@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книга - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .book-detail {
+            background-color: white;
+            border-radius: 12px;
+            padding: 50px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 50px;
+        }
+        
+        body.dark-theme .book-detail {
+            background-color: #2a2a2a;
+        }
+        
+        .book-gallery {
+            position: relative;
+        }
+        
+        .main-image-container {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            height: 500px;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            transform: translateY(-50%);
+        }
+        
+        .gallery-nav button {
+            background-color: rgba(116, 7, 14, 0.8);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .gallery-thumbnails {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+        }
+        
+        .thumbnail {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .thumbnail:hover,
+        .thumbnail.active {
+            opacity: 1;
+            border-color: var(--blood-red);
+        }
+        
+        .book-meta {
+            background-color: #f9f3e3;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        
+        body.dark-theme .book-meta {
+            background-color: #1a1a1a;
+        }
+        
+        .meta-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+        }
+        
+        .meta-row:last-child {
+            border-bottom: none;
+        }
+        
+        .meta-label {
+            font-weight: 600;
+            color: var(--drab-brown);
+        }
+        
+        .meta-value {
+            color: var(--black-bean);
+        }
+        
+        .meta-value.clickable {
+            color: var(--blood-red);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .meta-value.clickable:hover {
+            color: #5a0509;
+        }
+        
+        .rating-interactive {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stars-display {
+            font-size: 24px;
+            color: #ffa500;
+        }
+        
+        .rating-input {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #ddd;
+            transition: all 0.2s;
+        }
+        
+        .star-btn:hover,
+        .star-btn.active {
+            color: #ffa500;
+            transform: scale(1.2);
+        }
+        
+        .rating-info {
+            font-size: 18px;
+            color: var(--drab-brown);
+        }
+        
+        .page-title {
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .book-detail {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                        <li><a href="contact.html">Зв'язок</a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Переключити тему">🌙</button>
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                        🛒 <span class="cart-count">0</span>
+                    </button>
+                    <div class="profile-wrapper">
+                        <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                            👤
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="login.html">Увійти</a>
+                            <a href="register.html">Реєстрація</a>
+                            <a href="profile.html">Мій профіль</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Деталі книги -->
+    <section class="books-section">
+        <div class="container">
+            <a href="javascript:history.back()" class="back-link" style="display: inline-block; margin-bottom: 25px; color: var(--blood-red); font-weight: 600; font-size: 18px;">← Назад</a>
+
+            <div class="book-detail" id="book-detail">
+                <div class="book-loading" style="text-align: center; padding: 80px; font-size: 20px; grid-column: 1 / -1;">Завантаження...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Схожі книги -->
+    <section class="books-section bg-accent">
+        <div class="container">
+            <h2 class="section-title">Схожі книги</h2>
+            <div class="books-grid" id="similar-books">
+                <!-- Книги завантажуються через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Підвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Підтримка</h4>
+                    <ul>
+                        <li><a href="delivery.html">Доставка і оплата</a></li>
+                        <li><a href="return.html">Повернення товару</a></li>
+                        <li><a href="faq.html">Часті питання</a></li>
+                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/book.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+</html>

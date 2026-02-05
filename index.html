@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOKFEATHER - Інтернет-магазин книг</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Шапка сайту -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">BOOKFEATHER</a></h1>
+                    <!-- Тут вставте ваше лого: <img src="images/logo.png" alt="BOOKFEATHER" style="height: 50px;"> -->
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html" class="active">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html">Кошик <span class="cart-count">0</span></a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="favorites-btn" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Головний банер -->
+    <section class="hero-banner">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">Відкрий свою книжкову пір'їнку</h2>
+                <p class="hero-subtitle">Тисячі книг чекають на тебе у світі BOOKFEATHER</p>
+                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Нещодавно переглянуті -->
+    <section class="books-section" id="recently-viewed-section" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Нещодавно ви дивилися</h2>
+            <div class="books-grid" id="recently-viewed">
+                <!-- Книги завантажуються через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Категорії -->
+    <section class="categories-section">
+        <div class="container">
+            <h2 class="section-title">Категорії</h2>
+            <div class="categories-grid">
+                <a href="catalog.html?category=fiction" class="category-card">
+                    <h3>Художня література</h3>
+                </a>
+                <a href="catalog.html?category=detective" class="category-card">
+                    <h3>Детективи</h3>
+                </a>
+                <a href="catalog.html?category=fantasy" class="category-card">
+                    <h3>Фентезі</h3>
+                </a>
+                <a href="catalog.html?category=psychology" class="category-card">
+                    <h3>Психологія</h3>
+                </a>
+                <a href="catalog.html?category=business" class="category-card">
+                    <h3>Бізнес</h3>
+                </a>
+                <a href="catalog.html?category=science" class="category-card">
+                    <h3>Наука</h3>
+                </a>
+                <a href="catalog.html?category=biography" class="category-card">
+                    <h3>Біографії</h3>
+                </a>
+                <a href="catalog.html?category=history" class="category-card">
+                    <h3>Історія</h3>
+                </a>
+                <a href="catalog.html?category=children" class="category-card">
+                    <h3>Дитячі книги</h3>
+                </a>
+                <a href="catalog.html?category=romance" class="category-card">
+                    <h3>Романтика</h3>
+                </a>
+                <a href="catalog.html?category=thriller" class="category-card">
+                    <h3>Трилери</h3>
+                </a>
+                <a href="catalog.html?category=poetry" class="category-card">
+                    <h3>Поезія</h3>
+                </a>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="catalog.html" class="btn btn-outline">Переглянути всі категорії</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Новинки -->
+    <section class="books-section bg-accent">
+        <div class="container">
+            <h2 class="section-title">Новинки</h2>
+            <div class="books-grid" id="new-books">
+                <!-- Книги будуть завантажені через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Топ книги -->
+    <section class="books-section">
+        <div class="container">
+            <h2 class="section-title">Топ продажів</h2>
+            <div class="books-grid" id="top-books">
+                <!-- Книги будуть завантажені через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Підвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ваш найкращий книжковий магазин. Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html">Кошик</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                    <p style="margin-top: 15px;"><a href="contact.html" style="color: var(--blood-red); font-weight: 600;">Зворотній зв'язок →</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Підтримка</h4>
+                    <ul>
+                        <li><a href="#">Доставка і оплата</a></li>
+                        <li><a href="#">Повернення товару</a></li>
+                        <li><a href="#">Часті питання</a></li>
+                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кошик - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html" class="active">Кошик <span class="cart-count">0</span></a></li>
+                        <li><a href="admin.html">Адмінка</a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="favorites-btn" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Кошик -->
+    <section class="cart-section">
+        <div class="container">
+            <h1 class="page-title">Кошик</h1>
+
+            <div class="cart-content">
+                <!-- Список товарів -->
+                <div class="cart-items" id="cart-items">
+                    <!-- Товари завантажуються через JavaScript -->
+                </div>
+
+                <!-- Пустий кошик -->
+                <div class="empty-cart" id="empty-cart" style="display: none;">
+                    <p>Ваш кошик порожній</p>
+                    <a href="catalog.html" class="btn btn-primary">Перейти до каталогу</a>
+                </div>
+
+                <!-- Підсумок -->
+                <div class="cart-summary" id="cart-summary" style="display: none;">
+                    <h3>Підсумок замовлення</h3>
+                    <div class="summary-row">
+                        <span>Товарів:</span>
+                        <span id="items-count">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Вартість товарів:</span>
+                        <span id="subtotal">0 грн</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Доставка:</span>
+                        <span id="delivery">Безкоштовно</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Разом:</span>
+                        <span id="total">0 грн</span>
+                    </div>
+                    <button class="btn btn-primary btn-full" id="checkout-btn">Оформити замовлення</button>
+                    <button class="btn btn-outline btn-full" id="clear-cart">Очистити кошик</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Підвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ваш найкращий книжковий магазин</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html">Кошик</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+</body>
+</html>

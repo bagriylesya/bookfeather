@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель керування - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html">Кошик <span class="cart-count">0</span></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Вхід в адмінку -->
+    <section class="admin-section">
+        <div class="container">
+            <!-- Форма входу -->
+            <div class="admin-login" id="admin-login">
+                <h2>Вхід в панель керування</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Пароль:</label>
+                        <input type="password" id="admin-password" placeholder="Введіть пароль" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Увійти</button>
+                </form>
+            </div>
+
+            <!-- Панель керування -->
+            <div class="admin-panel" id="admin-panel" style="display: none;">
+                <div class="admin-header">
+                    <h1>Панель керування</h1>
+                    <button id="logout-btn" class="btn btn-outline">Вийти</button>
+                </div>
+
+                <!-- Табуляція -->
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="add-book">Додати книгу</button>
+                    <button class="tab-btn" data-tab="manage-books">Керування книгами</button>
+                </div>
+
+                <!-- Вкладка: Додати книгу -->
+                <div class="tab-content active" id="add-book">
+                    <h2>Додати нову книгу</h2>
+                    <form id="add-book-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Назва книги*:</label>
+                                <input type="text" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Автор*:</label>
+                                <input type="text" name="author" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Оригінальна назва:</label>
+                                <input type="text" name="originalTitle">
+                            </div>
+                            <div class="form-group">
+                                <label>Категорія*:</label>
+                                <select name="category" required>
+                                    <option value="">Оберіть категорію</option>
+                                    <option value="fiction">Художня література</option>
+                                    <option value="detective">Детективи</option>
+                                    <option value="fantasy">Фентезі</option>
+                                    <option value="psychology">Психологія</option>
+                                    <option value="business">Бізнес</option>
+                                    <option value="science">Наука</option>
+                                    <option value="biography">Біографії</option>
+                                    <option value="history">Історія</option>
+                                    <option value="children">Дитячі книги</option>
+                                    <option value="romance">Романтика</option>
+                                    <option value="thriller">Трилери</option>
+                                    <option value="poetry">Поезія</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Ціна (грн)*:</label>
+                                <input type="number" name="price" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Знижка (%):</label>
+                                <input type="number" name="discount" min="0" max="100" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Рейтинг (1-5):</label>
+                                <input type="number" name="rating" min="1" max="5" step="0.1" value="4">
+                            </div>
+                            <div class="form-group">
+                                <label>Кількість оцінок:</label>
+                                <input type="number" name="ratingCount" min="0" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Кількість сторінок:</label>
+                                <input type="number" name="pages" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Рік видання:</label>
+                                <input type="number" name="year" min="1900" max="2030" value="2024">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Обкладинка:</label>
+                                <select name="cover">
+                                    <option value="Тверда">Тверда</option>
+                                    <option value="М'яка">М'яка</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>URL обкладинки*:</label>
+                                <input type="url" name="image" placeholder="https://example.com/image.jpg" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Короткий опис*:</label>
+                            <textarea name="shortDescription" rows="2" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Повний опис*:</label>
+                            <textarea name="description" rows="5" required></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" name="isNew" value="true">
+                                    Новинка
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" name="isTop" value="true">
+                                    Топ продажів
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Додати книгу</button>
+                        <button type="reset" class="btn btn-outline">Очистити форму</button>
+                    </form>
+                </div>
+
+                <!-- Вкладка: Керування книгами -->
+                <div class="tab-content" id="manage-books">
+                    <h2>Керування книгами</h2>
+                    <div class="books-list" id="admin-books-list">
+                        <!-- Список книг завантажується через JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Підвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ваш найкращий книжковий магазин. Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html">Кошик</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                    <p style="margin-top: 15px;"><a href="contact.html" style="color: var(--blood-red); font-weight: 600;">Зворотній зв'язок →</a></p>
+                </div>
+                <div class="footer-section">
+                    <h4>Підтримка</h4>
+                    <ul>
+                        <li><a href="#">Доставка і оплата</a></li>
+                        <li><a href="#">Повернення товару</a></li>
+                        <li><a href="#">Часті питання</a></li>
+                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

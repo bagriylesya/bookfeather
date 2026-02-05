@@ -1,0 +1,962 @@
+/* ====== ЗМІННІ КОЛЬОРІВ ====== */
+:root {
+    --blood-red: #74070E;
+    --vanilla: #F4E3B2;
+    --drab-brown: #45462A;
+    --cinereous: #947268;
+    --black-bean: #310E10;
+    
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Lora', serif;
+}
+
+/* ====== БАЗОВІ СТИЛІ ====== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--vanilla);
+    color: var(--black-bean);
+    line-height: 1.6;
+    font-size: 17px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: var(--blood-red);
+}
+
+/* ====== ШАПКА САЙТУ ====== */
+.header {
+    background-color: var(--black-bean);
+    color: var(--vanilla);
+    padding: 25px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 32px;
+    letter-spacing: 2px;
+}
+
+.logo a {
+    color: var(--vanilla);
+}
+
+.nav ul {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.nav a {
+    color: var(--vanilla);
+    font-size: 19px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.nav a:hover, .nav a.active {
+    background-color: var(--blood-red);
+}
+
+.cart-count, .fav-count {
+    background-color: var(--blood-red);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 50%;
+    font-size: 14px;
+    margin-left: 6px;
+    font-weight: bold;
+}
+
+.header-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.favorites-btn {
+    background: none;
+    border: 2px solid var(--vanilla);
+    color: var(--vanilla);
+    padding: 10px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.favorites-btn:hover {
+    background-color: var(--blood-red);
+    border-color: var(--blood-red);
+    transform: scale(1.05);
+}
+
+/* ====== БАНЕР ====== */
+.hero-banner {
+    background: linear-gradient(135deg, var(--blood-red), var(--cinereous));
+    color: white;
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+}
+
+.hero-title {
+    font-size: 64px;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+}
+
+.hero-subtitle {
+    font-size: 28px;
+    margin-bottom: 35px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ====== КНОПКИ ====== */
+.btn {
+    padding: 16px 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 19px;
+    font-family: var(--font-body);
+    transition: all 0.3s;
+    display: inline-block;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--blood-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #5a0509;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+.btn-secondary {
+    background-color: var(--drab-brown);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #363721;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--blood-red);
+    color: var(--blood-red);
+}
+
+.btn-outline:hover {
+    background-color: var(--blood-red);
+    color: white;
+}
+
+.btn-full {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ====== СЕКЦІЇ ====== */
+.section-title {
+    font-size: 44px;
+    margin-bottom: 50px;
+    text-align: center;
+    color: var(--black-bean);
+}
+
+.books-section, .categories-section {
+    padding: 70px 0;
+}
+
+.bg-accent {
+    background-color: white;
+}
+
+/* ====== КАТЕГОРІЇ ====== */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.category-card {
+    background-color: white;
+    padding: 50px 25px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+    transition: all 0.3s;
+}
+
+.category-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(116, 7, 14, 0.25);
+    background-color: var(--blood-red);
+    color: white;
+}
+
+.category-card h3 {
+    font-size: 22px;
+}
+
+/* ====== СІТКА КНИГ ====== */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 35px;
+}
+
+.book-card {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+    transition: all 0.3s;
+    position: relative;
+    cursor: pointer;
+}
+
+.book-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.book-image {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+}
+
+.book-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: var(--blood-red);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.book-info {
+    padding: 25px;
+}
+
+.book-title {
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--black-bean);
+}
+
+.book-author {
+    color: var(--cinereous);
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.book-rating {
+    color: #ffa500;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.book-description {
+    font-size: 15px;
+    color: var(--drab-brown);
+    margin-bottom: 18px;
+    line-height: 1.6;
+}
+
+.book-price {
+    font-size: 28px;
+    color: var(--blood-red);
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+.book-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.book-actions .btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 16px;
+}
+
+.fav-btn {
+    background-color: var(--vanilla);
+    border: 2px solid var(--blood-red);
+    color: var(--blood-red);
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+}
+
+.fav-btn:hover, .fav-btn.active {
+    background-color: var(--blood-red);
+    color: white;
+}
+
+/* ====== КАТАЛОГ ====== */
+.catalog-section {
+    padding: 50px 0;
+}
+
+.page-title {
+    font-size: 48px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.catalog-controls {
+    background-color: white;
+    padding: 35px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+}
+
+.search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid var(--cinereous);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 17px;
+}
+
+.search-bar button {
+    padding: 15px 25px;
+    background-color: var(--blood-red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 24px;
+    transition: all 0.3s;
+}
+
+.search-bar button:hover {
+    background-color: #5a0509;
+    transform: scale(1.05);
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--black-bean);
+    font-size: 16px;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--cinereous);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 16px;
+}
+
+.price-range {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.price-range input {
+    width: 110px;
+}
+
+.catalog-results {
+    margin-bottom: 25px;
+}
+
+.results-info {
+    color: var(--drab-brown);
+    font-size: 18px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    font-size: 20px;
+    color: var(--cinereous);
+}
+
+/* ====== ДЕТАЛІ КНИГИ ====== */
+.book-detail-section {
+    padding: 50px 0;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 25px;
+    color: var(--blood-red);
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.book-detail {
+    background-color: white;
+    border-radius: 12px;
+    padding: 50px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 50px;
+}
+
+.book-detail-image img {
+    width: 100%;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.book-detail-image img:hover {
+    transform: scale(1.05);
+}
+
+.book-detail-info h1 {
+    font-size: 40px;
+    margin-bottom: 18px;
+}
+
+.book-detail-author {
+    font-size: 22px;
+    color: var(--cinereous);
+    margin-bottom: 25px;
+}
+
+.book-detail-price {
+    font-size: 36px;
+    color: var(--blood-red);
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+.book-detail-description {
+    margin-bottom: 35px;
+    line-height: 1.9;
+    font-size: 17px;
+}
+
+.book-meta {
+    background-color: #f9f3e3;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.book-meta-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 16px;
+}
+
+.book-meta-item:last-child {
+    border-bottom: none;
+}
+
+.book-meta-label {
+    font-weight: 600;
+    color: var(--drab-brown);
+}
+
+.book-loading {
+    text-align: center;
+    padding: 80px;
+    font-size: 20px;
+}
+
+/* ====== КОШИК ====== */
+.cart-section {
+    padding: 50px 0;
+    min-height: 60vh;
+}
+
+.cart-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 35px;
+    margin-top: 40px;
+}
+
+.cart-items {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.cart-item {
+    display: flex;
+    gap: 25px;
+    padding: 25px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cart-item:hover {
+    background-color: #f9f3e3;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item-image {
+    width: 110px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-title {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.cart-item-author {
+    color: var(--cinereous);
+    margin-bottom: 12px;
+    font-size: 17px;
+}
+
+.cart-item-price {
+    font-size: 26px;
+    color: var(--blood-red);
+    font-weight: bold;
+}
+
+.cart-item-remove {
+    padding: 10px 18px;
+    background-color: transparent;
+    border: 2px solid var(--blood-red);
+    color: var(--blood-red);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.cart-item-remove:hover {
+    background-color: var(--blood-red);
+    color: white;
+}
+
+.empty-cart {
+    text-align: center;
+    padding: 80px;
+    grid-column: 1 / -1;
+}
+
+.empty-cart p {
+    font-size: 22px;
+    margin-bottom: 25px;
+    color: var(--cinereous);
+}
+
+.cart-summary {
+    background-color: white;
+    border-radius: 12px;
+    padding: 35px;
+    height: fit-content;
+    position: sticky;
+    top: 110px;
+}
+
+.cart-summary h3 {
+    margin-bottom: 25px;
+    font-size: 26px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 17px;
+}
+
+.summary-row.total {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--blood-red);
+    border-top: 2px solid var(--black-bean);
+    border-bottom: none;
+    margin-top: 12px;
+    padding-top: 18px;
+}
+
+/* ====== АДМІНКА ====== */
+.admin-section {
+    padding: 50px 0;
+    min-height: 70vh;
+}
+
+.admin-login {
+    max-width: 450px;
+    margin: 80px auto;
+    background-color: white;
+    padding: 50px;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+}
+
+.admin-login h2 {
+    margin-bottom: 35px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--black-bean);
+    font-size: 17px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--cinereous);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 17px;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.admin-panel {
+    background-color: white;
+    border-radius: 12px;
+    padding: 50px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.admin-header h1 {
+    font-size: 38px;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 35px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+    padding: 18px 35px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: var(--font-body);
+    color: var(--drab-brown);
+    transition: all 0.3s;
+}
+
+.tab-btn:hover {
+    color: var(--blood-red);
+}
+
+.tab-btn.active {
+    color: var(--blood-red);
+    border-bottom-color: var(--blood-red);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    transform: scale(1.3);
+}
+
+.books-list {
+    display: grid;
+    gap: 25px;
+}
+
+.admin-book-item {
+    display: flex;
+    gap: 25px;
+    padding: 25px;
+    background-color: #f9f3e3;
+    border-radius: 12px;
+}
+
+.admin-book-image {
+    width: 90px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.admin-book-info {
+    flex: 1;
+}
+
+.admin-book-info p {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.admin-book-title {
+    font-size: 22px;
+    margin-bottom: 8px;
+}
+
+.admin-book-author {
+    color: var(--cinereous);
+    margin-bottom: 12px;
+    font-size: 17px;
+}
+
+.admin-book-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.admin-book-actions .btn {
+    padding: 10px 18px;
+    font-size: 16px;
+}
+
+/* ====== NOTIFICATION ====== */
+.notification {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background-color: var(--blood-red);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    z-index: 10000;
+    animation: slideIn 0.3s ease-out;
+    font-size: 17px;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ====== ПІДВАЛ ====== */
+.footer {
+    background-color: var(--black-bean);
+    color: var(--vanilla);
+    padding: 50px 0 25px;
+    margin-top: 80px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 50px;
+    margin-bottom: 35px;
+}
+
+.footer-section h3 {
+    font-size: 26px;
+    margin-bottom: 18px;
+    color: var(--vanilla);
+}
+
+.footer-section h4 {
+    font-size: 20px;
+    margin-bottom: 18px;
+    color: var(--vanilla);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.footer-section a {
+    color: var(--vanilla);
+}
+
+.footer-section a:hover {
+    color: var(--blood-red);
+}
+
+.footer-section p {
+    font-size: 16px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 25px;
+    border-top: 1px solid var(--cinereous);
+    font-size: 15px;
+}
+
+/* ====== РЕСПОНСИВ ====== */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav ul {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 40px;
+    }
+
+    .hero-subtitle {
+        font-size: 20px;
+    }
+
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .book-detail {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-content {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        flex-direction: column;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}

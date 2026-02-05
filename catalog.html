@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html" class="active">Каталог</a></li>
+                        <li><a href="cart.html">Кошик <span class="cart-count">0</span></a></li>
+                        <li><a href="admin.html">Адмінка</a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="favorites-btn" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Каталог -->
+    <section class="catalog-section">
+        <div class="container">
+            <h1 class="page-title">Каталог книг</h1>
+
+            <!-- Пошук та фільтри -->
+            <div class="catalog-controls">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Пошук за назвою, автором...">
+                    <button id="search-btn">🔍</button>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Категорія:</label>
+                        <select id="category-filter">
+                            <option value="">Всі категорії</option>
+                            <option value="fiction">Художня література</option>
+                            <option value="detective">Детективи</option>
+                            <option value="fantasy">Фентезі</option>
+                            <option value="psychology">Психологія</option>
+                            <option value="business">Бізнес</option>
+                            <option value="science">Наука</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Сортування:</label>
+                        <select id="sort-filter">
+                            <option value="popularity">За популярністю</option>
+                            <option value="newest">За новизною</option>
+                            <option value="price-asc">Ціна: від низької</option>
+                            <option value="price-desc">Ціна: від високої</option>
+                            <option value="rating">За рейтингом</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Ціна:</label>
+                        <div class="price-range">
+                            <input type="number" id="price-min" placeholder="Від" min="0">
+                            <span>-</span>
+                            <input type="number" id="price-max" placeholder="До" min="0">
+                        </div>
+                    </div>
+
+                    <button id="apply-filters" class="btn btn-secondary">Застосувати</button>
+                    <button id="reset-filters" class="btn btn-outline">Скинути</button>
+                </div>
+            </div>
+
+            <!-- Результати -->
+            <div class="catalog-results">
+                <p class="results-info"><span id="results-count">0</span> книг знайдено</p>
+            </div>
+
+            <!-- Сітка книг -->
+            <div class="books-grid" id="catalog-books">
+                <!-- Книги завантажуються через JavaScript -->
+            </div>
+
+            <!-- Повідомлення якщо пусто -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <p>Книг не знайдено. Спробуйте змінити фільтри.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Підвал -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ваш найкращий книжковий магазин</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="cart.html">Кошик</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/catalog.js"></script>
+</body>
+</html>
