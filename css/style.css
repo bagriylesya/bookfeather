@@ -5,9 +5,36 @@
     --drab-brown: #45462A;
     --cinereous: #947268;
     --black-bean: #310E10;
+    --bg-accent: #FAF6ED;
     
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Lora', serif;
+}
+
+/* Темна тема */
+body.dark-theme {
+    --vanilla: #1a1a1a;
+    --black-bean: #e8dcc4;
+    --bg-accent: #2a2a2a;
+    --drab-brown: #c4b89a;
+    --cinereous: #b89a8e;
+}
+
+body.dark-theme .header {
+    background-color: #0d0d0d;
+}
+
+body.dark-theme .book-card,
+body.dark-theme .category-card,
+body.dark-theme .admin-panel,
+body.dark-theme .cart-items,
+body.dark-theme .cart-summary,
+body.dark-theme .catalog-controls {
+    background-color: #2a2a2a;
+}
+
+body.dark-theme .footer {
+    background-color: #0d0d0d;
 }
 
 /* ====== БАЗОВІ СТИЛІ ====== */
@@ -23,6 +50,7 @@ body {
     color: var(--black-bean);
     line-height: 1.6;
     font-size: 17px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
@@ -41,15 +69,11 @@ a {
     transition: color 0.3s;
 }
 
-a:hover {
-    color: var(--blood-red);
-}
-
-/* ====== ШАПКА САЙТУ ====== */
+/* ====== ШАПКА ====== */
 .header {
     background-color: var(--black-bean);
     color: var(--vanilla);
-    padding: 25px 0;
+    padding: 20px 0;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -60,10 +84,21 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 30px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 50px;
+    width: auto;
 }
 
 .logo h1 {
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: 2px;
 }
 
@@ -74,12 +109,12 @@ a:hover {
 .nav ul {
     display: flex;
     list-style: none;
-    gap: 40px;
+    gap: 30px;
 }
 
 .nav a {
     color: var(--vanilla);
-    font-size: 19px;
+    font-size: 18px;
     padding: 8px 16px;
     border-radius: 6px;
     font-weight: 500;
@@ -87,39 +122,108 @@ a:hover {
 
 .nav a:hover, .nav a.active {
     background-color: var(--blood-red);
-}
-
-.cart-count, .fav-count {
-    background-color: var(--blood-red);
     color: white;
-    padding: 3px 8px;
-    border-radius: 50%;
-    font-size: 14px;
-    margin-left: 6px;
-    font-weight: bold;
 }
 
 .header-icons {
     display: flex;
     gap: 15px;
+    align-items: center;
 }
 
-.favorites-btn {
-    background: none;
+.icon-btn {
+    background: transparent;
     border: 2px solid var(--vanilla);
     color: var(--vanilla);
     padding: 10px 18px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 20px;
     transition: all 0.3s;
-    font-weight: 500;
+    position: relative;
+    min-width: 60px;
 }
 
-.favorites-btn:hover {
+.icon-btn:hover {
     background-color: var(--blood-red);
     border-color: var(--blood-red);
     transform: scale(1.05);
+}
+
+.cart-count, .fav-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--blood-red);
+    color: white;
+    padding: 3px 7px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.profile-wrapper {
+    position: relative;
+}
+
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s;
+    z-index: 1001;
+}
+
+.profile-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-menu a {
+    display: block;
+    padding: 14px 20px;
+    color: var(--black-bean);
+    font-size: 16px;
+    transition: background-color 0.3s;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-menu a:last-child {
+    border-bottom: none;
+}
+
+.profile-menu a:hover {
+    background-color: #f0f0f0;
+    color: var(--blood-red);
+}
+
+.profile-menu a:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.profile-menu a:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+body.dark-theme .profile-menu {
+    background-color: #2a2a2a;
+}
+
+body.dark-theme .profile-menu a {
+    color: #e8dcc4;
+    border-color: #1a1a1a;
+}
+
+body.dark-theme .profile-menu a:hover {
+    background-color: #1a1a1a;
 }
 
 /* ====== БАНЕР ====== */
@@ -128,7 +232,6 @@ a:hover {
     color: white;
     padding: 120px 0;
     text-align: center;
-    position: relative;
 }
 
 .hero-title {
@@ -163,17 +266,9 @@ a:hover {
 
 .btn-primary:hover {
     background-color: #5a0509;
+    color: white !important;
     transform: translateY(-3px);
     box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-}
-
-.btn-secondary {
-    background-color: var(--drab-brown);
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #363721;
 }
 
 .btn-outline {
@@ -184,12 +279,7 @@ a:hover {
 
 .btn-outline:hover {
     background-color: var(--blood-red);
-    color: white;
-}
-
-.btn-full {
-    width: 100%;
-    margin-top: 10px;
+    color: white !important;
 }
 
 /* ====== СЕКЦІЇ ====== */
@@ -205,14 +295,47 @@ a:hover {
 }
 
 .bg-accent {
-    background-color: white;
+    background-color: var(--bg-accent);
 }
 
-/* ====== КАТЕГОРІЇ ====== */
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+/* ====== КАТЕГОРІЇ СЛАЙДЕР ====== */
+.categories-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.category-nav-btn {
+    background-color: var(--blood-red);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 30px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-nav-btn:hover {
+    background-color: #5a0509;
+    transform: scale(1.1);
+}
+
+.categories-wrapper {
+    overflow: hidden;
+    flex: 1;
+}
+
+.categories-track {
+    display: flex;
     gap: 25px;
+    transition: transform 0.3s ease;
 }
 
 .category-card {
@@ -222,6 +345,8 @@ a:hover {
     border-radius: 12px;
     box-shadow: 0 3px 15px rgba(0,0,0,0.12);
     transition: all 0.3s;
+    min-width: 250px;
+    flex-shrink: 0;
 }
 
 .category-card:hover {
@@ -233,6 +358,16 @@ a:hover {
 
 .category-card h3 {
     font-size: 22px;
+}
+
+.category-card.view-all {
+    background-color: var(--bg-accent);
+    border: 2px dashed var(--blood-red);
+}
+
+.category-card.view-all:hover {
+    background-color: var(--blood-red);
+    border-color: var(--blood-red);
 }
 
 /* ====== СІТКА КНИГ ====== */
@@ -285,6 +420,10 @@ a:hover {
     color: var(--black-bean);
 }
 
+body.dark-theme .book-title {
+    color: #e8dcc4;
+}
+
 .book-author {
     color: var(--cinereous);
     margin-bottom: 12px;
@@ -317,519 +456,27 @@ a:hover {
 }
 
 .book-actions .btn {
-    flex: 1;
+    flex: 2;
     padding: 12px;
     font-size: 16px;
 }
 
-.fav-btn {
-    background-color: var(--vanilla);
-    border: 2px solid var(--blood-red);
-    color: var(--blood-red);
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 20px;
-    transition: all 0.3s;
-}
-
-.fav-btn:hover, .fav-btn.active {
-    background-color: var(--blood-red);
-    color: white;
-}
-
-/* ====== КАТАЛОГ ====== */
-.catalog-section {
-    padding: 50px 0;
-}
-
-.page-title {
-    font-size: 48px;
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-.catalog-controls {
-    background-color: white;
-    padding: 35px;
-    border-radius: 12px;
-    margin-bottom: 40px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-}
-
-.search-bar {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 25px;
-}
-
-.search-bar input {
+.book-actions .fav-btn {
     flex: 1;
-    padding: 15px;
-    border: 2px solid var(--cinereous);
-    border-radius: 8px;
-    font-family: var(--font-body);
-    font-size: 17px;
-}
-
-.search-bar button {
-    padding: 15px 25px;
-    background-color: var(--blood-red);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 24px;
-    transition: all 0.3s;
-}
-
-.search-bar button:hover {
-    background-color: #5a0509;
-    transform: scale(1.05);
-}
-
-.filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    align-items: flex-end;
-}
-
-.filter-group {
-    flex: 1;
-    min-width: 180px;
-}
-
-.filter-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--black-bean);
-    font-size: 16px;
-}
-
-.filter-group select,
-.filter-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid var(--cinereous);
-    border-radius: 8px;
-    font-family: var(--font-body);
-    font-size: 16px;
-}
-
-.price-range {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.price-range input {
-    width: 110px;
-}
-
-.catalog-results {
-    margin-bottom: 25px;
-}
-
-.results-info {
-    color: var(--drab-brown);
-    font-size: 18px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    font-size: 20px;
-    color: var(--cinereous);
-}
-
-/* ====== ДЕТАЛІ КНИГИ ====== */
-.book-detail-section {
-    padding: 50px 0;
-}
-
-.back-link {
-    display: inline-block;
-    margin-bottom: 25px;
-    color: var(--blood-red);
-    font-weight: 600;
-    font-size: 18px;
-}
-
-.book-detail {
-    background-color: white;
-    border-radius: 12px;
-    padding: 50px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 50px;
-}
-
-.book-detail-image img {
-    width: 100%;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-.book-detail-image img:hover {
-    transform: scale(1.05);
-}
-
-.book-detail-info h1 {
-    font-size: 40px;
-    margin-bottom: 18px;
-}
-
-.book-detail-author {
-    font-size: 22px;
-    color: var(--cinereous);
-    margin-bottom: 25px;
-}
-
-.book-detail-price {
-    font-size: 36px;
-    color: var(--blood-red);
-    font-weight: bold;
-    margin-bottom: 25px;
-}
-
-.book-detail-description {
-    margin-bottom: 35px;
-    line-height: 1.9;
-    font-size: 17px;
-}
-
-.book-meta {
-    background-color: #f9f3e3;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-
-.book-meta-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 16px;
-}
-
-.book-meta-item:last-child {
-    border-bottom: none;
-}
-
-.book-meta-label {
-    font-weight: 600;
-    color: var(--drab-brown);
-}
-
-.book-loading {
-    text-align: center;
-    padding: 80px;
-    font-size: 20px;
-}
-
-/* ====== КОШИК ====== */
-.cart-section {
-    padding: 50px 0;
-    min-height: 60vh;
-}
-
-.cart-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 35px;
-    margin-top: 40px;
-}
-
-.cart-items {
-    background-color: white;
-    border-radius: 12px;
-    padding: 25px;
-}
-
-.cart-item {
-    display: flex;
-    gap: 25px;
-    padding: 25px;
-    border-bottom: 1px solid #e0e0e0;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.cart-item:hover {
-    background-color: #f9f3e3;
-}
-
-.cart-item:last-child {
-    border-bottom: none;
-}
-
-.cart-item-image {
-    width: 110px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.cart-item-info {
-    flex: 1;
-}
-
-.cart-item-title {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.cart-item-author {
-    color: var(--cinereous);
-    margin-bottom: 12px;
-    font-size: 17px;
-}
-
-.cart-item-price {
-    font-size: 26px;
-    color: var(--blood-red);
-    font-weight: bold;
-}
-
-.cart-item-remove {
-    padding: 10px 18px;
     background-color: transparent;
     border: 2px solid var(--blood-red);
     color: var(--blood-red);
+    padding: 12px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 20px;
     transition: all 0.3s;
 }
 
-.cart-item-remove:hover {
+.book-actions .fav-btn:hover,
+.book-actions .fav-btn.active {
     background-color: var(--blood-red);
     color: white;
-}
-
-.empty-cart {
-    text-align: center;
-    padding: 80px;
-    grid-column: 1 / -1;
-}
-
-.empty-cart p {
-    font-size: 22px;
-    margin-bottom: 25px;
-    color: var(--cinereous);
-}
-
-.cart-summary {
-    background-color: white;
-    border-radius: 12px;
-    padding: 35px;
-    height: fit-content;
-    position: sticky;
-    top: 110px;
-}
-
-.cart-summary h3 {
-    margin-bottom: 25px;
-    font-size: 26px;
-}
-
-.summary-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 17px;
-}
-
-.summary-row.total {
-    font-size: 22px;
-    font-weight: bold;
-    color: var(--blood-red);
-    border-top: 2px solid var(--black-bean);
-    border-bottom: none;
-    margin-top: 12px;
-    padding-top: 18px;
-}
-
-/* ====== АДМІНКА ====== */
-.admin-section {
-    padding: 50px 0;
-    min-height: 70vh;
-}
-
-.admin-login {
-    max-width: 450px;
-    margin: 80px auto;
-    background-color: white;
-    padding: 50px;
-    border-radius: 12px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-}
-
-.admin-login h2 {
-    margin-bottom: 35px;
-    text-align: center;
-    font-size: 30px;
-}
-
-.form-group {
-    margin-bottom: 25px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: 600;
-    color: var(--black-bean);
-    font-size: 17px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 14px;
-    border: 2px solid var(--cinereous);
-    border-radius: 8px;
-    font-family: var(--font-body);
-    font-size: 17px;
-}
-
-.form-group textarea {
-    resize: vertical;
-}
-
-.admin-panel {
-    background-color: white;
-    border-radius: 12px;
-    padding: 50px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-}
-
-.admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.admin-header h1 {
-    font-size: 38px;
-}
-
-.admin-tabs {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 35px;
-    border-bottom: 2px solid #e0e0e0;
-}
-
-.tab-btn {
-    padding: 18px 35px;
-    background-color: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    cursor: pointer;
-    font-size: 18px;
-    font-family: var(--font-body);
-    color: var(--drab-brown);
-    transition: all 0.3s;
-}
-
-.tab-btn:hover {
-    color: var(--blood-red);
-}
-
-.tab-btn.active {
-    color: var(--blood-red);
-    border-bottom-color: var(--blood-red);
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.tab-content h2 {
-    font-size: 32px;
-    margin-bottom: 30px;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-.checkbox-group label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 17px;
-}
-
-.checkbox-group input[type="checkbox"] {
-    width: auto;
-    transform: scale(1.3);
-}
-
-.books-list {
-    display: grid;
-    gap: 25px;
-}
-
-.admin-book-item {
-    display: flex;
-    gap: 25px;
-    padding: 25px;
-    background-color: #f9f3e3;
-    border-radius: 12px;
-}
-
-.admin-book-image {
-    width: 90px;
-    height: 125px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.admin-book-info {
-    flex: 1;
-}
-
-.admin-book-info p {
-    font-size: 16px;
-    margin-bottom: 6px;
-}
-
-.admin-book-title {
-    font-size: 22px;
-    margin-bottom: 8px;
-}
-
-.admin-book-author {
-    color: var(--cinereous);
-    margin-bottom: 12px;
-    font-size: 17px;
-}
-
-.admin-book-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.admin-book-actions .btn {
-    padding: 10px 18px;
-    font-size: 16px;
 }
 
 /* ====== NOTIFICATION ====== */
@@ -843,11 +490,11 @@ a:hover {
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.3);
     z-index: 10000;
-    animation: slideIn 0.3s ease-out;
+    animation: slideInRight 0.3s ease-out;
     font-size: 17px;
 }
 
-@keyframes slideIn {
+@keyframes slideInRight {
     from {
         transform: translateX(400px);
         opacity: 0;
@@ -876,13 +523,11 @@ a:hover {
 .footer-section h3 {
     font-size: 26px;
     margin-bottom: 18px;
-    color: var(--vanilla);
 }
 
 .footer-section h4 {
     font-size: 20px;
     margin-bottom: 18px;
-    color: var(--vanilla);
 }
 
 .footer-section ul {
@@ -916,14 +561,12 @@ a:hover {
 /* ====== РЕСПОНСИВ ====== */
 @media (max-width: 768px) {
     .header-content {
-        flex-direction: column;
-        gap: 15px;
+        flex-wrap: wrap;
     }
 
     .nav ul {
-        flex-direction: column;
+        flex-wrap: wrap;
         gap: 10px;
-        text-align: center;
     }
 
     .hero-title {
@@ -934,29 +577,11 @@ a:hover {
         font-size: 20px;
     }
 
+    .category-card {
+        min-width: 200px;
+    }
+
     .books-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    }
-
-    .book-detail {
-        grid-template-columns: 1fr;
-    }
-
-    .cart-content {
-        grid-template-columns: 1fr;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-
-    .filters {
-        flex-direction: column;
-    }
-
-    .cart-item {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
     }
 }

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOKFEATHER - Інтернет-магазин книг</title>
+    <title>Вподобання - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Шапка сайту -->
+    <!-- Шапка -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -18,9 +18,9 @@
                 </div>
                 <nav class="nav">
                     <ul>
-                        <li><a href="index.html" class="active">Головна</a></li>
+                        <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="favorites.html">Вподобання</a></li>
+                        <li><a href="favorites.html" class="active">Вподобання</a></li>
                         <li><a href="about.html">Про нас</a></li>
                         <li><a href="contact.html">Зв'язок</a></li>
                     </ul>
@@ -44,85 +44,20 @@
         </div>
     </header>
 
-    <!-- Головний банер -->
-    <section class="hero-banner">
-        <div class="container">
-            <div class="hero-content">
-                <h2 class="hero-title">Відкрий свою книжкову пір'їнку</h2>
-                <p class="hero-subtitle">Тисячі книг чекають на тебе у світі BOOKFEATHER</p>
-                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Категорії -->
-    <section class="categories-section">
-        <div class="container">
-            <h2 class="section-title">Категорії</h2>
-            <div class="categories-container">
-                <button class="category-nav-btn prev" onclick="scrollCategories(-1)">‹</button>
-                <div class="categories-wrapper" id="categories-wrapper">
-                    <div class="categories-track" id="categories-track">
-                        <a href="catalog.html?category=fiction" class="category-card">
-                            <h3>Художня література</h3>
-                        </a>
-                        <a href="catalog.html?category=detective" class="category-card">
-                            <h3>Детективи</h3>
-                        </a>
-                        <a href="catalog.html?category=fantasy" class="category-card">
-                            <h3>Фентезі</h3>
-                        </a>
-                        <a href="catalog.html?category=psychology" class="category-card">
-                            <h3>Психологія</h3>
-                        </a>
-                        <a href="catalog.html?category=business" class="category-card">
-                            <h3>Бізнес</h3>
-                        </a>
-                        <a href="catalog.html?category=science" class="category-card">
-                            <h3>Наука</h3>
-                        </a>
-                        <a href="catalog.html?category=biography" class="category-card">
-                            <h3>Біографії</h3>
-                        </a>
-                        <a href="catalog.html?category=history" class="category-card">
-                            <h3>Історія</h3>
-                        </a>
-                        <a href="catalog.html" class="category-card view-all">
-                            <h3>Переглянути всі →</h3>
-                        </a>
-                    </div>
-                </div>
-                <button class="category-nav-btn next" onclick="scrollCategories(1)">›</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Новинки -->
+    <!-- Вподобання -->
     <section class="books-section">
         <div class="container">
-            <h2 class="section-title">Новинки</h2>
-            <div class="books-grid" id="new-books">
+            <h1 class="page-title" style="font-size: 48px; margin-bottom: 40px; text-align: center;">Вподобання</h1>
+
+            <!-- Сітка книг -->
+            <div class="books-grid" id="favorites-books">
                 <!-- Книги завантажуються через JavaScript -->
             </div>
-        </div>
-    </section>
 
-    <!-- Топ книги -->
-    <section class="books-section bg-accent">
-        <div class="container">
-            <h2 class="section-title">Топ продажів</h2>
-            <div class="books-grid" id="top-books">
-                <!-- Книги завантажуються через JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Нещодавно переглянуті -->
-    <section class="books-section" id="recently-viewed-section" style="display: none;">
-        <div class="container">
-            <h2 class="section-title">Ви дивилися</h2>
-            <div class="books-grid" id="recently-viewed">
-                <!-- Книги завантажуються через JavaScript -->
+            <!-- Пусте повідомлення -->
+            <div class="empty-state" id="empty-favorites" style="display: none; text-align: center; padding: 80px 20px;">
+                <p style="font-size: 22px; margin-bottom: 25px; color: var(--cinereous);">Ви ще не додали жодної книги у вподобання</p>
+                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
             </div>
         </div>
     </section>
@@ -166,5 +101,23 @@
 
     <script src="js/main.js"></script>
     <script src="js/theme.js"></script>
+    <script>
+        // Відображення вподобаних книг
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadBooks();
+            
+            const container = document.getElementById('favorites-books');
+            const emptyState = document.getElementById('empty-favorites');
+            
+            if (favorites.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            container.innerHTML = favorites.map(book => createBookCard(book)).join('');
+            attachBookCardListeners();
+        });
+    </script>
 </body>
 </html>

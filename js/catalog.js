@@ -2,6 +2,8 @@
 let filteredBooks = [];
 let currentFilters = {
     search: '',
+    author: '',
+    publisher: '',
     category: '',
     priceMin: 0,
     priceMax: Infinity,
@@ -15,10 +17,22 @@ async function loadCatalog() {
     // Перевіряємо URL параметри
     const urlParams = new URLSearchParams(window.location.search);
     const categoryFromUrl = urlParams.get('category');
+    const authorFromUrl = urlParams.get('author');
+    const publisherFromUrl = urlParams.get('publisher');
     
     if (categoryFromUrl) {
         document.getElementById('category-filter').value = categoryFromUrl;
         currentFilters.category = categoryFromUrl;
+    }
+    
+    if (authorFromUrl) {
+        document.getElementById('author-filter').value = decodeURIComponent(authorFromUrl);
+        currentFilters.author = decodeURIComponent(authorFromUrl);
+    }
+    
+    if (publisherFromUrl) {
+        document.getElementById('publisher-filter').value = decodeURIComponent(publisherFromUrl);
+        currentFilters.publisher = decodeURIComponent(publisherFromUrl);
     }
     
     applyFilters();
@@ -32,6 +46,14 @@ function applyFilters() {
             book.title.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
             book.author.toLowerCase().includes(currentFilters.search.toLowerCase());
         
+        // Автор
+        const authorMatch = !currentFilters.author || 
+            book.author.toLowerCase().includes(currentFilters.author.toLowerCase());
+        
+        // Видавництво
+        const publisherMatch = !currentFilters.publisher || 
+            (book.publisher && book.publisher.toLowerCase().includes(currentFilters.publisher.toLowerCase()));
+        
         // Категорія
         const categoryMatch = !currentFilters.category || book.category === currentFilters.category;
         
@@ -39,7 +61,7 @@ function applyFilters() {
         const priceMatch = book.price >= currentFilters.priceMin && 
                           book.price <= currentFilters.priceMax;
         
-        return searchMatch && categoryMatch && priceMatch;
+        return searchMatch && authorMatch && publisherMatch && categoryMatch && priceMatch;
     });
     
     // Сортування
@@ -132,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Застосування фільтрів
     document.getElementById('apply-filters').addEventListener('click', () => {
+        currentFilters.author = document.getElementById('author-filter').value;
+        currentFilters.publisher = document.getElementById('publisher-filter').value;
         currentFilters.category = document.getElementById('category-filter').value;
         currentFilters.sort = document.getElementById('sort-filter').value;
         

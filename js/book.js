@@ -134,11 +134,11 @@ function generateStars(rating) {
 // ====== ГЕНЕРАЦІЯ ІНТЕРАКТИВНИХ ЗІРОК ======
 function generateRatingStars(userRating) {
     let stars = '';
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 0.5; i <= 10; i += 0.5) {
         const active = i <= userRating ? 'active' : '';
-        const display = Math.ceil(i / 2);
-        const half = i % 2 === 1;
-        stars += `<button class="star-btn ${active}" data-rating="${i}" title="${i}/10">${half ? '⯨' : '★'}</button>`;
+        const starType = (i % 1 === 0.5) ? '½' : '★';
+        const displayRating = i.toFixed(1);
+        stars += `<button class="star-btn ${active}" data-rating="${i}" title="${displayRating}/10">${starType}</button>`;
     }
     return stars;
 }
@@ -148,12 +148,13 @@ function attachRatingListeners(bookId) {
     const ratingBtns = document.querySelectorAll('.star-btn');
     ratingBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            const rating = parseInt(btn.dataset.rating);
+            const rating = parseFloat(btn.dataset.rating);
             setUserRating(bookId, rating);
             
             // Оновлюємо відображення
-            ratingBtns.forEach((b, index) => {
-                if (index < rating) {
+            ratingBtns.forEach(b => {
+                const btnRating = parseFloat(b.dataset.rating);
+                if (btnRating <= rating) {
                     b.classList.add('active');
                 } else {
                     b.classList.remove('active');
