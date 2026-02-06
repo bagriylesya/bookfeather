@@ -1,9 +1,8 @@
-// ====== ГЛОБАЛЬНІ ЗМІННІ ======
 let currentBook = null;
 let currentImageIndex = 0;
 let userRatings = JSON.parse(localStorage.getItem('userRatings')) || {};
+let userRating = 0;
 
-// ====== ВІДОБРАЖЕННЯ ДЕТАЛЕЙ КНИГИ ======
 async function displayBookDetails() {
     const urlParams = new URLSearchParams(window.location.search);
     const bookId = parseInt(urlParams.get('id'));
@@ -23,12 +22,11 @@ async function displayBookDetails() {
     
     const isFavorite = favorites.some(fav => fav.id === book.id);
     const images = book.images || [book.image];
-    const userRating = userRatings[bookId] || 0;
+    userRating = userRatings[bookId] || 0;
     
-    // Розрахунок фінальної ціни зі знижкою
     const finalPrice = book.discount > 0 ? (book.price * (1 - book.discount / 100)).toFixed(2) : book.price;
     const priceHtml = book.discount > 0 
-        ? `<p class="book-detail-price"><span style="text-decoration: line-through; font-size: 24px; color: #947268;">${book.price} грн</span> ${finalPrice} грн <span style="color: var(--blood-red); font-size: 20px;">(-${book.discount}%)</span></p>`
+        ? `<p class="book-detail-price"><span style="text-decoration: line-through; font-size: 26px; color: #947268;">${book.price} грн</span> ${finalPrice} грн <span style="color: var(--blood-red); font-size: 22px;">(-${book.discount}%)</span></p>`
         : `<p class="book-detail-price">${book.price} грн</p>`;
     
     container.innerHTML = `
@@ -58,14 +56,19 @@ async function displayBookDetails() {
             </p>
             
             <div class="rating-interactive">
-                <div class="stars-display">${generateStars(book.rating)}</div>
-                <span class="rating-info">${book.rating.toFixed(1)} (${book.ratingCount || 0} оцінок)</span>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <p style="font-size: 17px; margin-bottom: 10px; color: var(--drab-brown);">Поставте свою оцінку:</p>
-                <div class="rating-input" id="rating-input">
-                    ${generateRatingStars(userRating)}
+                <div class="current-rating">
+                    <div class="stars-display">${generateStarsDisplay(book.rating)}</div>
+                    <span class="rating-info">${book.rating.toFixed(1)} / 10 (${book.ratingCount || 0} оцінок)</span>
+                </div>
+                
+                <div class="user-rating">
+                    <div class="user-rating-label">Поставте свою оцінку:</div>
+                    <div class="rating-stars" id="rating-stars">
+                        ${generateRatingStars()}
+                    </div>
+                    <div class="selected-rating" id="selected-rating">
+                        ${userRating > 0 ? `Ваша оцінка: ${userRating} / 10` : 'Оберіть оцінку'}
+                    </div>
                 </div>
             </div>
             
@@ -90,13 +93,13 @@ async function displayBookDetails() {
             </div>
             
             <div style="margin-bottom: 30px;">
-                <h3 style="font-size: 24px; margin-bottom: 15px; color: var(--blood-red);">Опис</h3>
-                <p class="book-detail-description" style="line-height: 1.9; font-size: 17px;">${book.description}</p>
+                <h3 style="font-size: 26px; margin-bottom: 18px; color: var(--blood-red);">Опис</h3>
+                <p style="line-height: 1.9; font-size: 17px;">${book.description}</p>
             </div>
             
-            <div class="book-actions" style="display: flex; gap: 12px;">
-                <button class="btn btn-primary" onclick="addToCart(${book.id})" style="flex: 2;">Додати в кошик</button>
-                <button class="fav-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${book.id}, this)" style="flex: 1; background-color: transparent; border: 2px solid var(--blood-red); color: var(--blood-red); padding: 12px; border-radius: 8px; cursor: pointer; font-size: 20px;">♥</button>
+            <div class="book-actions" style="display: flex; gap: 15px;">
+                <button class="btn btn-primary" onclick="addToCart(${book.id})" style="flex: 2; padding: 16px; font-size: 18px;">Додати в кошик</button>
+                <button class="fav-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${book.id}, this)" style="flex: 1; font-size: 24px;">♥</button>
             </div>
         </div>
     `;
@@ -105,7 +108,6 @@ async function displayBookDetails() {
     displaySimilarBooks(book.category, book.categories, bookId);
 }
 
-// ====== СТВОРЕННЯ РЯДКА МЕТАДАНИХ ======
 function createMetaRow(label, value, clickable = false, onclick = '') {
     if (!value || value === 'Н/Д') return '';
     const valueClass = clickable ? 'meta-value clickable' : 'meta-value';
@@ -118,71 +120,89 @@ function createMetaRow(label, value, clickable = false, onclick = '') {
     `;
 }
 
-// ====== ГЕНЕРАЦІЯ ЗІРОК ВІДОБРАЖЕННЯ ======
-function generateStars(rating) {
-    const fullStars = Math.floor(rating / 2);
-    const halfStar = (rating % 2) >= 1;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+function generateStarsDisplay(rating) {
+    const normalizedRating = rating / 2;
+    const fullStars = Math.floor(normalizedRating);
+    const hasHalfStar = (normalizedRating % 1) >= 0.5;
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     
     let stars = '★'.repeat(fullStars);
-    if (halfStar) stars += '⯨';
+    if (hasHalfStar) stars += '⯨';
     stars += '☆'.repeat(emptyStars);
     
     return stars;
 }
 
-// ====== ГЕНЕРАЦІЯ ІНТЕРАКТИВНИХ ЗІРОК ======
-function generateRatingStars(userRating) {
-    let stars = '';
-    for (let i = 0.5; i <= 10; i += 0.5) {
-        const active = i <= userRating ? 'active' : '';
-        const starType = (i % 1 === 0.5) ? '½' : '★';
-        const displayRating = i.toFixed(1);
-        stars += `<button class="star-btn ${active}" data-rating="${i}" title="${displayRating}/10">${starType}</button>`;
+function generateRatingStars() {
+    let html = '';
+    for (let i = 1; i <= 10; i++) {
+        const filled = i <= userRating ? 'filled' : '';
+        html += `<span class="star ${filled}" data-rating="${i}">★</span>`;
     }
-    return stars;
+    return html;
 }
 
-// ====== ОБРОБНИКИ ОЦІНЮВАННЯ ======
 function attachRatingListeners(bookId) {
-    const ratingBtns = document.querySelectorAll('.star-btn');
-    ratingBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const rating = parseFloat(btn.dataset.rating);
+    const stars = document.querySelectorAll('.star');
+    const selectedRatingEl = document.getElementById('selected-rating');
+    
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            const rating = index + 1;
             setUserRating(bookId, rating);
+            userRating = rating;
             
-            // Оновлюємо відображення
-            ratingBtns.forEach(b => {
-                const btnRating = parseFloat(b.dataset.rating);
-                if (btnRating <= rating) {
-                    b.classList.add('active');
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.classList.add('filled');
                 } else {
-                    b.classList.remove('active');
+                    s.classList.remove('filled');
                 }
             });
             
+            selectedRatingEl.textContent = `Ваша оцінка: ${rating} / 10`;
             showNotification(`Ви поставили оцінку ${rating}/10`);
+        });
+        
+        star.addEventListener('mouseenter', () => {
+            const rating = index + 1;
+            stars.forEach((s, i) => {
+                if (i < rating) {
+                    s.classList.add('filled');
+                } else {
+                    s.classList.remove('filled');
+                }
+            });
+        });
+    });
+    
+    const ratingStarsContainer = document.getElementById('rating-stars');
+    ratingStarsContainer.addEventListener('mouseleave', () => {
+        stars.forEach((s, i) => {
+            if (i < userRating) {
+                s.classList.add('filled');
+            } else {
+                s.classList.remove('filled');
+            }
         });
     });
 }
 
-// ====== ЗБЕРЕЖЕННЯ ОЦІНКИ КОРИСТУВАЧА ======
 function setUserRating(bookId, rating) {
     userRatings[bookId] = rating;
     localStorage.setItem('userRatings', JSON.stringify(userRatings));
     
-    // Оновлюємо середню оцінку книги
     const book = books.find(b => b.id === bookId);
     if (book) {
-        book.ratingCount = (book.ratingCount || 0) + 1;
-        const totalRating = (book.rating * 2 * (book.ratingCount - 1)) + rating;
-        book.rating = totalRating / (book.ratingCount * 2);
+        const previousCount = book.ratingCount || 0;
+        const previousTotal = (book.rating || 0) * previousCount;
+        book.ratingCount = previousCount + 1;
+        book.rating = (previousTotal + rating) / book.ratingCount;
         
         localStorage.setItem('books', JSON.stringify(books));
     }
 }
 
-// ====== ГАЛЕРЕЯ ЗОБРАЖЕНЬ ======
 function changeImage(direction) {
     const images = currentBook.images || [currentBook.image];
     currentImageIndex += direction;
@@ -204,7 +224,6 @@ function setImage(index) {
     });
 }
 
-// ====== ФІЛЬТРАЦІЯ ======
 function filterByAuthor(author) {
     window.location.href = `catalog.html?author=${encodeURIComponent(author)}`;
 }
@@ -217,7 +236,6 @@ function filterByPublisher(publisher) {
     window.location.href = `catalog.html?publisher=${encodeURIComponent(publisher)}`;
 }
 
-// ====== СХОЖІ КНИГИ ======
 async function displaySimilarBooks(mainCategory, additionalCategories, currentBookId) {
     const container = document.getElementById('similar-books');
     if (!container) return;
@@ -239,7 +257,6 @@ async function displaySimilarBooks(mainCategory, additionalCategories, currentBo
     attachBookCardListeners();
 }
 
-// ====== ІНІЦІАЛІЗАЦІЯ ======
 document.addEventListener('DOMContentLoaded', () => {
     displayBookDetails();
 });

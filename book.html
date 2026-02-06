@@ -17,10 +17,6 @@
             gap: 50px;
         }
         
-        body.dark-theme .book-detail {
-            background-color: #2a2a2a;
-        }
-        
         .book-gallery {
             position: relative;
         }
@@ -92,16 +88,12 @@
             margin-bottom: 25px;
         }
         
-        body.dark-theme .book-meta {
-            background-color: #1a1a1a;
-        }
-        
         .meta-row {
             display: grid;
             grid-template-columns: 180px 1fr;
             padding: 12px 0;
             border-bottom: 1px solid #e0e0e0;
-            font-size: 16px;
+            font-size: 17px;
         }
         
         .meta-row:last-child {
@@ -129,34 +121,23 @@
         
         .rating-interactive {
             display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #f9f3e3;
+            border-radius: 12px;
+        }
+        
+        .current-rating {
+            display: flex;
             align-items: center;
             gap: 15px;
-            margin: 20px 0;
         }
         
         .stars-display {
-            font-size: 24px;
-            color: #ffa500;
-        }
-        
-        .rating-input {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .star-btn {
-            background: none;
-            border: none;
             font-size: 28px;
-            cursor: pointer;
-            color: #ddd;
-            transition: all 0.2s;
-        }
-        
-        .star-btn:hover,
-        .star-btn.active {
             color: #ffa500;
-            transform: scale(1.2);
         }
         
         .rating-info {
@@ -164,9 +145,68 @@
             color: var(--drab-brown);
         }
         
+        .user-rating {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .user-rating-label {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--black-bean);
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .star {
+            font-size: 36px;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .star:hover {
+            transform: scale(1.2);
+        }
+        
+        .star.filled {
+            color: #ffa500;
+        }
+        
+        .star.half {
+            background: linear-gradient(90deg, #ffa500 50%, #ddd 50%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .selected-rating {
+            font-size: 16px;
+            color: var(--blood-red);
+            font-weight: 600;
+        }
+        
         .page-title {
-            font-size: 48px;
-            margin-bottom: 30px;
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+        
+        .book-detail-author {
+            font-size: 22px;
+            color: var(--cinereous);
+            margin-bottom: 20px;
+        }
+        
+        .book-detail-price {
+            font-size: 38px;
+            color: var(--blood-red);
+            font-weight: bold;
+            margin-bottom: 25px;
         }
         
         @media (max-width: 768px) {
@@ -177,7 +217,6 @@
     </style>
 </head>
 <body>
-    <!-- Шапка -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -189,17 +228,18 @@
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="favorites.html">Вподобання</a></li>
                         <li><a href="about.html">Про нас</a></li>
-                        <li><a href="contact.html">Зв'язок</a></li>
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
                     <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
                         🛒 <span class="cart-count">0</span>
                     </button>
                     <div class="profile-wrapper">
-                        <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
                             👤
                         </button>
                         <div class="profile-menu" id="profile-menu">
@@ -213,7 +253,6 @@
         </div>
     </header>
 
-    <!-- Деталі книги -->
     <section class="books-section">
         <div class="container">
             <a href="javascript:history.back()" class="back-link" style="display: inline-block; margin-bottom: 25px; color: var(--blood-red); font-weight: 600; font-size: 18px;">← Назад</a>
@@ -224,17 +263,13 @@
         </div>
     </section>
 
-    <!-- Схожі книги -->
     <section class="books-section bg-accent">
         <div class="container">
             <h2 class="section-title">Схожі книги</h2>
-            <div class="books-grid" id="similar-books">
-                <!-- Книги завантажуються через JavaScript -->
-            </div>
+            <div class="books-grid" id="similar-books"></div>
         </div>
     </section>
 
-    <!-- Підвал -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -273,6 +308,5 @@
 
     <script src="js/main.js"></script>
     <script src="js/book.js"></script>
-    <script src="js/theme.js"></script>
 </body>
 </html>

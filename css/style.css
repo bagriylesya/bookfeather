@@ -107,10 +107,13 @@ a {
     padding: 10px 18px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 22px;
     transition: all 0.3s;
     position: relative;
     min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .icon-btn:hover {
@@ -119,7 +122,7 @@ a {
     transform: scale(1.05);
 }
 
-.cart-count {
+.cart-count, .fav-count {
     position: absolute;
     top: -8px;
     right: -8px;

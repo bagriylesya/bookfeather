@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Шапка -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -20,17 +19,18 @@
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="favorites.html" class="active">Вподобання</a></li>
                         <li><a href="about.html">Про нас</a></li>
-                        <li><a href="contact.html">Зв'язок</a></li>
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <button class="icon-btn active" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
                     <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
                         🛒 <span class="cart-count">0</span>
                     </button>
                     <div class="profile-wrapper">
-                        <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
                             👤
                         </button>
                         <div class="profile-menu" id="profile-menu">
@@ -44,25 +44,19 @@
         </div>
     </header>
 
-    <!-- Вподобання -->
     <section class="books-section">
         <div class="container">
-            <h1 class="page-title" style="font-size: 48px; margin-bottom: 40px; text-align: center;">Вподобання</h1>
+            <h1 class="page-title">Вподобання</h1>
 
-            <!-- Сітка книг -->
-            <div class="books-grid" id="favorites-books">
-                <!-- Книги завантажуються через JavaScript -->
-            </div>
+            <div class="books-grid" id="favorites-books"></div>
 
-            <!-- Пусте повідомлення -->
-            <div class="empty-state" id="empty-favorites" style="display: none; text-align: center; padding: 80px 20px;">
-                <p style="font-size: 22px; margin-bottom: 25px; color: var(--cinereous);">Ви ще не додали жодної книги у вподобання</p>
+            <div class="empty-state" id="empty-favorites" style="display: none;">
+                <p style="font-size: 22px; margin-bottom: 25px;">Ви ще не додали жодної книги у вподобання</p>
                 <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
             </div>
         </div>
     </section>
 
-    <!-- Підвал -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -100,9 +94,7 @@
     </footer>
 
     <script src="js/main.js"></script>
-    <script src="js/theme.js"></script>
     <script>
-        // Відображення вподобаних книг
         document.addEventListener('DOMContentLoaded', async () => {
             await loadBooks();
             

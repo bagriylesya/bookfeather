@@ -1,4 +1,3 @@
-// ====== ФІЛЬТРИ ТА ПОШУК ======
 let filteredBooks = [];
 let currentFilters = {
     search: '',
@@ -10,11 +9,9 @@ let currentFilters = {
     sort: 'popularity'
 };
 
-// ====== ЗАВАНТАЖЕННЯ КАТАЛОГУ ======
 async function loadCatalog() {
     await loadBooks();
     
-    // Перевіряємо URL параметри
     const urlParams = new URLSearchParams(window.location.search);
     const categoryFromUrl = urlParams.get('category');
     const authorFromUrl = urlParams.get('author');
@@ -38,40 +35,30 @@ async function loadCatalog() {
     applyFilters();
 }
 
-// ====== ЗАСТОСУВАННЯ ФІЛЬТРІВ ======
 function applyFilters() {
     filteredBooks = books.filter(book => {
-        // Пошук
         const searchMatch = !currentFilters.search || 
             book.title.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
             book.author.toLowerCase().includes(currentFilters.search.toLowerCase());
         
-        // Автор
         const authorMatch = !currentFilters.author || 
             book.author.toLowerCase().includes(currentFilters.author.toLowerCase());
         
-        // Видавництво
         const publisherMatch = !currentFilters.publisher || 
             (book.publisher && book.publisher.toLowerCase().includes(currentFilters.publisher.toLowerCase()));
         
-        // Категорія
         const categoryMatch = !currentFilters.category || book.category === currentFilters.category;
         
-        // Ціна
         const priceMatch = book.price >= currentFilters.priceMin && 
                           book.price <= currentFilters.priceMax;
         
         return searchMatch && authorMatch && publisherMatch && categoryMatch && priceMatch;
     });
     
-    // Сортування
     sortBooks();
-    
-    // Відображення
     displayCatalog();
 }
 
-// ====== СОРТУВАННЯ ======
 function sortBooks() {
     switch(currentFilters.sort) {
         case 'popularity':
@@ -92,7 +79,6 @@ function sortBooks() {
     }
 }
 
-// ====== ВІДОБРАЖЕННЯ КАТАЛОГУ ======
 function displayCatalog() {
     const container = document.getElementById('catalog-books');
     const emptyState = document.getElementById('empty-state');
@@ -111,9 +97,10 @@ function displayCatalog() {
     attachBookCardListeners();
 }
 
-// ====== СКИДАННЯ ФІЛЬТРІВ ======
 function resetFilters() {
     document.getElementById('search-input').value = '';
+    document.getElementById('author-filter').value = '';
+    document.getElementById('publisher-filter').value = '';
     document.getElementById('category-filter').value = '';
     document.getElementById('sort-filter').value = 'popularity';
     document.getElementById('price-min').value = '';
@@ -121,6 +108,8 @@ function resetFilters() {
     
     currentFilters = {
         search: '',
+        author: '',
+        publisher: '',
         category: '',
         priceMin: 0,
         priceMax: Infinity,
@@ -130,13 +119,11 @@ function resetFilters() {
     applyFilters();
 }
 
-// ====== ОБРОБНИКИ ПОДІЙ ======
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('catalog-books')) return;
     
     loadCatalog();
     
-    // Пошук
     const searchInput = document.getElementById('search-input');
     const searchBtn = document.getElementById('search-btn');
     
@@ -152,7 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Застосування фільтрів
     document.getElementById('apply-filters').addEventListener('click', () => {
         currentFilters.author = document.getElementById('author-filter').value;
         currentFilters.publisher = document.getElementById('publisher-filter').value;
@@ -168,10 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
         applyFilters();
     });
     
-    // Скидання фільтрів
     document.getElementById('reset-filters').addEventListener('click', resetFilters);
     
-    // Фільтри в реальному часі
     document.getElementById('category-filter').addEventListener('change', () => {
         currentFilters.category = document.getElementById('category-filter').value;
         applyFilters();

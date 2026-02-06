@@ -24,10 +24,6 @@
             top: 100px;
         }
         
-        body.dark-theme .catalog-sidebar {
-            background-color: #2a2a2a;
-        }
-        
         .filter-section {
             margin-bottom: 30px;
         }
@@ -61,20 +57,12 @@
             font-size: 15px;
         }
         
-        .catalog-main {
-            min-height: 500px;
-        }
-        
         .search-header {
             background-color: white;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 3px 15px rgba(0,0,0,0.12);
             margin-bottom: 30px;
-        }
-        
-        body.dark-theme .search-header {
-            background-color: #2a2a2a;
         }
         
         .search-bar {
@@ -99,22 +87,21 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 18px;
-            transition: all 0.3s;
         }
         
-        .search-bar button:hover {
-            background-color: #5a0509;
-        }
-        
-        .results-info {
-            margin-top: 20px;
-            font-size: 17px;
-            color: var(--drab-brown);
+        @media (max-width: 768px) {
+            .catalog-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .catalog-sidebar {
+                position: relative;
+                top: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Шапка -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -126,17 +113,18 @@
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html" class="active">Каталог</a></li>
-                        <li><a href="favorites.html">Вподобання</a></li>
                         <li><a href="about.html">Про нас</a></li>
-                        <li><a href="contact.html">Зв'язок</a></li>
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
                     <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
                         🛒 <span class="cart-count">0</span>
                     </button>
                     <div class="profile-wrapper">
-                        <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
                             👤
                         </button>
                         <div class="profile-menu" id="profile-menu">
@@ -150,13 +138,11 @@
         </div>
     </header>
 
-    <!-- Каталог -->
     <section class="books-section">
         <div class="container">
             <h1 class="page-title">Каталог книг</h1>
 
             <div class="catalog-layout">
-                <!-- Бічна панель фільтрів -->
                 <aside class="catalog-sidebar">
                     <div class="filter-section">
                         <h3>Автор</h3>
@@ -195,7 +181,6 @@
                     </div>
                 </aside>
 
-                <!-- Основний контент -->
                 <div class="catalog-main">
                     <div class="search-header">
                         <div class="search-bar">
@@ -204,7 +189,7 @@
                         </div>
 
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                            <div class="results-info">
+                            <div style="color: var(--drab-brown); font-size: 17px;">
                                 Знайдено: <span id="results-count">0</span> книг
                             </div>
                             <div>
@@ -219,12 +204,8 @@
                         </div>
                     </div>
 
-                    <!-- Сітка книг -->
-                    <div class="books-grid" id="catalog-books">
-                        <!-- Книги завантажуються через JavaScript -->
-                    </div>
+                    <div class="books-grid" id="catalog-books"></div>
 
-                    <!-- Пусте повідомлення -->
                     <div class="empty-state" id="empty-state" style="display: none;">
                         <p>Книг не знайдено. Спробуйте змінити фільтри.</p>
                     </div>
@@ -233,7 +214,6 @@
         </div>
     </section>
 
-    <!-- Підвал -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -272,6 +252,5 @@
 
     <script src="js/main.js"></script>
     <script src="js/catalog.js"></script>
-    <script src="js/theme.js"></script>
 </body>
 </html>
