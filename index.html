@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Шапка сайту -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -30,7 +29,7 @@
                         🛒 <span class="cart-count">0</span>
                     </button>
                     <div class="profile-wrapper">
-                        <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
                             👤
                         </button>
                         <div class="profile-menu" id="profile-menu">
@@ -44,7 +43,6 @@
         </div>
     </header>
 
-    <!-- Головний банер -->
     <section class="hero-banner">
         <div class="container">
             <div class="hero-content">
@@ -55,13 +53,12 @@
         </div>
     </section>
 
-    <!-- Категорії -->
     <section class="categories-section">
         <div class="container">
             <h2 class="section-title">Категорії</h2>
             <div class="categories-container">
                 <button class="category-nav-btn prev" onclick="scrollCategories(-1)">‹</button>
-                <div class="categories-wrapper" id="categories-wrapper">
+                <div class="categories-wrapper">
                     <div class="categories-track" id="categories-track">
                         <a href="catalog.html?category=fiction" class="category-card">
                             <h3>Художня література</h3>
@@ -97,37 +94,27 @@
         </div>
     </section>
 
-    <!-- Новинки -->
     <section class="books-section">
         <div class="container">
             <h2 class="section-title">Новинки</h2>
-            <div class="books-grid" id="new-books">
-                <!-- Книги завантажуються через JavaScript -->
-            </div>
+            <div class="books-grid" id="new-books"></div>
         </div>
     </section>
 
-    <!-- Топ книги -->
     <section class="books-section bg-accent">
         <div class="container">
             <h2 class="section-title">Топ продажів</h2>
-            <div class="books-grid" id="top-books">
-                <!-- Книги завантажуються через JavaScript -->
-            </div>
+            <div class="books-grid" id="top-books"></div>
         </div>
     </section>
 
-    <!-- Нещодавно переглянуті -->
     <section class="books-section" id="recently-viewed-section" style="display: none;">
         <div class="container">
             <h2 class="section-title">Ви дивилися</h2>
-            <div class="books-grid" id="recently-viewed">
-                <!-- Книги завантажуються через JavaScript -->
-            </div>
+            <div class="books-grid" id="recently-viewed"></div>
         </div>
     </section>
 
-    <!-- Підвал -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -165,6 +152,5 @@
     </footer>
 
     <script src="js/main.js"></script>
-    <script src="js/theme.js"></script>
 </body>
 </html>
