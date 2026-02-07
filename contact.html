@@ -12,51 +12,65 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1><a href="index.html">BOOKFEATHER</a></h1>
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
                 </div>
                 <nav class="nav">
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="cart.html">Кошик <span class="cart-count">0</span></a></li>
+                        <li><a href="about.html">Про нас</a></li>
                     </ul>
                 </nav>
                 <div class="header-icons">
-                    <button class="favorites-btn" title="Вподобання">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
                         ♥ <span class="fav-count">0</span>
                     </button>
+                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                        🛒 <span class="cart-count">0</span>
+                    </button>
+                    <div class="profile-wrapper">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                            👤
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="login.html">Увійти</a>
+                            <a href="register.html">Реєстрація</a>
+                            <a href="profile.html">Мій профіль</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="admin-section">
+    <section class="books-section">
         <div class="container">
-            <div class="admin-login" style="max-width: 600px;">
-                <h2>Зворотній зв'язок</h2>
-                <p style="text-align: center; color: var(--drab-brown); margin-bottom: 30px; font-size: 16px;">
+            <div style="max-width: 700px; margin: 0 auto; background-color: white; padding: 50px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.12);">
+                <h1 style="margin-bottom: 15px; text-align: center; font-size: 42px;">Зворотній зв'язок</h1>
+                <p style="text-align: center; color: var(--drab-brown); margin-bottom: 40px; font-size: 17px;">
                     Маєте питання, побажання чи зауваження? Напишіть нам!
                 </p>
                 
                 <form id="contact-form">
-                    <div class="form-group">
-                        <label>Ваше ім'я*:</label>
-                        <input type="text" name="name" required placeholder="Введіть ім'я">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Ваше ім'я*:</label>
+                        <input type="text" name="name" required placeholder="Введіть ім'я" style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
                     </div>
                     
-                    <div class="form-group">
-                        <label>Email*:</label>
-                        <input type="email" name="email" required placeholder="your@email.com">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Email*:</label>
+                        <input type="email" name="email" required placeholder="your@email.com" style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
                     </div>
                     
-                    <div class="form-group">
-                        <label>Телефон:</label>
-                        <input type="tel" name="phone" placeholder="+380 XX XXX XX XX">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Телефон:</label>
+                        <input type="tel" name="phone" placeholder="+380 XX XXX XX XX" style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
                     </div>
                     
-                    <div class="form-group">
-                        <label>Тема звернення*:</label>
-                        <select name="subject" required>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Тема звернення*:</label>
+                        <select name="subject" required style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
                             <option value="">Оберіть тему</option>
                             <option value="order">Питання щодо замовлення</option>
                             <option value="delivery">Доставка</option>
@@ -67,17 +81,17 @@
                         </select>
                     </div>
                     
-                    <div class="form-group">
-                        <label>Повідомлення*:</label>
-                        <textarea name="message" rows="6" required placeholder="Опишіть вашу ситуацію або питання детально..."></textarea>
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Повідомлення*:</label>
+                        <textarea name="message" rows="6" required placeholder="Опишіть вашу ситуацію або питання детально..." style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px; resize: vertical;"></textarea>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Надіслати</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 19px;">Надіслати</button>
                 </form>
                 
-                <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e0e0e0;">
-                    <h3 style="font-size: 22px; margin-bottom: 20px; text-align: center;">Інші способи зв'язку</h3>
-                    <div style="text-align: center; font-size: 16px; line-height: 2;">
+                <div style="margin-top: 50px; padding-top: 40px; border-top: 2px solid #e0e0e0;">
+                    <h3 style="font-size: 24px; margin-bottom: 25px; text-align: center; color: var(--blood-red);">Інші способи зв'язку</h3>
+                    <div style="text-align: center; font-size: 17px; line-height: 2.2;">
                         <p><strong>Email:</strong> info@bookfeather.com</p>
                         <p><strong>Телефон:</strong> +380 XX XXX XX XX</p>
                         <p><strong>Графік роботи:</strong> Пн-Пт 9:00-18:00</p>
@@ -92,14 +106,13 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>BOOKFEATHER</h3>
-                    <p>Ваш найкращий книжковий магазин. Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Навігація</h4>
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="cart.html">Кошик</a></li>
                         <li><a href="about.html">Про нас</a></li>
                     </ul>
                 </div>
@@ -107,14 +120,13 @@
                     <h4>Контакти</h4>
                     <p>Email: info@bookfeather.com</p>
                     <p>Тел: +380 XX XXX XX XX</p>
-                    <p style="margin-top: 15px;"><a href="contact.html" style="color: var(--blood-red); font-weight: 600;">Зворотній зв'язок →</a></p>
                 </div>
                 <div class="footer-section">
                     <h4>Підтримка</h4>
                     <ul>
-                        <li><a href="#">Доставка і оплата</a></li>
-                        <li><a href="#">Повернення товару</a></li>
-                        <li><a href="#">Часті питання</a></li>
+                        <li><a href="delivery.html">Доставка і оплата</a></li>
+                        <li><a href="return.html">Повернення товару</a></li>
+                        <li><a href="faq.html">Часті питання</a></li>
                         <li><a href="contact.html">Зв'яжіться з нами</a></li>
                     </ul>
                 </div>

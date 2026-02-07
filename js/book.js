@@ -55,6 +55,8 @@ async function displayBookDetails() {
                 Автор: <span class="meta-value clickable" onclick="filterByAuthor('${book.author}')">${book.author}</span>
             </p>
             
+            ${priceHtml}
+            
             <div class="rating-interactive">
                 <div class="current-rating">
                     <div class="stars-display">${generateStarsDisplay(book.rating)}</div>
@@ -72,16 +74,14 @@ async function displayBookDetails() {
                 </div>
             </div>
             
-            ${priceHtml}
-            
             <div class="book-meta">
                 ${createMetaRow('Оригінальна назва', book.originalTitle || book.title)}
                 ${createMetaRow('Автор', book.author, true, `filterByAuthor('${book.author}')`)}
-                ${book.translator ? createMetaRow('Перекладач', book.translator) : ''}
                 ${book.publisher ? createMetaRow('Видавництво', book.publisher, true, `filterByPublisher('${book.publisher}')`) : ''}
                 ${createMetaRow('Категорія', getCategoryName(book.category), true, `filterByCategory('${book.category}')`)}
                 ${book.categories && book.categories.length > 0 ? createMetaRow('Додаткові категорії', book.categories.map(c => `<span class="meta-value clickable" onclick="filterByCategory('${c}')">${getCategoryName(c)}</span>`).join(', ')) : ''}
                 ${createMetaRow('Мова', book.language || 'Українська')}
+                ${book.translator ? createMetaRow('Перекладач', book.translator) : ''}
                 ${createMetaRow('Обкладинка', book.cover || 'Тверда')}
                 ${createMetaRow('Кількість сторінок', book.pages || 'Н/Д')}
                 ${createMetaRow('Рік видання', book.year || '2024')}

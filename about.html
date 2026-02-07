@@ -12,32 +12,46 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <h1><a href="index.html">BOOKFEATHER</a></h1>
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
                 </div>
                 <nav class="nav">
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="cart.html">Кошик <span class="cart-count">0</span></a></li>
+                        <li><a href="about.html" class="active">Про нас</a></li>
                     </ul>
                 </nav>
                 <div class="header-icons">
-                    <button class="favorites-btn" title="Вподобання">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
                         ♥ <span class="fav-count">0</span>
                     </button>
+                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                        🛒 <span class="cart-count">0</span>
+                    </button>
+                    <div class="profile-wrapper">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                            👤
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="login.html">Увійти</a>
+                            <a href="register.html">Реєстрація</a>
+                            <a href="profile.html">Мій профіль</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="admin-section">
+    <section class="books-section">
         <div class="container">
-            <div class="admin-panel" style="display: block;">
-                <h1 style="margin-bottom: 40px; text-align: center;">Про BOOKFEATHER</h1>
+            <div style="max-width: 900px; margin: 0 auto; background-color: white; padding: 60px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.12);">
+                <h1 style="margin-bottom: 40px; text-align: center; font-size: 48px;">Про BOOKFEATHER</h1>
                 
-                <div style="max-width: 800px; margin: 0 auto; line-height: 1.9; font-size: 17px;">
+                <div style="line-height: 1.9; font-size: 17px;">
                     <p style="margin-bottom: 25px;">
-                        <strong>BOOKFEATHER</strong> — це не просто інтернет-магазин книг. Це світ, де кожна книга знаходить свого читача, а кожен читач відкриває для себе нові літературні горизонти.
+                        <strong style="color: var(--blood-red); font-size: 20px;">BOOKFEATHER</strong> — це не просто інтернет-магазин книг. Це світ, де кожна книга знаходить свого читача, а кожен читач відкриває для себе нові літературні горизонти.
                     </p>
                     
                     <h3 style="font-size: 28px; margin: 35px 0 20px; color: var(--blood-red);">Наша місія</h3>
@@ -88,14 +102,13 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>BOOKFEATHER</h3>
-                    <p>Ваш найкращий книжковий магазин. Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Навігація</h4>
                     <ul>
                         <li><a href="index.html">Головна</a></li>
                         <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="cart.html">Кошик</a></li>
                         <li><a href="about.html">Про нас</a></li>
                     </ul>
                 </div>
@@ -103,14 +116,13 @@
                     <h4>Контакти</h4>
                     <p>Email: info@bookfeather.com</p>
                     <p>Тел: +380 XX XXX XX XX</p>
-                    <p style="margin-top: 15px;"><a href="contact.html" style="color: var(--blood-red); font-weight: 600;">Зворотній зв'язок →</a></p>
                 </div>
                 <div class="footer-section">
                     <h4>Підтримка</h4>
                     <ul>
-                        <li><a href="#">Доставка і оплата</a></li>
-                        <li><a href="#">Повернення товару</a></li>
-                        <li><a href="#">Часті питання</a></li>
+                        <li><a href="delivery.html">Доставка і оплата</a></li>
+                        <li><a href="return.html">Повернення товару</a></li>
+                        <li><a href="faq.html">Часті питання</a></li>
                         <li><a href="contact.html">Зв'яжіться з нами</a></li>
                     </ul>
                 </div>
