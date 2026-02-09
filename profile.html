@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій профіль - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .profile-sidebar {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--blood-red);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        
+        .profile-name {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .profile-email {
+            text-align: center;
+            color: var(--cinereous);
+            margin-bottom: 30px;
+        }
+        
+        .profile-nav {
+            list-style: none;
+        }
+        
+        .profile-nav li {
+            margin-bottom: 10px;
+        }
+        
+        .profile-nav a {
+            display: block;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: var(--drab-brown);
+            transition: all 0.3s;
+            font-size: 17px;
+        }
+        
+        .profile-nav a:hover,
+        .profile-nav a.active {
+            background-color: var(--blood-red);
+            color: white;
+        }
+        
+        .profile-content {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+        }
+        
+        .profile-section {
+            display: none;
+        }
+        
+        .profile-section.active {
+            display: block;
+        }
+        
+        .order-item {
+            background-color: #f9f3e3;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--vanilla);
+        }
+        
+        .order-status {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .status-processing {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-shipped {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-delivered {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                        🛒 <span class="cart-count">0</span>
+                    </button>
+                    <div class="profile-wrapper">
+                        <button class="icon-btn profile-btn active" onclick="toggleProfileMenu(event)" title="Профіль">
+                            👤
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="login.html">Увійти</a>
+                            <a href="register.html">Реєстрація</a>
+                            <a href="profile.html">Мій профіль</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="books-section">
+        <div class="container">
+            <div class="profile-layout" style="display: grid; grid-template-columns: 320px 1fr; gap: 30px;">
+                
+                <!-- Сайдбар -->
+                <aside class="profile-sidebar">
+                    <div class="profile-avatar" id="profile-avatar">П</div>
+                    <h2 class="profile-name" id="profile-name">Ім'я Користувача</h2>
+                    <p class="profile-email" id="profile-email">email@example.com</p>
+                    
+                    <ul class="profile-nav">
+                        <li><a href="#" class="profile-nav-link active" data-section="overview">📊 Огляд</a></li>
+                        <li><a href="#" class="profile-nav-link" data-section="orders">📦 Мої замовлення</a></li>
+                        <li><a href="#" class="profile-nav-link" data-section="personal">👤 Особисті дані</a></li>
+                        <li><a href="#" class="profile-nav-link" data-section="addresses">📍 Адреси доставки</a></li>
+                        <li><a href="#" class="profile-nav-link" data-section="password">🔐 Змінити пароль</a></li>
+                    </ul>
+                    
+                    <button class="btn btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Вийти</button>
+                </aside>
+                
+                <!-- Контент -->
+                <div class="profile-content">
+                    
+                    <!-- Огляд -->
+                    <div class="profile-section active" id="section-overview">
+                        <h1 style="font-size: 36px; margin-bottom: 30px;">Мій профіль</h1>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px;">
+                            <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 42px; font-weight: bold; color: var(--blood-red); margin-bottom: 10px;" id="orders-count">0</div>
+                                <div style="font-size: 18px; color: var(--drab-brown);">Всього замовлень</div>
+                            </div>
+                            
+                            <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 42px; font-weight: bold; color: var(--blood-red); margin-bottom: 10px;" id="favorites-count">0</div>
+                                <div style="font-size: 18px; color: var(--drab-brown);">Вподобань</div>
+                            </div>
+                            
+                            <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; text-align: center;">
+                                <div style="font-size: 42px; font-weight: bold; color: var(--blood-red); margin-bottom: 10px;">🎉</div>
+                                <div style="font-size: 18px; color: var(--drab-brown);">Бонуси незабаром!</div>
+                            </div>
+                        </div>
+                        
+                        <h2 style="font-size: 28px; margin-bottom: 20px;">Останні замовлення</h2>
+                        <div id="recent-orders">
+                            <p style="text-align: center; color: var(--cinereous); padding: 40px;">Ви ще не зробили жодного замовлення</p>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="catalog.html" class="btn btn-primary">Перейти до каталогу</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Мої замовлення -->
+                    <div class="profile-section" id="section-orders">
+                        <h1 style="font-size: 36px; margin-bottom: 30px;">Мої замовлення</h1>
+                        
+                        <div id="all-orders">
+                            <p style="text-align: center; color: var(--cinereous); padding: 80px; font-size: 20px;">
+                                У вас поки немає замовлень
+                            </p>
+                            <div style="text-align: center;">
+                                <a href="catalog.html" class="btn btn-primary">Почати покупки</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Особисті дані -->
+                    <div class="profile-section" id="section-personal">
+                        <h1 style="font-size: 36px; margin-bottom: 30px;">Особисті дані</h1>
+                        
+                        <form id="personal-data-form">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Ім'я*:</label>
+                                    <input type="text" name="name" id="edit-name" required 
+                                        style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Прізвище*:</label>
+                                    <input type="text" name="surname" id="edit-surname" required
+                                        style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Email*:</label>
+                                <input type="email" name="email" id="edit-email" required
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Телефон*:</label>
+                                <input type="tel" name="phone" id="edit-phone" required
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 30px;">
+                                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                    <input type="checkbox" name="newsletter" id="edit-newsletter" style="transform: scale(1.3);">
+                                    <span style="font-size: 17px;">Отримувати новини та спеціальні пропозиції</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Адреси -->
+                    <div class="profile-section" id="section-addresses">
+                        <h1 style="font-size: 36px; margin-bottom: 30px;">Адреси доставки</h1>
+                        
+                        <div id="saved-addresses">
+                            <p style="text-align: center; color: var(--cinereous); padding: 60px; font-size: 18px;">
+                                У вас немає збережених адрес
+                            </p>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="showAddAddressForm()">+ Додати адресу</button>
+                        
+                        <div id="add-address-form" style="display: none; margin-top: 30px; padding: 30px; background-color: #f9f3e3; border-radius: 12px;">
+                            <h3 style="font-size: 24px; margin-bottom: 25px;">Нова адреса</h3>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Місто*:</label>
+                                <input type="text" id="address-city" required placeholder="Київ"
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Відділення Нової Пошти / Адреса*:</label>
+                                <input type="text" id="address-details" required placeholder="Відділення №1 або вул. Хрещатик, 22, кв. 5"
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            </div>
+                            
+                            <div style="display: flex; gap: 15px;">
+                                <button class="btn btn-primary" onclick="saveAddress()">Зберегти</button>
+                                <button class="btn btn-outline" onclick="hideAddAddressForm()">Скасувати</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Зміна пароля -->
+                    <div class="profile-section" id="section-password">
+                        <h1 style="font-size: 36px; margin-bottom: 30px;">Змінити пароль</h1>
+                        
+                        <form id="change-password-form" style="max-width: 500px;">
+                            <div style="margin-bottom: 25px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Поточний пароль*:</label>
+                                <input type="password" name="current-password" required
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            </div>
+                            
+                            <div style="margin-bottom: 25px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Новий пароль*:</label>
+                                <input type="password" name="new-password" required minlength="6"
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                                <small style="color: var(--cinereous);">Мінімум 6 символів</small>
+                            </div>
+                            
+                            <div style="margin-bottom: 30px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Підтвердіть новий пароль*:</label>
+                                <input type="password" name="confirm-new-password" required minlength="6"
+                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Змінити пароль</button>
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Підтримка</h4>
+                    <ul>
+                        <li><a href="delivery.html">Доставка і оплата</a></li>
+                        <li><a href="return.html">Повернення товару</a></li>
+                        <li><a href="faq.html">Часті питання</a></li>
+                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

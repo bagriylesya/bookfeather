@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доставка і оплата - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                        🛒 <span class="cart-count">0</span>
+                    </button>
+                    <div class="profile-wrapper">
+                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
+                            👤
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="login.html">Увійти</a>
+                            <a href="register.html">Реєстрація</a>
+                            <a href="profile.html">Мій профіль</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="books-section">
+        <div class="container">
+            <div style="max-width: 1000px; margin: 0 auto; background-color: white; padding: 60px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.12);">
+                <h1 style="margin-bottom: 40px; text-align: center; font-size: 48px;">Доставка і оплата</h1>
+                
+                <div style="line-height: 1.9; font-size: 17px;">
+                    
+                    <!-- Способи доставки -->
+                    <h2 style="font-size: 32px; margin: 40px 0 25px; color: var(--blood-red);">📦 Способи доставки</h2>
+                    
+                    <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 25px;">
+                        <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">🚚 Нова Пошта</h3>
+                        <ul style="margin-left: 25px; line-height: 2;">
+                            <li><strong>Доставка у відділення:</strong> 50 грн (безкоштовно при замовленні від 500 грн)</li>
+                            <li><strong>Кур'єром додому:</strong> 80 грн (безкоштовно при замовленні від 800 грн)</li>
+                            <li><strong>Термін доставки:</strong> 1-3 робочих дні</li>
+                            <li><strong>Накладений платіж:</strong> доступний (+20 грн до вартості доставки)</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 25px;">
+                        <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">📮 Укрпошта</h3>
+                        <ul style="margin-left: 25px; line-height: 2;">
+                            <li><strong>Доставка у відділення:</strong> 35 грн</li>
+                            <li><strong>Кур'єром додому:</strong> 60 грн</li>
+                            <li><strong>Термін доставки:</strong> 3-7 робочих днів</li>
+                            <li><strong>Накладений платіж:</strong> доступний (+15 грн)</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 35px;">
+                        <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">🚗 Самовивіз (м. Київ)</h3>
+                        <ul style="margin-left: 25px; line-height: 2;">
+                            <li><strong>Вартість:</strong> безкоштовно</li>
+                            <li><strong>Адреса:</strong> вул. Хрещатик, 22 (ТЦ "Глобус", 2-й поверх)</li>
+                            <li><strong>Графік роботи:</strong> Пн-Пт 10:00-19:00, Сб 11:00-17:00</li>
+                            <li><strong>Час підготовки:</strong> 1-2 години після оформлення</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Способи оплати -->
+                    <h2 style="font-size: 32px; margin: 40px 0 25px; color: var(--blood-red);">💳 Способи оплати</h2>
+                    
+                    <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 25px;">
+                        <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">💵 Готівкою або карткою при отриманні</h3>
+                        <p style="margin-bottom: 12px;">Оплата при отриманні товару у відділенні Нової Пошти, Укрпошти або кур'єру. Додаткова комісія за накладений платіж становить 20 грн (2% від суми + 20 грн).</p>
+                        <p style="color: var(--cinereous); font-style: italic;">⚠️ Перевірте посилку перед оплатою!</p>
+                    </div>
+                    
+                    <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 25px;">
+                        <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">💳 Оплата карткою онлайн</h3>
+                        <p style="margin-bottom: 12px;">Безпечна оплата через платіжну систему. Приймаємо картки Visa, Mastercard. Кошти списуються одразу після підтвердження замовлення.</p>
+                        <p style="color: var(--cinereous); font-style: italic;">🔒 Всі платежі захищені SSL-сертифікатом</p>
+                    </div>
+                    
+                    <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 35px;">
+                        <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">🏦 Безготівковий розрахунок для юридичних осіб</h3>
+                        <p style="margin-bottom: 12px;">Для оформлення замовлення зі сплатою за рахунком зв'яжіться з нами:</p>
+                        <ul style="margin-left: 25px; line-height: 2;">
+                            <li>Email: <a href="mailto:info@bookfeather.com" style="color: var(--blood-red); text-decoration: underline;">info@bookfeather.com</a></li>
+                            <li>Телефон: +380 XX XXX XX XX</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Важлива інформація -->
+                    <h2 style="font-size: 32px; margin: 40px 0 25px; color: var(--blood-red);">ℹ️ Важлива інформація</h2>
+                    
+                    <div style="background-color: #fff3cd; padding: 30px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #ffc107;">
+                        <h3 style="font-size: 22px; margin-bottom: 15px;">📋 Оформлення замовлення</h3>
+                        <ol style="margin-left: 25px; line-height: 2;">
+                            <li>Додайте книги до кошика</li>
+                            <li>Перейдіть до оформлення замовлення</li>
+                            <li>Вкажіть ваші контактні дані та спосіб доставки</li>
+                            <li>Оберіть спосіб оплати</li>
+                            <li>Підтвердіть замовлення</li>
+                            <li>Очікуйте підтвердження від нашого менеджера</li>
+                        </ol>
+                    </div>
+                    
+                    <div style="background-color: #d4edda; padding: 30px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #28a745;">
+                        <h3 style="font-size: 22px; margin-bottom: 15px;">⏱️ Терміни обробки</h3>
+                        <ul style="margin-left: 25px; line-height: 2;">
+                            <li><strong>Наявність на складі:</strong> відправка в день замовлення (при оформленні до 14:00)</li>
+                            <li><strong>Під замовлення:</strong> 3-7 робочих днів</li>
+                            <li><strong>Попередній замовлення:</strong> згідно з датою виходу книги</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background-color: #f8d7da; padding: 30px; border-radius: 12px; margin-bottom: 25px; border-left: 5px solid #dc3545;">
+                        <h3 style="font-size: 22px; margin-bottom: 15px;">⚠️ Що робити, якщо...</h3>
+                        <ul style="margin-left: 25px; line-height: 2;">
+                            <li><strong>Не отримали SMS про відправку:</strong> зверніться до менеджера</li>
+                            <li><strong>Посилка пошкоджена:</strong> не оплачуйте, складіть акт у відділенні</li>
+                            <li><strong>Не підходить книга:</strong> ознайомтесь з умовами повернення на сторінці <a href="return.html" style="color: var(--blood-red); text-decoration: underline;">"Повернення товару"</a></li>
+                            <li><strong>Є питання:</strong> пишіть на <a href="mailto:info@bookfeather.com" style="color: var(--blood-red); text-decoration: underline;">info@bookfeather.com</a> або телефонуйте +380 XX XXX XX XX</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Контакти -->
+                    <div style="background-color: #f9f3e3; padding: 40px; border-radius: 12px; margin-top: 40px; text-align: center;">
+                        <h3 style="font-size: 28px; margin-bottom: 25px; color: var(--blood-red);">Маєте питання?</h3>
+                        <p style="font-size: 18px; margin-bottom: 25px;">Наша служба підтримки завжди готова допомогти!</p>
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                            <a href="contact.html" class="btn btn-primary">Зв'язатися з нами</a>
+                            <a href="faq.html" class="btn btn-outline">Часті питання</a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Підтримка</h4>
+                    <ul>
+                        <li><a href="delivery.html">Доставка і оплата</a></li>
+                        <li><a href="return.html">Повернення товару</a></li>
+                        <li><a href="faq.html">Часті питання</a></li>
+                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

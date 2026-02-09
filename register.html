@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстрація - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+                </div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </nav>
+                <div class="header-icons">
+                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                        ♥ <span class="fav-count">0</span>
+                    </button>
+                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                        🛒 <span class="cart-count">0</span>
+                    </button>
+                    <div class="profile-wrapper">
+                        <button class="icon-btn profile-btn active" onclick="toggleProfileMenu(event)" title="Профіль">
+                            👤
+                        </button>
+                        <div class="profile-menu" id="profile-menu">
+                            <a href="login.html">Увійти</a>
+                            <a href="register.html">Реєстрація</a>
+                            <a href="profile.html">Мій профіль</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="books-section">
+        <div class="container">
+            <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 50px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.12);">
+                <h1 style="margin-bottom: 15px; text-align: center; font-size: 42px;">Реєстрація</h1>
+                <p style="text-align: center; color: var(--cinereous); margin-bottom: 40px; font-size: 17px;">
+                    Створіть обліковий запис та отримайте доступ до всіх переваг
+                </p>
+                
+                <form id="register-form">
+                    <!-- Ім'я -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Ім'я*:</label>
+                        <input type="text" name="name" id="register-name" required placeholder="Ваше ім'я" 
+                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
+                    </div>
+                    
+                    <!-- Прізвище -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Прізвище*:</label>
+                        <input type="text" name="surname" id="register-surname" required placeholder="Ваше прізвище" 
+                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
+                    </div>
+                    
+                    <!-- Email -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Email*:</label>
+                        <input type="email" name="email" id="register-email" required placeholder="your@email.com" 
+                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
+                        <small style="color: var(--cinereous); font-size: 14px;">Використовується для входу в систему</small>
+                    </div>
+                    
+                    <!-- Телефон -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Телефон*:</label>
+                        <input type="tel" name="phone" id="register-phone" required placeholder="+380 XX XXX XX XX" 
+                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
+                    </div>
+                    
+                    <!-- Пароль -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Пароль*:</label>
+                        <input type="password" name="password" id="register-password" required placeholder="Мінімум 6 символів"
+                            minlength="6"
+                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
+                        <small style="color: var(--cinereous); font-size: 14px;">Мінімум 6 символів</small>
+                    </div>
+                    
+                    <!-- Підтвердження пароля -->
+                    <div style="margin-bottom: 25px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Підтвердіть пароль*:</label>
+                        <input type="password" name="confirm-password" id="confirm-password" required placeholder="Повторіть пароль"
+                            minlength="6"
+                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
+                    </div>
+                    
+                    <!-- Згода з умовами -->
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: flex; align-items: flex-start; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" name="terms" required style="transform: scale(1.3); margin-top: 4px; flex-shrink: 0;">
+                            <span style="font-size: 15px; line-height: 1.6;">
+                                Я погоджуюсь з 
+                                <a href="#" style="color: var(--blood-red); text-decoration: underline;">Умовами використання</a> та 
+                                <a href="#" style="color: var(--blood-red); text-decoration: underline;">Політикою конфіденційності</a>
+                            </span>
+                        </label>
+                    </div>
+                    
+                    <!-- Підписка на розсилку -->
+                    <div style="margin-bottom: 30px;">
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                            <input type="checkbox" name="newsletter" checked style="transform: scale(1.3);">
+                            <span style="font-size: 16px;">Хочу отримувати новини та спеціальні пропозиції</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 19px; margin-bottom: 20px;">
+                        Зареєструватися
+                    </button>
+                    
+                    <div style="text-align: center; margin-top: 25px;">
+                        <p style="font-size: 17px;">
+                            Вже маєте обліковий запис? 
+                            <a href="login.html" style="color: var(--blood-red); text-decoration: underline; font-weight: 600;">Увійти</a>
+                        </p>
+                    </div>
+                </form>
+                
+                <div style="margin-top: 40px; padding: 25px; background-color: #f9f3e3; border-radius: 12px;">
+                    <h3 style="font-size: 20px; margin-bottom: 15px; color: var(--blood-red);">✨ Переваги реєстрації:</h3>
+                    <ul style="margin-left: 20px; line-height: 2; font-size: 16px;">
+                        <li>Швидке оформлення замовлень</li>
+                        <li>Історія покупок</li>
+                        <li>Персональні знижки</li>
+                        <li>Список вподобань</li>
+                        <li>Першими дізнаєтесь про новинки</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BOOKFEATHER</h3>
+                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навігація</h4>
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="catalog.html">Каталог</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакти</h4>
+                    <p>Email: info@bookfeather.com</p>
+                    <p>Тел: +380 XX XXX XX XX</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Підтримка</h4>
+                    <ul>
+                        <li><a href="delivery.html">Доставка і оплата</a></li>
+                        <li><a href="return.html">Повернення товару</a></li>
+                        <li><a href="faq.html">Часті питання</a></li>
+                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const surname = document.getElementById('register-surname').value;
+            const email = document.getElementById('register-email').value;
+            const phone = document.getElementById('register-phone').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const newsletter = document.querySelector('[name="newsletter"]').checked;
+            
+            // Перевірка паролів
+            if (password !== confirmPassword) {
+                showNotification('Паролі не співпадають!');
+                return;
+            }
+            
+            // Перевірка довжини пароля
+            if (password.length < 6) {
+                showNotification('Пароль має бути мінімум 6 символів!');
+                return;
+            }
+            
+            // Отримуємо існуючих користувачів
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Перевірка чи email вже зареєстрований
+            if (users.some(u => u.email === email)) {
+                showNotification('Користувач з таким email вже існує!');
+                return;
+            }
+            
+            // Створюємо нового користувача
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                surname: surname,
+                email: email,
+                phone: phone,
+                password: password,
+                newsletter: newsletter,
+                createdAt: new Date().toISOString(),
+                orders: []
+            };
+            
+            // Додаємо користувача
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Автоматичний вхід
+            sessionStorage.setItem('currentUser', JSON.stringify(newUser));
+            
+            showNotification('Реєстрація успішна! Вітаємо, ' + name + '!');
+            
+            // Перенаправлення на профіль
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
