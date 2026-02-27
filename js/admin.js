@@ -1,4 +1,5 @@
-// ====== АВТОРИЗАЦІЯ ======
+// ====== ПОВНИЙ admin.js З УСІМА ФУНКЦІЯМИ ======
+
 const ADMIN_PASSWORD = 'admin123';
 let isAdminLoggedIn = sessionStorage.getItem('adminLoggedIn') === 'true';
 
@@ -11,6 +12,7 @@ function checkAuth() {
         loginSection.style.display = 'none';
         panelSection.style.display = 'block';
         loadAdminBooks();
+        loadCategoryOptions();
     } else {
         loginSection.style.display = 'block';
         panelSection.style.display = 'none';
@@ -37,6 +39,42 @@ function logout() {
     showNotification('Ви вийшли з панелі керування');
 }
 
+// ====== ОТРИМАННЯ ВСІХ КАТЕГОРІЙ ======
+function getAllCategories() {
+    const categories = new Set();
+    books.forEach(book => {
+        if (book.category) categories.add(book.category);
+        if (book.categories) {
+            book.categories.forEach(cat => categories.add(cat));
+        }
+    });
+    return Array.from(categories);
+}
+
+// ====== ЗАВАНТАЖЕННЯ КАТЕГОРІЙ В DATALIST ======
+function loadCategoryOptions() {
+    const allCategories = getAllCategories();
+    const datalist = document.getElementById('category-suggestions');
+    
+    if (!datalist) {
+        // Створюємо datalist якщо його немає
+        const categoryInput = document.querySelector('[name="category"]');
+        if (categoryInput) {
+            const newDatalist = document.createElement('datalist');
+            newDatalist.id = 'category-suggestions';
+            categoryInput.setAttribute('list', 'category-suggestions');
+            categoryInput.parentNode.insertBefore(newDatalist, categoryInput.nextSibling);
+        }
+    }
+    
+    const datalistElement = document.getElementById('category-suggestions');
+    if (datalistElement) {
+        datalistElement.innerHTML = allCategories.map(cat => 
+            `<option value="${cat}">${getCategoryName(cat)}</option>`
+        ).join('');
+    }
+}
+
 // ====== ДОДАВАННЯ КНИГИ ======
 async function addBook(bookData) {
     const newId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
@@ -48,22 +86,36 @@ async function addBook(bookData) {
         originalTitle: bookData.originalTitle || bookData.title,
         price: parseFloat(bookData.price),
         category: bookData.category,
+        categories: bookData.additionalCategories ? bookData.additionalCategories.split(',').map(c => c.trim()) : [],
         rating: parseFloat(bookData.rating) || 4.0,
         ratingCount: parseInt(bookData.ratingCount) || 0,
         pages: parseInt(bookData.pages) || 300,
         year: parseInt(bookData.year) || 2024,
         cover: bookData.cover || 'Тверда',
+        language: bookData.language || 'Українська',
+        publisher: bookData.publisher || '',
+        translator: bookData.translator || '',
+        isbn: bookData.isbn || '',
+        barcode: bookData.barcode || '',
+        size: bookData.size || '',
+        weight: parseInt(bookData.weight) || 0,
+        illustrations: bookData.illustrations || '',
         image: bookData.image,
-        images: [bookData.image],
+        images: bookData.images ? bookData.images.split(',').map(img => img.trim()) : [bookData.image],
         shortDescription: bookData.shortDescription,
         description: bookData.description,
         isNew: bookData.isNew === 'true',
         isTop: bookData.isTop === 'true',
-        discount: parseInt(bookData.discount) || 0
+        discount: parseInt(bookData.discount) || 0,
+        stock: parseInt(bookData.stock) || 0,
+        reserved: 0
     };
     
     books.push(newBook);
     localStorage.setItem('books', JSON.stringify(books));
+    
+    // Оновлюємо категорії
+    loadCategoryOptions();
     
     showNotification('Книгу успішно додано!');
     loadAdminBooks();
@@ -96,7 +148,10 @@ function loadAdminBooks() {
     }
     
     container.innerHTML = books.map(book => {
+        const stockStatus = book.stock > 15 ? '✅' : book.stock > 0 ? '⚠️' : '❌';
+        const stockText = book.stock > 0 ? `${book.stock} шт` : 'Немає в наявності';
         const discountInfo = book.discount > 0 ? `<p><strong>Знижка:</strong> ${book.discount}%</p>` : '';
+        
         return `
         <div class="admin-book-item">
             <img src="${book.image}" alt="${book.title}" class="admin-book-image">
@@ -107,6 +162,7 @@ function loadAdminBooks() {
                 <p><strong>Ціна:</strong> ${book.price} грн</p>
                 ${discountInfo}
                 <p><strong>Рейтинг:</strong> ${book.rating} (${book.ratingCount || 0} оцінок)</p>
+                <p><strong>Склад:</strong> ${stockStatus} ${stockText}</p>
                 <p><strong>Сторінок:</strong> ${book.pages || 'Н/Д'} | <strong>Рік:</strong> ${book.year || '2024'}</p>
             </div>
             <div class="admin-book-actions">
@@ -137,7 +193,7 @@ function editBook(bookId) {
     const book = books.find(b => b.id === bookId);
     if (!book) return;
     
-    // Переключаємо на вкладку додавання
+    // Перемикаємось на вкладку додавання
     document.querySelector('[data-tab="add-book"]').click();
     
     // Заповнюємо форму
@@ -145,19 +201,34 @@ function editBook(bookId) {
     form.elements['title'].value = book.title;
     form.elements['author'].value = book.author;
     form.elements['originalTitle'].value = book.originalTitle || '';
-    form.elements['price'].value = book.price;
+    form.elements['publisher'].value = book.publisher || '';
     form.elements['category'].value = book.category;
+    form.elements['language'].value = book.language || 'Українська';
+    form.elements['price'].value = book.price;
+    form.elements['discount'].value = book.discount || 0;
     form.elements['rating'].value = book.rating;
     form.elements['ratingCount'].value = book.ratingCount || 0;
     form.elements['pages'].value = book.pages || '';
     form.elements['year'].value = book.year || 2024;
     form.elements['cover'].value = book.cover || 'Тверда';
+    form.elements['translator'].value = book.translator || '';
+    form.elements['isbn'].value = book.isbn || '';
+    form.elements['barcode'].value = book.barcode || '';
+    form.elements['size'].value = book.size || '';
+    form.elements['weight'].value = book.weight || '';
+    form.elements['illustrations'].value = book.illustrations || '';
     form.elements['image'].value = book.image;
+    form.elements['images'].value = book.images ? book.images.join(', ') : book.image;
     form.elements['shortDescription'].value = book.shortDescription;
     form.elements['description'].value = book.description;
     form.elements['isNew'].checked = book.isNew;
     form.elements['isTop'].checked = book.isTop;
-    form.elements['discount'].value = book.discount || 0;
+    form.elements['stock'].value = book.stock || 0;
+    
+    // Додаткові категорії
+    if (book.categories && book.categories.length > 0) {
+        form.elements['additionalCategories'].value = book.categories.join(', ');
+    }
     
     // Змінюємо кнопку
     const submitBtn = form.querySelector('button[type="submit"]');
@@ -180,21 +251,36 @@ function updateBook(bookId, bookData) {
         originalTitle: bookData.originalTitle || bookData.title,
         price: parseFloat(bookData.price),
         category: bookData.category,
+        categories: bookData.additionalCategories ? bookData.additionalCategories.split(',').map(c => c.trim()) : [],
         rating: parseFloat(bookData.rating) || 4.0,
         ratingCount: parseInt(bookData.ratingCount) || 0,
         pages: parseInt(bookData.pages) || 300,
         year: parseInt(bookData.year) || 2024,
         cover: bookData.cover || 'Тверда',
+        language: bookData.language || 'Українська',
+        publisher: bookData.publisher || '',
+        translator: bookData.translator || '',
+        isbn: bookData.isbn || '',
+        barcode: bookData.barcode || '',
+        size: bookData.size || '',
+        weight: parseInt(bookData.weight) || 0,
+        illustrations: bookData.illustrations || '',
         image: bookData.image,
-        images: [bookData.image],
+        images: bookData.images ? bookData.images.split(',').map(img => img.trim()) : [bookData.image],
         shortDescription: bookData.shortDescription,
         description: bookData.description,
         isNew: bookData.isNew === 'true',
         isTop: bookData.isTop === 'true',
-        discount: parseInt(bookData.discount) || 0
+        discount: parseInt(bookData.discount) || 0,
+        stock: parseInt(bookData.stock) || books[index].stock || 0,
+        reserved: books[index].reserved || 0
     };
     
     localStorage.setItem('books', JSON.stringify(books));
+    
+    // Оновлюємо категорії
+    loadCategoryOptions();
+    
     showNotification('Книгу оновлено!');
     loadAdminBooks();
 }
@@ -218,7 +304,7 @@ function getCategoryName(category) {
     return categories[category] || category;
 }
 
-// ====== ПЕРЕКЛЮЧЕННЯ ВКЛАДОК ======
+// ====== ПЕРЕМИКАННЯ ВКЛАДОК ======
 function setupTabs() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -259,7 +345,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     // Вихід
-    document.getElementById('logout-btn').addEventListener('click', logout);
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
     
     // Форма додавання книги
     document.getElementById('add-book-form').addEventListener('submit', (e) => {
@@ -274,19 +363,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             title: formData.get('title'),
             author: formData.get('author'),
             originalTitle: formData.get('originalTitle'),
-            price: formData.get('price'),
+            publisher: formData.get('publisher'),
             category: formData.get('category'),
+            additionalCategories: formData.get('additionalCategories'),
+            language: formData.get('language'),
+            price: formData.get('price'),
+            discount: formData.get('discount'),
             rating: formData.get('rating'),
             ratingCount: formData.get('ratingCount'),
             pages: formData.get('pages'),
             year: formData.get('year'),
             cover: formData.get('cover'),
+            translator: formData.get('translator'),
+            isbn: formData.get('isbn'),
+            barcode: formData.get('barcode'),
+            size: formData.get('size'),
+            weight: formData.get('weight'),
+            illustrations: formData.get('illustrations'),
             image: formData.get('image'),
+            images: formData.get('images'),
             shortDescription: formData.get('shortDescription'),
             description: formData.get('description'),
             isNew: formData.get('isNew') || 'false',
             isTop: formData.get('isTop') || 'false',
-            discount: formData.get('discount')
+            stock: formData.get('stock')
         };
         
         if (editId) {
@@ -299,7 +399,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         form.reset();
         
-        // Переключаємо на вкладку керування
+        // Перемикаємось на вкладку керування
         document.querySelector('[data-tab="manage-books"]').click();
     });
 });
