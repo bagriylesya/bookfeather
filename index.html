@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOKFEATHER - Інтернет-магазин книг</title>
+    <title>BOOKFEATHER - Онлайн книгарня</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -23,6 +23,12 @@
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <!-- НОВИЙ ПОШУК В HEADER -->
+                    <div class="header-search">
+                        <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                    
                     <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
                         ♥ <span class="fav-count">0</span>
                     </button>
@@ -44,75 +50,58 @@
         </div>
     </header>
 
-    <section class="hero-banner">
+    <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h2 class="hero-title">Відкрий свою книжкову пір'їнку</h2>
-                <p class="hero-subtitle">Тисячі книг чекають на тебе у світі BOOKFEATHER</p>
-                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="categories-section">
-        <div class="container">
-            <h2 class="section-title">Категорії</h2>
-            <div class="categories-container">
-                <button class="category-nav-btn prev" onclick="scrollCategories(-1)">‹</button>
-                <div class="categories-wrapper">
-                    <div class="categories-track" id="categories-track">
-                        <a href="catalog.html?category=fiction" class="category-card">
-                            <h3>Художня література</h3>
-                        </a>
-                        <a href="catalog.html?category=detective" class="category-card">
-                            <h3>Детективи</h3>
-                        </a>
-                        <a href="catalog.html?category=fantasy" class="category-card">
-                            <h3>Фентезі</h3>
-                        </a>
-                        <a href="catalog.html?category=psychology" class="category-card">
-                            <h3>Психологія</h3>
-                        </a>
-                        <a href="catalog.html?category=business" class="category-card">
-                            <h3>Бізнес</h3>
-                        </a>
-                        <a href="catalog.html?category=science" class="category-card">
-                            <h3>Наука</h3>
-                        </a>
-                        <a href="catalog.html?category=biography" class="category-card">
-                            <h3>Біографії</h3>
-                        </a>
-                        <a href="catalog.html?category=history" class="category-card">
-                            <h3>Історія</h3>
-                        </a>
-                        <a href="catalog.html" class="category-card view-all">
-                            <h3>Переглянути всі →</h3>
-                        </a>
-                    </div>
-                </div>
-                <button class="category-nav-btn next" onclick="scrollCategories(1)">›</button>
+                <h1 class="hero-title">Світ книг чекає на вас</h1>
+                <p class="hero-subtitle">Відкрийте для себе тисячі історій українською та іноземними мовами</p>
+                <a href="catalog.html" class="btn btn-primary btn-large">Переглянути каталог</a>
             </div>
         </div>
     </section>
 
     <section class="books-section">
         <div class="container">
-            <h2 class="section-title">Новинки</h2>
-            <div class="books-grid" id="new-books"></div>
+            <h2 class="section-title">🔥 Топ продажів</h2>
+            <div class="books-grid" id="top-books">
+                <p style="text-align: center; padding: 40px;">Завантаження...</p>
+            </div>
         </div>
     </section>
 
-    <section class="books-section bg-accent">
+    <section class="books-section" style="background-color: #f9f3e3;">
         <div class="container">
-            <h2 class="section-title">Топ продажів</h2>
-            <div class="books-grid" id="top-books"></div>
+            <h2 class="section-title">⭐ Новинки</h2>
+            <div class="books-grid" id="new-books">
+                <p style="text-align: center; padding: 40px;">Завантаження...</p>
+            </div>
         </div>
     </section>
 
-    <section class="books-section" id="recently-viewed-section" style="display: none;">
+    <section class="features">
         <div class="container">
-            <h2 class="section-title">Ви дивилися</h2>
-            <div class="books-grid" id="recently-viewed"></div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📦</div>
+                    <h3>Швидка доставка</h3>
+                    <p>Нова Пошта 1-3 дні<br>Безкоштовно від 500 грн</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✅</div>
+                    <h3>Тільки нові книги</h3>
+                    <p>Оригінальні видання<br>від офіційних видавництв</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💳</div>
+                    <h3>Зручна оплата</h3>
+                    <p>Готівка, картка<br>або онлайн оплата</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🇺🇦</div>
+                    <h3>Українською</h3>
+                    <p>Великий вибір книг<br>українською мовою</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -147,11 +136,89 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
             </div>
         </div>
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
+    <script>
+        // Завантаження топ продажів
+        async function loadTopBooks() {
+            await loadBooks();
+            const topBooks = books.filter(b => b.isTop).slice(0, 4);
+            const container = document.getElementById('top-books');
+            container.innerHTML = topBooks.map(book => createBookCard(book)).join('');
+        }
+
+        // Завантаження новинок
+        async function loadNewBooks() {
+            await loadBooks();
+            const newBooks = books.filter(b => b.isNew).slice(0, 4);
+            const container = document.getElementById('new-books');
+            container.innerHTML = newBooks.map(book => createBookCard(book)).join('');
+        }
+
+        // Функція створення картки книги
+        function createBookCard(book) {
+            const availableStock = (book.stock || 0) - (book.reserved || 0);
+            const discountPrice = book.discount > 0 ? book.price * (1 - book.discount / 100) : book.price;
+            
+            let stockBadge = '';
+            if (availableStock <= 0) {
+                stockBadge = `<div class="stock-badge out-of-stock">Немає в наявності</div>`;
+            } else if (availableStock <= 15) {
+                stockBadge = `<div class="stock-badge low-stock">⚠️ Останні ${availableStock} шт</div>`;
+            }
+            
+            let badges = '';
+            if (book.isNew) badges += '<span class="badge badge-new">Новинка</span>';
+            if (book.isTop) badges += '<span class="badge badge-top">Топ</span>';
+            if (book.discount > 0) badges += `<span class="badge badge-discount">-${book.discount}%</span>`;
+            
+            return `
+                <div class="book-card">
+                    ${stockBadge}
+                    <a href="book.html?id=${book.id}">
+                        <img src="${book.image}" alt="${book.title}" class="book-image">
+                    </a>
+                    <div class="book-badges">${badges}</div>
+                    <div class="book-info">
+                        <h3 class="book-title">${book.title}</h3>
+                        <p class="book-author">${book.author}</p>
+                        <div class="book-rating">
+                            ${'⭐'.repeat(Math.round(book.rating || 4))} 
+                            <span class="rating-count">(${book.ratingCount || 0})</span>
+                        </div>
+                        <div class="book-footer">
+                            <div class="book-price">
+                                ${book.discount > 0 ? `
+                                    <span class="price-old">${book.price} грн</span>
+                                    <span class="price-current">${discountPrice.toFixed(0)} грн</span>
+                                ` : `
+                                    <span class="price-current">${book.price} грн</span>
+                                `}
+                            </div>
+                            <div class="book-actions">
+                                <button class="btn-icon" onclick="toggleFavorite(${book.id}); event.stopPropagation();" title="Додати до вподобань">♥</button>
+                                ${availableStock > 0 ? `
+                                    <button class="btn btn-primary btn-small" onclick="addToCart(${book.id}); event.stopPropagation();">В кошик</button>
+                                ` : `
+                                    <button class="btn btn-outline btn-small" onclick="notifyWhenAvailable(${book.id}); event.stopPropagation();">🔔 Повідомити</button>
+                                `}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Ініціалізація
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTopBooks();
+            loadNewBooks();
+        });
+    </script>
 </body>
 </html>

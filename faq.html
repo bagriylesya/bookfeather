@@ -7,63 +7,83 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        .faq-category {
+            margin-bottom: 50px;
+        }
+        
+        .faq-category h2 {
+            font-size: 32px;
+            margin-bottom: 25px;
+            color: var(--blood-red);
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--blood-red);
+        }
+        
         .faq-item {
             background-color: white;
-            padding: 25px;
             margin-bottom: 15px;
             border-radius: 12px;
+            overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            cursor: pointer;
             transition: all 0.3s;
         }
         
         .faq-item:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         
         .faq-question {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--black-bean);
+            padding: 25px 30px;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: #f9f3e3;
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--black-bean);
+            transition: background-color 0.3s;
+        }
+        
+        .faq-question:hover {
+            background-color: #f4e8d0;
+        }
+        
+        .faq-question.active {
+            background-color: var(--blood-red);
+            color: white;
         }
         
         .faq-icon {
             font-size: 24px;
-            color: var(--blood-red);
             transition: transform 0.3s;
         }
         
-        .faq-item.active .faq-icon {
+        .faq-question.active .faq-icon {
             transform: rotate(180deg);
         }
         
         .faq-answer {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s;
-            color: var(--drab-brown);
-            font-size: 17px;
-            line-height: 1.8;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding: 0 30px;
         }
         
-        .faq-item.active .faq-answer {
+        .faq-answer.active {
             max-height: 1000px;
-            margin-top: 20px;
+            padding: 25px 30px;
         }
         
-        .faq-category {
-            margin-bottom: 50px;
+        .faq-answer p {
+            line-height: 1.9;
+            font-size: 17px;
+            margin-bottom: 12px;
         }
         
-        .faq-category-title {
-            font-size: 32px;
-            margin-bottom: 25px;
-            color: var(--blood-red);
-            padding-bottom: 15px;
-            border-bottom: 3px solid var(--blood-red);
+        .faq-answer ul {
+            margin-left: 25px;
+            line-height: 2;
         }
     </style>
 </head>
@@ -83,6 +103,10 @@
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <div class="header-search">
+                        <input type="text" id="header-search" placeholder="Пошук книг..." style="padding: 10px 14px; border: 2px solid var(--vanilla); border-radius: 6px; width: 250px;">
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
                     <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
                         ♥ <span class="fav-count">0</span>
                     </button>
@@ -107,287 +131,247 @@
     <section class="books-section">
         <div class="container">
             <div style="max-width: 1000px; margin: 0 auto;">
-                <h1 style="margin-bottom: 20px; text-align: center; font-size: 48px;">Часті питання</h1>
-                <p style="text-align: center; font-size: 19px; color: var(--cinereous); margin-bottom: 50px;">
-                    Знайдіть відповіді на найпоширеніші питання про роботу з BOOKFEATHER
-                </p>
+                <h1 style="text-align: center; margin-bottom: 50px; font-size: 48px;">Часті питання</h1>
                 
-                <!-- Про замовлення -->
+                <!-- Замовлення та оплата -->
                 <div class="faq-category">
-                    <h2 class="faq-category-title">🛒 Замовлення та оплата</h2>
+                    <h2>📦 Замовлення та оплата</h2>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Як оформити замовлення?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Як оформити замовлення?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
                             <p>Оформити замовлення дуже просто:</p>
-                            <ol style="margin-left: 20px; margin-top: 10px;">
-                                <li>Додайте потрібні книги до кошика, натиснувши кнопку "В кошик"</li>
-                                <li>Перейдіть до кошика, натиснувши на іконку 🛒 у верхньому меню</li>
-                                <li>Перевірте вибрані товари та натисніть "Оформити замовлення"</li>
-                                <li>Заповніть контактні дані та оберіть спосіб доставки</li>
-                                <li>Виберіть спосіб оплати та підтвердіть замовлення</li>
-                                <li>Очікуйте дзвінок нашого менеджера для підтвердження</li>
-                            </ol>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Які способи оплати доступні?
-                            <span class="faq-icon">▼</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Ми приймаємо такі способи оплати:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li><strong>Готівкою</strong> при отриманні у відділенні пошти або кур'єру</li>
-                                <li><strong>Карткою</strong> при отриманні (термінал у кур'єра)</li>
-                                <li><strong>Онлайн</strong> через платіжну систему (Visa, Mastercard)</li>
-                                <li><strong>Безготівковий розрахунок</strong> для юридичних осіб</li>
+                            <ul>
+                                <li>Додайте книги до кошика натиснувши кнопку "Додати в кошик"</li>
+                                <li>Перейдіть у кошик (іконка вгорі справа)</li>
+                                <li>Перевірте вибрані книги</li>
+                                <li>Натисніть "Оформити замовлення"</li>
+                                <li>Заповніть контактні дані та адресу доставки</li>
+                                <li>Оберіть спосіб доставки та оплати</li>
+                                <li>Підтвердіть замовлення</li>
                             </ul>
-                            <p style="margin-top: 15px;">Детальніше на сторінці <a href="delivery.html" style="color: var(--blood-red); text-decoration: underline;">Доставка і оплата</a></p>
+                            <p>Наш менеджер зв'яжеться з вами протягом години для підтвердження.</p>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Чи можна змінити або скасувати замовлення?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Які способи оплати доступні?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Так, ви можете змінити або скасувати замовлення <strong>до моменту відправки</strong>. Для цього зателефонуйте нам: <strong>+380 XX XXX XX XX</strong> або напишіть на email: <strong>info@bookfeather.com</strong></p>
-                            <p style="margin-top: 10px;">Якщо товар вже відправлено, ви можете відмовитись від отримання або повернути його згідно з умовами, описаними на сторінці <a href="return.html" style="color: var(--blood-red); text-decoration: underline;">Повернення товару</a>.</p>
+                            <p>Ми приймаємо наступні способи оплати:</p>
+                            <ul>
+                                <li><strong>Готівкою при отриманні</strong> - в відділенні пошти або кур'єру</li>
+                                <li><strong>Карткою при отриманні</strong> - в відділенні Нової Пошти</li>
+                                <li><strong>Онлайн оплата</strong> - карткою Visa/Mastercard через платіжну систему</li>
+                                <li><strong>Безготівковий розрахунок</strong> - для юридичних осіб</li>
+                            </ul>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Чи можна замовити книгу, якої немає в наявності?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Чи можна скасувати або змінити замовлення?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Так! Якщо потрібної книги немає в наявності, ми можемо замовити її для вас. Час очікування зазвичай становить 3-7 робочих днів. Зв'яжіться з нами через <a href="contact.html" style="color: var(--blood-red); text-decoration: underline;">форму зворотного зв'язку</a> або телефоном <strong>+380 XX XXX XX XX</strong>.</p>
+                            <p><strong>Так!</strong> Ви можете скасувати або змінити замовлення ДО моменту його відправки.</p>
+                            <p>Для цього зателефонуйте нам: <strong>+380 XX XXX XX XX</strong> або напишіть на <strong>info@bookfeather.com</strong></p>
+                            <p>Вкажіть номер замовлення та що саме потрібно змінити.</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Доставка -->
                 <div class="faq-category">
-                    <h2 class="faq-category-title">🚚 Доставка</h2>
+                    <h2>🚚 Доставка</h2>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Скільки коштує доставка?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Скільки коштує доставка?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
                             <p><strong>Нова Пошта:</strong></p>
-                            <ul style="margin-left: 20px;">
-                                <li>У відділення: 50 грн (безкоштовно від 500 грн)</li>
-                                <li>Кур'єром додому: 80 грн (безкоштовно від 800 грн)</li>
+                            <ul>
+                                <li>У відділення - 50 грн (безкоштовно від 500 грн)</li>
+                                <li>Кур'єром додому - 80 грн (безкоштовно від 800 грн)</li>
                             </ul>
-                            <p style="margin-top: 15px;"><strong>Укрпошта:</strong></p>
-                            <ul style="margin-left: 20px;">
-                                <li>У відділення: 35 грн</li>
-                                <li>Кур'єром: 60 грн</li>
+                            <p><strong>Укрпошта:</strong></p>
+                            <ul>
+                                <li>У відділення - 35 грн</li>
+                                <li>Кур'єром - 60 грн</li>
                             </ul>
-                            <p style="margin-top: 15px;"><strong>Самовивіз</strong> у Києві - безкоштовно!</p>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Як швидко доставляють замовлення?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Як швидко доставляєте замовлення?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Терміни доставки залежать від способу:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li><strong>Нова Пошта:</strong> 1-3 робочих дні</li>
-                                <li><strong>Укрпошта:</strong> 3-7 робочих днів</li>
-                                <li><strong>Самовивіз:</strong> 1-2 години після оформлення</li>
+                            <p><strong>Новою Поштою:</strong> 1-3 робочих дні</p>
+                            <p><strong>Укрпоштою:</strong> 3-7 робочих днів</p>
+                            <p>Якщо замовлення оформлене до 14:00 і книга є на складі - відправляємо в той же день!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Як відстежити моє замовлення?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Після відправки ви отримаєте SMS з номером ТТН (трек-номером).</p>
+                            <p>Відстежити посилку можна:</p>
+                            <ul>
+                                <li>На сайті Нової Пошти: <strong>novaposhta.ua</strong></li>
+                                <li>На сайті Укрпошти: <strong>ukrposhta.ua</strong></li>
+                                <li>У вашому профілі на нашому сайті (розділ "Мої замовлення")</li>
                             </ul>
-                            <p style="margin-top: 15px;">Якщо замовлення оформлене до 14:00 і товар є в наявності, відправляємо в той самий день!</p>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Чи доставляєте за кордон?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Чи доставляєте за кордон?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>На даний момент ми доставляємо тільки по Україні. Міжнародна доставка планується найближчим часом. Слідкуйте за оновленнями на нашому сайті!</p>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Як відстежити замовлення?
-                            <span class="faq-icon">▼</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Після відправки ви отримаєте SMS та email з номером декларації (ТТН). За цим номером можна відстежити посилку на сайті:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li><strong>Нова Пошта:</strong> novaposhta.ua</li>
-                                <li><strong>Укрпошта:</strong> ukrposhta.ua</li>
-                            </ul>
-                            <p style="margin-top: 15px;">Також ви можете зателефонувати нам, і ми повідомимо статус вашого замовлення.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Повернення та обмін -->
-                <div class="faq-category">
-                    <h2 class="faq-category-title">🔄 Повернення та обмін</h2>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Чи можна повернути книгу?
-                            <span class="faq-icon">▼</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Так! Ви можете повернути книгу протягом <strong>14 днів</strong> з дати покупки, якщо:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li>Книга має належний товарний вигляд</li>
-                                <li>Збережена упаковка та обгортка</li>
-                                <li>Немає слідів читання (загнутих сторінок, помарок)</li>
-                                <li>Є чек або документ про покупку</li>
-                            </ul>
-                            <p style="margin-top: 15px;">Детальні умови на сторінці <a href="return.html" style="color: var(--blood-red); text-decoration: underline;">Повернення товару</a>.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Що робити, якщо книга пошкоджена?
-                            <span class="faq-icon">▼</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Якщо ви отримали пошкоджену книгу:</p>
-                            <ol style="margin-left: 20px; margin-top: 10px;">
-                                <li><strong>НЕ оплачуйте посилку</strong> при отриманні</li>
-                                <li>Складіть акт про пошкодження у відділенні</li>
-                                <li>Сфотографуйте пошкодження</li>
-                                <li>Зв'яжіться з нами: support@bookfeather.com</li>
-                                <li>Ми організуємо безкоштовний обмін або повернення коштів</li>
-                            </ol>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question">
-                            Хто оплачує доставку при поверненні?
-                            <span class="faq-icon">▼</span>
-                        </div>
-                        <div class="faq-answer">
-                            <p>Якщо причина повернення - передумали або не підійшла книга, вартість зворотної доставки оплачує покупець.</p>
-                            <p style="margin-top: 10px;">Якщо причина - брак, помилка магазину або пошкодження при доставці, всі витрати бере на себе BOOKFEATHER.</p>
+                            <p>На даний момент ми доставляємо <strong>тільки по Україні</strong>.</p>
+                            <p>Міжнародна доставка планується у майбутньому. Слідкуйте за оновленнями!</p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Про товар -->
                 <div class="faq-category">
-                    <h2 class="faq-category-title">📚 Про товар</h2>
+                    <h2>📚 Про товар</h2>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Чи всі книги нові?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Чи всі книги нові?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Так! Усі книги в нашому магазині - <strong>нові, оригінальні видання</strong> від офіційних видавництв. Ми не продаємо вживані книги.</p>
+                            <p><strong>Так!</strong> Ми продаємо тільки нові книги.</p>
+                            <p>Всі книги надходять від офіційних видавництв та дистриб'юторів.</p>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Чи є книги українською мовою?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Якими мовами книги?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Так! У нашому каталозі представлені книги:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li>Українською мовою (переклади та оригінальні твори)</li>
-                                <li>Російською мовою</li>
-                                <li>Англійською та іншими іноземними мовами</li>
+                            <p>У нашому асортименті є книги:</p>
+                            <ul>
+                                <li><strong>Українською мовою</strong> - найбільший вибір</li>
+                                <li><strong>Англійською мовою</strong> - оригінальні видання</li>
+                                <li><strong>Іншими іноземними мовами</strong> - за наявності</li>
                             </ul>
-                            <p style="margin-top: 15px;">Мова видання вказана на сторінці кожної книги.</p>
+                            <p>Мова кожної книги вказана на сторінці товару.</p>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Як дізнатися про наявність книги?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Що означає "Останні 15 одиниць"?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>На сторінці кожної книги вказано її наявність. Також ви можете:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li>Зателефонувати: +380 XX XXX XX XX</li>
-                                <li>Написати на email: info@bookfeather.com</li>
-                                <li>Звернутися через <a href="contact.html" style="color: var(--blood-red); text-decoration: underline;">форму зворотного зв'язку</a></li>
+                            <p>Коли на складі залишається 15 або менше примірників книги, ми показуємо точну кількість.</p>
+                            <p>Це допомагає вам зробити замовлення вчасно, поки книга в наявності.</p>
+                            <p><strong>Кількість оновлюється автоматично</strong> після кожної покупки.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Що робити якщо книги немає в наявності?</span>
+                            <span class="faq-icon">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Якщо книги немає на складі, ви побачите кнопку <strong>"🔔 Повідомити про наявність"</strong>.</p>
+                            <p><strong>Як це працює:</strong></p>
+                            <ul>
+                                <li>Натисніть кнопку "Повідомити про наявність"</li>
+                                <li>Якщо ви увійшли в систему - ми автоматично додамо вашу email адресу</li>
+                                <li>Якщо ні - з'явиться вікно з пропозицією увійти або зареєструватися</li>
+                                <li>Коли книга з'явиться на складі - ви отримаєте email</li>
                             </ul>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Чи можна отримати книгу в подарункову упаковку?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Чи можна отримати книгу в подарунковій упаковці?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Так! Ми пропонуємо <strong>безкоштовну подарункову упаковку</strong> для будь-якого замовлення. Просто вкажіть це в коментарі до замовлення або повідомте менеджеру при підтвердженні.</p>
+                            <p><strong>Так!</strong> Ми можемо красиво упакувати книгу в подарунковий папір.</p>
+                            <p>Вкажіть це в коментарі до замовлення або зв'яжіться з менеджером.</p>
+                            <p><em>Послуга безкоштовна!</em></p>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Особистий кабінет -->
                 <div class="faq-category">
-                    <h2 class="faq-category-title">👤 Особистий кабінет</h2>
+                    <h2>👤 Особистий кабінет</h2>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Навіщо реєструватися?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Навіщо реєструватися?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Реєстрація дає вам додаткові можливості:</p>
-                            <ul style="margin-left: 20px; margin-top: 10px;">
-                                <li>Швидше оформлення замовлень (збережені дані)</li>
-                                <li>Перегляд історії покупок</li>
-                                <li>Список вподобань</li>
-                                <li>Персональні знижки та бонуси</li>
-                                <li>Першими дізнаєтесь про акції</li>
+                            <p>Реєстрація дає вам багато переваг:</p>
+                            <ul>
+                                <li>🎯 Швидше оформлення замовлень (дані збережені)</li>
+                                <li>📦 Історія всіх ваших замовлень</li>
+                                <li>❤️ Список вподобаних книг</li>
+                                <li>🔔 Повідомлення про наявність книг</li>
+                                <li>🎁 Участь в акціях та бонусній програмі</li>
+                                <li>📧 Персоналізовані рекомендації</li>
                             </ul>
-                            <p style="margin-top: 15px;">Але ви можете замовляти і без реєстрації!</p>
                         </div>
                     </div>
                     
                     <div class="faq-item">
-                        <div class="faq-question">
-                            Як відновити пароль?
+                        <div class="faq-question" onclick="toggleFaq(this)">
+                            <span>Як відновити пароль?</span>
                             <span class="faq-icon">▼</span>
                         </div>
                         <div class="faq-answer">
-                            <p>Натисніть "Забули пароль?" на сторінці входу, вкажіть email, який використовували при реєстрації. Ми надішлемо посилання для створення нового пароля.</p>
+                            <p>Для відновлення пароля:</p>
+                            <ul>
+                                <li>Перейдіть на сторінку входу</li>
+                                <li>Натисніть "Забули пароль?"</li>
+                                <li>Введіть вашу email адресу</li>
+                                <li>Перевірте пошту - ми надішлемо посилання для відновлення</li>
+                                <li>Перейдіть за посиланням та створіть новий пароль</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Контакти та підтримка -->
+                <!-- Контакти -->
                 <div style="background-color: #f9f3e3; padding: 40px; border-radius: 12px; text-align: center; margin-top: 50px;">
-                    <h3 style="font-size: 28px; margin-bottom: 25px; color: var(--blood-red);">Не знайшли відповідь?</h3>
-                    <p style="font-size: 18px; margin-bottom: 25px;">Наша служба підтримки завжди готова допомогти!</p>
-                    <div style="margin-bottom: 25px; font-size: 18px;">
+                    <h3 style="font-size: 28px; margin-bottom: 20px; color: var(--blood-red);">Не знайшли відповіді?</h3>
+                    <p style="font-size: 18px; margin-bottom: 25px;">Наша команда з радістю допоможе!</p>
+                    <div style="font-size: 18px; margin-bottom: 25px;">
                         <p><strong>📧 Email:</strong> info@bookfeather.com</p>
                         <p><strong>📞 Телефон:</strong> +380 XX XXX XX XX</p>
                         <p><strong>⏰ Графік:</strong> Пн-Пт 9:00-18:00</p>
                     </div>
-                    <a href="contact.html" class="btn btn-primary">Написати нам</a>
+                    <a href="contact.html" class="btn btn-primary">Зв'язатися з нами</a>
                 </div>
             </div>
         </div>
@@ -398,7 +382,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>BOOKFEATHER</h3>
-                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+                    <p>Ваша онлайн книгарня з серцем ❤️</p>
                 </div>
                 <div class="footer-section">
                     <h4>Навігація</h4>
@@ -430,12 +414,21 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
     <script>
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.addEventListener('click', () => {
-                item.classList.toggle('active');
+        function toggleFaq(element) {
+            // Закрити всі інші
+            document.querySelectorAll('.faq-question').forEach(q => {
+                if (q !== element) {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('active');
+                }
             });
-        });
+            
+            // Перемкнути поточний
+            element.classList.toggle('active');
+            element.nextElementSibling.classList.toggle('active');
+        }
     </script>
 </body>
 </html>

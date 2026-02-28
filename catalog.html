@@ -3,103 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Каталог - BOOKFEATHER</title>
+    <title>Каталог книг - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        .catalog-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 40px;
-            margin-top: 40px;
-        }
-        
-        .catalog-sidebar {
-            background-color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-            height: fit-content;
-            position: sticky;
-            top: 100px;
-        }
-        
-        .filter-section {
-            margin-bottom: 30px;
-        }
-        
-        .filter-section h3 {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: var(--blood-red);
-        }
-        
-        .filter-section input,
-        .filter-section select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid var(--cinereous);
-            border-radius: 6px;
-            font-family: var(--font-body);
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .filter-buttons .btn {
-            flex: 1;
-            padding: 10px;
-            font-size: 15px;
-        }
-        
-        .search-header {
-            background-color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-            margin-bottom: 30px;
-        }
-        
-        .search-bar {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .search-bar input {
-            flex: 1;
-            padding: 14px;
-            border: 2px solid var(--cinereous);
-            border-radius: 6px;
-            font-family: var(--font-body);
-            font-size: 17px;
-        }
-        
-        .search-bar button {
-            padding: 14px 25px;
-            background-color: var(--blood-red);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-        
-        @media (max-width: 768px) {
-            .catalog-layout {
-                grid-template-columns: 1fr;
-            }
-            
-            .catalog-sidebar {
-                position: relative;
-                top: 0;
-            }
-        }
-    </style>
 </head>
 <body>
     <header class="header">
@@ -117,6 +23,12 @@
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <!-- ПОШУК В HEADER -->
+                    <div class="header-search">
+                        <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                    
                     <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
                         ♥ <span class="fav-count">0</span>
                     </button>
@@ -140,76 +52,33 @@
 
     <section class="books-section">
         <div class="container">
-            <h1 class="page-title">Каталог книг</h1>
-
-            <div class="catalog-layout">
-                <aside class="catalog-sidebar">
-                    <div class="filter-section">
-                        <h3>Автор</h3>
-                        <input type="text" id="author-filter" placeholder="Введіть автора">
-                    </div>
-
-                    <div class="filter-section">
-                        <h3>Видавництво</h3>
-                        <input type="text" id="publisher-filter" placeholder="Введіть видавництво">
-                    </div>
-
-                    <div class="filter-section">
-                        <h3>Категорія</h3>
-                        <select id="category-filter">
-                            <option value="">Всі категорії</option>
-                            <option value="fiction">Художня література</option>
-                            <option value="detective">Детективи</option>
-                            <option value="fantasy">Фентезі</option>
-                            <option value="psychology">Психологія</option>
-                            <option value="business">Бізнес</option>
-                            <option value="science">Наука</option>
-                            <option value="biography">Біографії</option>
-                            <option value="history">Історія</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-section">
-                        <h3>Ціна</h3>
-                        <input type="number" id="price-min" placeholder="Від" min="0">
-                        <input type="number" id="price-max" placeholder="До" min="0">
-                    </div>
-
-                    <div class="filter-buttons">
-                        <button class="btn btn-primary" id="apply-filters">Застосувати</button>
-                        <button class="btn btn-outline" id="reset-filters">Скинути</button>
-                    </div>
-                </aside>
-
-                <div class="catalog-main">
-                    <div class="search-header">
-                        <div class="search-bar">
-                            <input type="text" id="search-input" placeholder="Пошук за назвою, автором...">
-                            <button id="search-btn">🔍</button>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                            <div style="color: var(--drab-brown); font-size: 17px;">
-                                Знайдено: <span id="results-count">0</span> книг
-                            </div>
-                            <div>
-                                <select id="sort-filter" style="padding: 10px; border: 2px solid var(--cinereous); border-radius: 6px; font-size: 16px;">
-                                    <option value="popularity">За популярністю</option>
-                                    <option value="newest">За новизною</option>
-                                    <option value="price-asc">Ціна: від низької</option>
-                                    <option value="price-desc">Ціна: від високої</option>
-                                    <option value="rating">За рейтингом</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="books-grid" id="catalog-books"></div>
-
-                    <div class="empty-state" id="empty-state" style="display: none;">
-                        <p>Книг не знайдено. Спробуйте змінити фільтри.</p>
-                    </div>
+            <h1>Каталог книг</h1>
+            
+            <div class="catalog-controls">
+                <div class="filters">
+                    <select id="category-filter" onchange="filterBooks()">
+                        <option value="">Всі категорії</option>
+                    </select>
+                    
+                    <select id="sort-filter" onchange="filterBooks()">
+                        <option value="popular">За популярністю</option>
+                        <option value="new">Новинки</option>
+                        <option value="price-low">Ціна: за зростанням</option>
+                        <option value="price-high">Ціна: за спаданням</option>
+                        <option value="rating">За рейтингом</option>
+                    </select>
+                    
+                    <select id="language-filter" onchange="filterBooks()">
+                        <option value="">Всі мови</option>
+                        <option value="Українська">Українська</option>
+                        <option value="Англійська">Англійська</option>
+                        <option value="Інша">Інші мови</option>
+                    </select>
                 </div>
+            </div>
+
+            <div class="books-grid" id="books-container">
+                <p style="text-align: center; padding: 40px;">Завантаження...</p>
             </div>
         </div>
     </section>
@@ -252,5 +121,6 @@
 
     <script src="js/main.js"></script>
     <script src="js/catalog.js"></script>
+    <script src="js/search.js"></script>
 </body>
 </html>
