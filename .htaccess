@@ -1,0 +1,18 @@
+# .htaccess
+RewriteEngine On
+
+# Якщо файл існує - показати його
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Якщо папка існує - показати її
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Інакше - показати index.html
+RewriteRule ^ index.html [L]
+
+# Налаштування PHP
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
