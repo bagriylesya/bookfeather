@@ -1,14 +1,20 @@
+/* ===================================
+   BOOKFEATHER - ПОВНІ СТИЛІ
+   Всі стилі для всього сайту
+   =================================== */
+
+/* === ЗМІННІ === */
 :root {
     --blood-red: #74070E;
-    --vanilla: #F4E3B2;
-    --drab-brown: #45462A;
-    --cinereous: #947268;
-    --black-bean: #310E10;
-    --bg-accent: #FAF6ED;
+    --black-bean: #3D0814;
+    --vanilla: #F1E4C3;
+    --cinereous: #C6B9A8;
+    --drab-brown: #716040;
     --font-heading: 'Playfair Display', serif;
     --font-body: 'Lora', serif;
 }
 
+/* === БАЗОВІ СТИЛІ === */
 * {
     margin: 0;
     padding: 0;
@@ -17,10 +23,25 @@
 
 body {
     font-family: var(--font-body);
-    background-color: var(--vanilla);
     color: var(--black-bean);
+    background-color: #fafafa;
     line-height: 1.6;
-    font-size: 17px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 .container {
@@ -29,421 +50,540 @@ body {
     padding: 0 20px;
 }
 
-h1, h2, h3, h4 {
-    font-family: var(--font-heading);
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-    transition: color 0.3s;
-}
-
+/* === HEADER === */
 .header {
-    background-color: var(--black-bean);
-    color: var(--vanilla);
-    padding: 20px 0;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 100;
 }
 
 .header-content {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 30px;
+    justify-content: space-between;
+    padding: 20px 0;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--blood-red);
+}
+
+.logo a {
+    color: var(--blood-red);
 }
 
 .logo-img {
     height: 50px;
-    width: auto;
-}
-
-.logo h1 {
-    font-size: 28px;
-    letter-spacing: 2px;
-}
-
-.logo a {
-    color: var(--vanilla);
 }
 
 .nav ul {
     display: flex;
     list-style: none;
-    gap: 25px;
+    gap: 30px;
 }
 
 .nav a {
-    color: var(--vanilla);
-    font-size: 18px;
-    padding: 8px 16px;
-    border-radius: 6px;
+    color: var(--black-bean);
+    font-size: 17px;
     font-weight: 500;
+    transition: color 0.3s;
 }
 
-.nav a:hover, .nav a.active {
-    background-color: var(--blood-red);
-    color: white;
+.nav a:hover,
+.nav a.active {
+    color: var(--blood-red);
 }
 
+/* === HEADER ICONS === */
 .header-icons {
     display: flex;
-    gap: 15px;
     align-items: center;
+    gap: 15px;
 }
 
 .icon-btn {
-    background: transparent;
-    border: 2px solid var(--vanilla);
-    color: var(--vanilla);
-    padding: 10px 18px;
-    border-radius: 6px;
+    background: none;
+    border: none;
+    font-size: 24px;
     cursor: pointer;
-    font-size: 22px;
-    transition: all 0.3s;
     position: relative;
-    min-width: 60px;
+    transition: transform 0.3s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.1);
+}
+
+.cart-count,
+.fav-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--blood-red);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.icon-btn:hover {
-    background-color: var(--blood-red);
+/* === ПОШУК В HEADER === */
+.header-search {
+    position: relative;
+}
+
+.header-search input {
+    padding: 10px 15px;
+    border: 2px solid var(--vanilla);
+    border-radius: 25px;
+    width: 280px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    transition: border-color 0.3s;
+}
+
+.header-search input:focus {
+    outline: none;
     border-color: var(--blood-red);
-    transform: scale(1.05);
 }
 
-.cart-count, .fav-count {
+.search-suggestions {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--blood-red);
-    color: white;
-    padding: 3px 7px;
-    border-radius: 50%;
-    font-size: 12px;
-    font-weight: bold;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    margin-top: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
 }
 
+.search-suggestions.show {
+    display: block;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.3s;
+}
+
+.suggestion-item:hover {
+    background: #f9f3e3;
+}
+
+.suggestion-image {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.suggestion-info {
+    flex: 1;
+}
+
+.suggestion-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.suggestion-author {
+    font-size: 14px;
+    color: var(--cinereous);
+}
+
+/* === PROFILE MENU === */
 .profile-wrapper {
     position: relative;
 }
 
 .profile-menu {
     position: absolute;
-    top: calc(100% + 10px);
+    top: 100%;
     right: 0;
-    background-color: white;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    background: white;
     border-radius: 8px;
-    min-width: 180px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s;
-    z-index: 1001;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    margin-top: 10px;
+    min-width: 200px;
+    display: none;
+    z-index: 1000;
 }
 
 .profile-menu.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    display: block;
 }
 
 .profile-menu a {
     display: block;
-    padding: 14px 20px;
+    padding: 12px 20px;
     color: var(--black-bean);
-    font-size: 16px;
-    transition: background-color 0.3s;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.profile-menu a:last-child {
-    border-bottom: none;
+    transition: background 0.3s;
 }
 
 .profile-menu a:hover {
-    background-color: #f0f0f0;
-    color: var(--blood-red);
+    background: #f9f3e3;
 }
 
-.profile-menu a:first-child {
-    border-radius: 8px 8px 0 0;
-}
-
-.profile-menu a:last-child {
-    border-radius: 0 0 8px 8px;
-}
-
-.hero-banner {
-    background: linear-gradient(135deg, var(--blood-red), var(--cinereous));
-    color: white;
-    padding: 120px 0;
-    text-align: center;
-}
-
-.hero-title {
-    font-size: 64px;
-    margin-bottom: 25px;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-}
-
-.hero-subtitle {
-    font-size: 28px;
-    margin-bottom: 35px;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
-}
-
+/* === КНОПКИ === */
 .btn {
-    padding: 16px 40px;
+    padding: 12px 30px;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
-    font-size: 19px;
     font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
     transition: all 0.3s;
     display: inline-block;
-    font-weight: 500;
 }
 
 .btn-primary {
-    background-color: var(--blood-red);
+    background: var(--blood-red);
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #5a0509;
-    color: white;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    background: var(--black-bean);
+    transform: translateY(-2px);
 }
 
 .btn-outline {
-    background-color: transparent;
-    border: 2px solid var(--blood-red);
+    background: white;
     color: var(--blood-red);
+    border: 2px solid var(--blood-red);
 }
 
 .btn-outline:hover {
-    background-color: var(--blood-red);
+    background: var(--blood-red);
     color: white;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.btn-large {
+    padding: 16px 40px;
+    font-size: 18px;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+/* === HERO === */
+.hero {
+    background: linear-gradient(135deg, var(--blood-red) 0%, var(--black-bean) 100%);
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 56px;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle {
+    font-size: 22px;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+/* === СЕКЦІЇ === */
+.books-section {
+    padding: 60px 0;
 }
 
 .section-title {
-    font-size: 44px;
-    margin-bottom: 50px;
+    font-size: 36px;
     text-align: center;
-    color: var(--black-bean);
+    margin-bottom: 40px;
+    color: var(--blood-red);
 }
 
-.books-section, .categories-section {
-    padding: 70px 0;
-}
-
-.bg-accent {
-    background-color: var(--bg-accent);
-}
-
-.categories-container {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.category-nav-btn {
-    background-color: var(--blood-red);
-    color: white;
-    border: none;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    font-size: 30px;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.category-nav-btn:hover {
-    background-color: #5a0509;
-    transform: scale(1.1);
-}
-
-.categories-wrapper {
-    overflow: hidden;
-    flex: 1;
-}
-
-.categories-track {
-    display: flex;
-    gap: 25px;
-    transition: transform 0.3s ease;
-}
-
-.category-card {
-    background-color: white;
-    padding: 50px 25px;
-    text-align: center;
-    border-radius: 12px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-    transition: all 0.3s;
-    min-width: 250px;
-    flex-shrink: 0;
-}
-
-.category-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 25px rgba(116, 7, 14, 0.25);
-    background-color: var(--blood-red);
-    color: white;
-}
-
-.category-card h3 {
-    font-size: 22px;
-}
-
-.category-card.view-all {
-    background-color: var(--bg-accent);
-    border: 2px dashed var(--blood-red);
-}
-
-.category-card.view-all:hover {
-    background-color: var(--blood-red);
-    border-color: var(--blood-red);
-}
-
+/* === СІТКА КНИГ === */
 .books-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 35px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
 }
 
 .book-card {
-    background-color: white;
+    background: white;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-    transition: all 0.3s;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
     position: relative;
-    cursor: pointer;
 }
 
 .book-card:hover {
-    transform: translateY(-12px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
 }
 
 .book-image {
     width: 100%;
-    height: 380px;
+    height: 350px;
     object-fit: cover;
 }
 
-.book-badge {
+.book-badges {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background-color: var(--blood-red);
-    color: white;
-    padding: 8px 15px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: bold;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-new {
+    background: #28a745;
+    color: white;
+}
+
+.badge-top {
+    background: #ffc107;
+    color: var(--black-bean);
+}
+
+.badge-discount {
+    background: var(--blood-red);
+    color: white;
+}
+
+/* === СКЛАД === */
+.stock-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.stock-badge.low-stock {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.stock-badge.out-of-stock {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* === ІНФО КНИГИ === */
 .book-info {
-    padding: 25px;
+    padding: 20px;
 }
 
 .book-title {
-    font-size: 22px;
-    margin-bottom: 12px;
+    font-size: 18px;
+    margin-bottom: 8px;
     color: var(--black-bean);
 }
 
 .book-author {
     color: var(--cinereous);
-    margin-bottom: 12px;
-    font-size: 16px;
+    font-size: 15px;
+    margin-bottom: 10px;
 }
 
 .book-rating {
     color: #ffa500;
-    margin-bottom: 12px;
-    font-size: 16px;
+    margin-bottom: 15px;
 }
 
-.book-description {
-    font-size: 15px;
-    color: var(--drab-brown);
-    margin-bottom: 18px;
-    line-height: 1.6;
+.rating-count {
+    color: var(--cinereous);
+    font-size: 14px;
+}
+
+.book-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .book-price {
-    font-size: 28px;
+    font-size: 22px;
+    font-weight: 700;
     color: var(--blood-red);
-    font-weight: bold;
-    margin-bottom: 18px;
+}
+
+.price-old {
+    font-size: 16px;
+    color: var(--cinereous);
+    text-decoration: line-through;
+    margin-right: 8px;
 }
 
 .book-actions {
     display: flex;
-    gap: 12px;
+    gap: 8px;
 }
 
-.book-actions .btn {
-    flex: 2;
-    padding: 12px;
-    font-size: 16px;
-}
-
-.book-actions .fav-btn {
-    flex: 1;
-    background-color: transparent;
+.btn-icon {
+    width: 40px;
+    height: 40px;
     border: 2px solid var(--blood-red);
+    background: white;
     color: var(--blood-red);
-    padding: 12px;
-    border-radius: 8px;
+    border-radius: 50%;
     cursor: pointer;
     font-size: 20px;
     transition: all 0.3s;
 }
 
-.book-actions .fav-btn:hover,
-.book-actions .fav-btn.active {
-    background-color: var(--blood-red);
+.btn-icon:hover,
+.btn-icon.active {
+    background: var(--blood-red);
     color: white;
 }
 
+/* === FOOTER === */
+.footer {
+    background: var(--black-bean);
+    color: white;
+    padding: 50px 0 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.footer-section h3,
+.footer-section h4 {
+    margin-bottom: 20px;
+    color: var(--vanilla);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: rgba(255,255,255,0.8);
+    transition: color 0.3s;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .header-content {
+        flex-wrap: wrap;
+    }
+    
+    .nav ul {
+        gap: 15px;
+    }
+    
+    .header-search input {
+        width: 200px;
+    }
+    
+    .hero-title {
+        font-size: 36px;
+    }
+    
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+}
+
+/* === МОДАЛЬНЕ ВІКНО === */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    align-items: center;
+    justify-content: center;
+}
+
+.image-modal.show {
+    display: flex;
+}
+
+.modal-close {
+    position: absolute;
+    top: 25px;
+    right: 45px;
+    font-size: 50px;
+    color: white;
+    cursor: pointer;
+}
+
+.modal-image {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+}
+
+/* === NOTIFICATION === */
 .notification {
     position: fixed;
-    top: 100px;
-    right: 30px;
-    background-color: var(--blood-red);
-    color: white;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     z-index: 10000;
-    animation: slideInRight 0.3s ease-out;
-    font-size: 17px;
+    animation: slideIn 0.3s ease;
 }
 
-@keyframes slideInRight {
+@keyframes slideIn {
     from {
         transform: translateX(400px);
         opacity: 0;
@@ -454,94 +594,10 @@ a {
     }
 }
 
-.footer {
-    background-color: var(--black-bean);
-    color: var(--vanilla);
-    padding: 50px 0 25px;
-    margin-top: 80px;
+.notification.success {
+    border-left: 4px solid #28a745;
 }
 
-.footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 50px;
-    margin-bottom: 35px;
-}
-
-.footer-section h3 {
-    font-size: 26px;
-    margin-bottom: 18px;
-}
-
-.footer-section h4 {
-    font-size: 20px;
-    margin-bottom: 18px;
-}
-
-.footer-section ul {
-    list-style: none;
-}
-
-.footer-section ul li {
-    margin-bottom: 10px;
-    font-size: 16px;
-}
-
-.footer-section a {
-    color: var(--vanilla);
-}
-
-.footer-section a:hover {
-    color: var(--blood-red);
-}
-
-.footer-section p {
-    font-size: 16px;
-}
-
-.footer-bottom {
-    text-align: center;
-    padding-top: 25px;
-    border-top: 1px solid var(--cinereous);
-    font-size: 15px;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    font-size: 20px;
-    color: var(--cinereous);
-}
-
-.page-title {
-    font-size: 48px;
-    margin-bottom: 40px;
-    text-align: center;
-}
-
-@media (max-width: 768px) {
-    .header-content {
-        flex-wrap: wrap;
-    }
-
-    .nav ul {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .hero-title {
-        font-size: 40px;
-    }
-
-    .hero-subtitle {
-        font-size: 20px;
-    }
-
-    .category-card {
-        min-width: 200px;
-    }
-
-    .books-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    }
+.notification.error {
+    border-left: 4px solid #dc3545;
 }

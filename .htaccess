@@ -1,136 +1,44 @@
-# ===================================
 # BOOKFEATHER .htaccess
-# Конфігурація Apache для сайту
-# ===================================
-
-# Увімкнути RewriteEngine
 RewriteEngine On
 
-# Базова директорія (якщо сайт не в корені)
-# RewriteBase /
-
-# ===================================
-# БЕЗПЕКА
-# ===================================
-
-# Заборонити перегляд директорій
+# Безпека
 Options -Indexes
-
-# Заборонити доступ до системних файлів
 <FilesMatch "^\.">
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-# Захистити config.php
+# Захист файлів
 <Files "config.php">
     Order allow,deny
     Deny from all
 </Files>
 
-# Захистити database.sql
-<Files "database.sql">
-    Order allow,deny
-    Deny from all
-</Files>
-
-# ===================================
-# КЕШУВАННЯ
-# ===================================
-
-# Кешування статичних файлів
+# Кешування
 <IfModule mod_expires.c>
     ExpiresActive On
-    
-    # Зображення
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    
-    # CSS та JavaScript
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
-    
-    # Шрифти
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
 </IfModule>
 
-# ===================================
-# СТИСНЕННЯ
-# ===================================
-
+# Стиснення
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript
 </IfModule>
 
-# ===================================
-# PHP НАЛАШТУВАННЯ
-# ===================================
-
-# Розмір завантажуваних файлів
+# PHP налаштування
 php_value upload_max_filesize 10M
 php_value post_max_size 10M
 php_value max_execution_time 300
-php_value max_input_time 300
-php_value memory_limit 256M
 
-# Показувати помилки (ТІЛЬКИ ДЛЯ РОЗРОБКИ!)
-# Для production встановити в Off
-php_flag display_errors On
-php_value error_reporting E_ALL
-
-# Часовий пояс
-php_value date.timezone "Europe/Kyiv"
-
-# ===================================
-# ПЕРЕНАПРАВЛЕННЯ
-# ===================================
-
-# Якщо файл існує - показати його
+# Перенаправлення
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
-
-# Якщо папка існує - показати її
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-
-# Інакше - показати index.html
 RewriteRule ^ index.html [L]
 
-# ===================================
-# MIME TYPES
-# ===================================
-
-AddType application/javascript .js
-AddType text/css .css
-AddType image/svg+xml .svg
-AddType application/json .json
-
-# ===================================
-# КОДУВАННЯ
-# ===================================
-
+# Кодування
 AddDefaultCharset UTF-8
-
-# ===================================
-# CUSTOM ERROR PAGES (опціонально)
-# ===================================
-
-# ErrorDocument 404 /404.html
-# ErrorDocument 500 /500.html
-
-# ===================================
-# HTTPS (якщо є SSL)
-# ===================================
-
-# Примусове перенаправлення на HTTPS
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
-
-# ===================================
-# ГОТОВО!
-# ===================================
