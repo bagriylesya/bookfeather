@@ -23,6 +23,12 @@
                     </ul>
                 </nav>
                 <div class="header-icons">
+                    <!-- ПОШУК В HEADER -->
+                    <div class="header-search">
+                        <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                        <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                    
                     <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
                         ♥ <span class="fav-count">0</span>
                     </button>
@@ -249,5 +255,6 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
 </body>
 </html>
