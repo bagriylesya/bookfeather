@@ -1,262 +1,418 @@
-let currentBook = null;
-let currentImageIndex = 0;
-let userRatings = JSON.parse(localStorage.getItem('userRatings')) || {};
-let userRating = 0;
+// ===================================
+// BOOKFEATHER - BOOK.JS
+// Сторінка окремої книги: галерея, рейтинг, схожі книги
+// ===================================
 
+let currentBook       = null;
+let currentImageIndex = 0;
+let userRatings       = JSON.parse(localStorage.getItem('userRatings') || '{}');
+let userRating        = 0;
+
+// ===================================
+// ІНІЦІАЛІЗАЦІЯ
+// ===================================
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadBooks();
+    displayBookDetails();
+});
+
+// ===================================
+// ВІДОБРАЖЕННЯ КНИГИ
+// ===================================
 async function displayBookDetails() {
     const urlParams = new URLSearchParams(window.location.search);
-    const bookId = parseInt(urlParams.get('id'));
-    
-    await loadBooks();
-    const book = books.find(b => b.id === bookId);
-    
+    const bookId    = parseInt(urlParams.get('id'));
     const container = document.getElementById('book-detail');
-    
+
+    if (!container) return;
+
+    const book = books.find(b => b.id === bookId);
+
     if (!book) {
-        container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Книгу не знайдено</p>';
+        container.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:80px 20px;">
+                <div style="font-size:60px; margin-bottom:20px;">📚</div>
+                <h2>Книгу не знайдено</h2>
+                <p style="color:var(--cinereous); margin-bottom:24px;">Можливо, вона була видалена або посилання невірне</p>
+                <a href="catalog.html" class="btn btn-primary">До каталогу</a>
+            </div>
+        `;
         return;
     }
-    
+
     currentBook = book;
     addToRecentlyViewed(bookId);
-    
-    const isFavorite = favorites.some(fav => fav.id === book.id);
-    const images = book.images || [book.image];
-    userRating = userRatings[bookId] || 0;
-    
-    const finalPrice = book.discount > 0 ? (book.price * (1 - book.discount / 100)).toFixed(2) : book.price;
-    const priceHtml = book.discount > 0 
-        ? `<p class="book-detail-price"><span style="text-decoration: line-through; font-size: 26px; color: #947268;">${book.price} грн</span> ${finalPrice} грн <span style="color: var(--blood-red); font-size: 22px;">(-${book.discount}%)</span></p>`
-        : `<p class="book-detail-price">${book.price} грн</p>`;
-    
+
+    const images         = getBookImages(book);
+    const isFavorite     = isInFavorites(book.id);
+    userRating           = userRatings[bookId] || 0;
+    const availableStock = (book.stock || 0) - (book.reserved || 0);
+
+    // Ціна з урахуванням знижки
+    const finalPrice = book.discount > 0
+        ? (book.price * (1 - book.discount / 100)).toFixed(0)
+        : book.price;
+
+    const priceHtml = book.discount > 0 ? `
+        <div class="book-detail-price">
+            <span style="text-decoration:line-through; font-size:20px; color:var(--cinereous); margin-right:10px;">${book.price} грн</span>
+            ${finalPrice} грн
+            <span style="font-size:18px; color:var(--blood-red); margin-left:8px;">(-${book.discount}%)</span>
+        </div>
+    ` : `<div class="book-detail-price">${book.price} грн</div>`;
+
+    // Стан складу
+    let stockHtml = '';
+    if (availableStock <= 0) {
+        stockHtml = `<div style="background:#f8d7da; color:#721c24; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
+            ❌ Немає в наявності
+        </div>`;
+    } else if (availableStock <= 15) {
+        stockHtml = `<div style="background:#fff3cd; color:#856404; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
+            ⚠️ Останні ${availableStock} шт на складі — поспішайте!
+        </div>`;
+    } else {
+        stockHtml = `<div style="background:#d4edda; color:#155724; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
+            ✅ В наявності: ${availableStock} шт
+        </div>`;
+    }
+
     container.innerHTML = `
+        <!-- ГАЛЕРЕЯ -->
         <div class="book-gallery">
             <div class="main-image-container">
-                <img src="${images[0]}" alt="${book.title}" class="main-image" id="main-image" onclick="window.open(this.src, '_blank')">
+                <img src="${images[0] || 'https://via.placeholder.com/380x520?text=📚'}"
+                     alt="${book.title}"
+                     class="main-image"
+                     id="main-image"
+                     onclick="openImageModal(this.src)"
+                     title="Натисніть для збільшення">
                 ${images.length > 1 ? `
-                <div class="gallery-nav">
-                    <button onclick="changeImage(-1)">‹</button>
-                    <button onclick="changeImage(1)">›</button>
-                </div>
+                    <div class="gallery-nav">
+                        <button onclick="changeImage(-1)" title="Попереднє">‹</button>
+                        <button onclick="changeImage(1)"  title="Наступне">›</button>
+                    </div>
                 ` : ''}
             </div>
             ${images.length > 1 ? `
-            <div class="gallery-thumbnails">
-                ${images.map((img, index) => `
-                    <img src="${img}" class="thumbnail ${index === 0 ? 'active' : ''}" onclick="setImage(${index})">
-                `).join('')}
-            </div>
+                <div class="gallery-thumbnails">
+                    ${images.map((img, i) => `
+                        <img src="${img}"
+                             class="thumbnail ${i === 0 ? 'active' : ''}"
+                             onclick="setImage(${i})"
+                             alt="Фото ${i + 1}"
+                             onerror="this.style.display='none'">
+                    `).join('')}
+                </div>
             ` : ''}
         </div>
-        
+
+        <!-- ІНФОРМАЦІЯ -->
         <div class="book-detail-info">
             <h1 class="page-title">${book.title}</h1>
-            <p class="book-detail-author">
-                Автор: <span class="meta-value clickable" onclick="filterByAuthor('${book.author}')">${book.author}</span>
+
+            <p style="font-size:18px; color:var(--cinereous); margin-bottom:16px;">
+                ${book.author}
+                ${book.publisher ? `· <span style="font-size:15px;">${book.publisher}</span>` : ''}
             </p>
-            
+
             ${priceHtml}
-            
+            ${stockHtml}
+
+            <!-- РЕЙТИНГ -->
             <div class="rating-interactive">
                 <div class="current-rating">
-                    <div class="stars-display">${generateStarsDisplay(book.rating)}</div>
-                    <span class="rating-info">${book.rating.toFixed(1)} / 10 (${book.ratingCount || 0} оцінок)</span>
+                    <div class="stars-display">${generateStarsDisplay(book.rating || 0)}</div>
+                    <span class="rating-info">
+                        ${(book.rating || 0).toFixed(1)} / 10
+                        · ${book.ratingCount || 0} оцінок
+                    </span>
                 </div>
-                
-                <div class="user-rating">
-                    <div class="user-rating-label">Поставте свою оцінку:</div>
+
+                <div class="user-rating" style="margin-top:14px;">
+                    <div class="user-rating-label">Ваша оцінка:</div>
                     <div class="rating-stars" id="rating-stars">
                         ${generateRatingStars()}
                     </div>
                     <div class="selected-rating" id="selected-rating">
-                        ${userRating > 0 ? `Ваша оцінка: ${userRating} / 10` : 'Оберіть оцінку'}
+                        ${userRating > 0 ? `Ви оцінили: ${userRating}/10` : 'Натисніть на зірку'}
                     </div>
                 </div>
             </div>
-            
-            <div class="book-meta">
-                ${createMetaRow('Оригінальна назва', book.originalTitle || book.title)}
-                ${createMetaRow('Автор', book.author, true, `filterByAuthor('${book.author}')`)}
-                ${book.publisher ? createMetaRow('Видавництво', book.publisher, true, `filterByPublisher('${book.publisher}')`) : ''}
-                ${createMetaRow('Категорія', getCategoryName(book.category), true, `filterByCategory('${book.category}')`)}
-                ${book.categories && book.categories.length > 0 ? createMetaRow('Додаткові категорії', book.categories.map(c => `<span class="meta-value clickable" onclick="filterByCategory('${c}')">${getCategoryName(c)}</span>`).join(', ')) : ''}
-                ${createMetaRow('Мова', book.language || 'Українська')}
-                ${book.translator ? createMetaRow('Перекладач', book.translator) : ''}
-                ${createMetaRow('Обкладинка', book.cover || 'Тверда')}
-                ${createMetaRow('Кількість сторінок', book.pages || 'Н/Д')}
-                ${createMetaRow('Рік видання', book.year || '2024')}
-                ${book.size ? createMetaRow('Розмір (мм)', book.size) : ''}
-                ${book.weight ? createMetaRow('Вага', `${book.weight} г`) : ''}
-                ${book.isbn ? createMetaRow('ISBN', book.isbn) : ''}
-                ${book.barcode ? createMetaRow('Штрих-код', book.barcode) : ''}
-                ${book.illustrations ? createMetaRow('Ілюстрації', book.illustrations) : ''}
+
+            <!-- ХАРАКТЕРИСТИКИ -->
+            <div class="book-meta" style="margin:24px 0;">
+                ${metaRow('Оригінальна назва', book.originalTitle)}
+                ${metaRow('Автор', book.author, () => `catalog.html?author=${encodeURIComponent(book.author)}`)}
+                ${metaRow('Видавництво', book.publisher, book.publisher ? () => `catalog.html?publisher=${encodeURIComponent(book.publisher)}` : null)}
+                ${metaRow('Категорія', getCategoryIcon(book.category) + ' ' + getCategoryName(book.category), () => `catalog.html?category=${encodeURIComponent(book.category)}`)}
+                ${metaRow('Мова', book.language)}
+                ${metaRow('Перекладач', book.translator)}
+                ${metaRow('Обкладинка', book.cover)}
+                ${metaRow('Кількість сторінок', book.pages)}
+                ${metaRow('Рік видання', book.year)}
+                ${metaRow('Розмір (мм)', book.size)}
+                ${metaRow('Вага', book.weight ? `${book.weight} г` : null)}
+                ${metaRow('ISBN', book.isbn)}
+                ${metaRow('Штрих-код', book.barcode)}
+                ${metaRow('Ілюстрації', book.illustrations)}
             </div>
-            
-            <div style="margin-bottom: 30px;">
-                <h3 style="font-size: 26px; margin-bottom: 18px; color: var(--blood-red);">Опис</h3>
-                <p style="line-height: 1.9; font-size: 17px;">${book.description}</p>
+
+            <!-- ОПИС -->
+            <div style="margin-bottom:28px;">
+                <h3 style="font-size:22px; margin-bottom:12px; color:var(--blood-red);">Про книгу</h3>
+                <p style="line-height:1.9; font-size:16px; color:var(--black-bean);">${book.description || book.shortDescription || ''}</p>
             </div>
-            
-            <div class="book-actions" style="display: flex; gap: 15px;">
-                <button class="btn btn-primary" onclick="addToCart(${book.id})" style="flex: 2; padding: 16px; font-size: 18px;">Додати в кошик</button>
-                <button class="fav-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${book.id}, this)" style="flex: 1; font-size: 24px;">♥</button>
+
+            <!-- КНОПКИ ДІЙ -->
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                ${availableStock > 0 ? `
+                    <button class="btn btn-primary btn-large"
+                            onclick="addToCart(${book.id})"
+                            style="flex:2; min-width:160px;">
+                        🛒 В кошик
+                    </button>
+                ` : `
+                    <button class="btn btn-outline btn-large"
+                            onclick="notifyWhenAvailable(${book.id})"
+                            style="flex:2; min-width:160px;">
+                        🔔 Повідомити про наявність
+                    </button>
+                `}
+                <button class="fav-btn ${isFavorite ? 'active' : ''}"
+                        id="detail-fav-btn"
+                        onclick="toggleFavoriteDetail(${book.id})"
+                        style="flex:1; min-width:60px; font-size:22px; padding:14px;"
+                        title="${isFavorite ? 'Видалити з вподобань' : 'Додати до вподобань'}">
+                    ♥
+                </button>
+            </div>
+
+            <!-- ДІЛИТИСЬ -->
+            <div style="margin-top:20px; padding-top:20px; border-top:1px solid #f0e8d8;">
+                <button onclick="shareBook()" class="btn btn-outline btn-small">
+                    🔗 Поділитись
+                </button>
             </div>
         </div>
     `;
-    
+
     attachRatingListeners(bookId);
-    displaySimilarBooks(book.category, book.categories, bookId);
+    displaySimilarBooks(book);
 }
 
-function createMetaRow(label, value, clickable = false, onclick = '') {
-    if (!value || value === 'Н/Д') return '';
-    const valueClass = clickable ? 'meta-value clickable' : 'meta-value';
-    const clickAttr = onclick ? `onclick="${onclick}"` : '';
+// ===================================
+// РЯДОК ХАРАКТЕРИСТИКИ
+// ===================================
+function metaRow(label, value, linkFn = null) {
+    if (!value && value !== 0) return '';
+    const isClickable = typeof linkFn === 'function';
+    const href = isClickable ? linkFn() : null;
+    const valueHtml = isClickable
+        ? `<a href="${href}" style="color:var(--blood-red); text-decoration:underline;">${value}</a>`
+        : `<span>${value}</span>`;
+
     return `
         <div class="meta-row">
             <span class="meta-label">${label}:</span>
-            <span class="${valueClass}" ${clickAttr}>${value}</span>
+            ${valueHtml}
         </div>
     `;
 }
 
+// ===================================
+// ЗІРКИ ДЛЯ ВІДОБРАЖЕННЯ РЕЙТИНГУ
+// ===================================
 function generateStarsDisplay(rating) {
-    const normalizedRating = rating / 2;
-    const fullStars = Math.floor(normalizedRating);
-    const hasHalfStar = (normalizedRating % 1) >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
-    let stars = '★'.repeat(fullStars);
-    if (hasHalfStar) stars += '⯨';
-    stars += '☆'.repeat(emptyStars);
-    
-    return stars;
+    const normalized = rating / 2; // з 10 → 5
+    const full  = Math.floor(normalized);
+    const half  = (normalized % 1) >= 0.5;
+    const empty = 5 - full - (half ? 1 : 0);
+
+    return '★'.repeat(full) + (half ? '⯨' : '') + '☆'.repeat(Math.max(0, empty));
 }
 
+// ===================================
+// ЗІРКИ ДЛЯ ВИБОРУ ОЦІНКИ (1-10)
+// ===================================
 function generateRatingStars() {
-    let html = '';
-    for (let i = 1; i <= 10; i++) {
-        const filled = i <= userRating ? 'filled' : '';
-        html += `<span class="star ${filled}" data-rating="${i}">★</span>`;
-    }
-    return html;
+    return Array.from({ length: 10 }, (_, i) => {
+        const n = i + 1;
+        const filled = n <= userRating ? 'filled' : '';
+        return `<span class="star ${filled}" data-rating="${n}" title="${n}/10">★</span>`;
+    }).join('');
 }
 
+// ===================================
+// СЛУХАЧІ РЕЙТИНГУ
+// ===================================
 function attachRatingListeners(bookId) {
-    const stars = document.querySelectorAll('.star');
-    const selectedRatingEl = document.getElementById('selected-rating');
-    
-    stars.forEach((star, index) => {
+    const stars         = document.querySelectorAll('#rating-stars .star');
+    const selectedLabel = document.getElementById('selected-rating');
+    if (!stars.length) return;
+
+    // Hover
+    stars.forEach((star, i) => {
+        star.addEventListener('mouseenter', () => {
+            stars.forEach((s, j) => s.classList.toggle('filled', j <= i));
+        });
+
         star.addEventListener('click', () => {
-            const rating = index + 1;
+            const rating = i + 1;
             setUserRating(bookId, rating);
             userRating = rating;
-            
-            stars.forEach((s, i) => {
-                if (i < rating) {
-                    s.classList.add('filled');
-                } else {
-                    s.classList.remove('filled');
-                }
-            });
-            
-            selectedRatingEl.textContent = `Ваша оцінка: ${rating} / 10`;
-            showNotification(`Ви поставили оцінку ${rating}/10`);
-        });
-        
-        star.addEventListener('mouseenter', () => {
-            const rating = index + 1;
-            stars.forEach((s, i) => {
-                if (i < rating) {
-                    s.classList.add('filled');
-                } else {
-                    s.classList.remove('filled');
-                }
-            });
+            stars.forEach((s, j) => s.classList.toggle('filled', j < rating));
+            if (selectedLabel) selectedLabel.textContent = `Ви оцінили: ${rating}/10 ✓`;
+            showNotification(`Дякуємо за оцінку ${rating}/10! ⭐`);
         });
     });
-    
-    const ratingStarsContainer = document.getElementById('rating-stars');
-    ratingStarsContainer.addEventListener('mouseleave', () => {
-        stars.forEach((s, i) => {
-            if (i < userRating) {
-                s.classList.add('filled');
-            } else {
-                s.classList.remove('filled');
-            }
-        });
+
+    // Повернення після hover
+    document.getElementById('rating-stars')?.addEventListener('mouseleave', () => {
+        stars.forEach((s, j) => s.classList.toggle('filled', j < userRating));
     });
 }
 
+// ===================================
+// ЗБЕРЕЖЕННЯ ОЦІНКИ
+// ===================================
 function setUserRating(bookId, rating) {
     userRatings[bookId] = rating;
     localStorage.setItem('userRatings', JSON.stringify(userRatings));
-    
+
+    // Оновлюємо середній рейтинг книги
     const book = books.find(b => b.id === bookId);
     if (book) {
-        const previousCount = book.ratingCount || 0;
-        const previousTotal = (book.rating || 0) * previousCount;
-        book.ratingCount = previousCount + 1;
-        book.rating = (previousTotal + rating) / book.ratingCount;
-        
+        const prevCount = book.ratingCount || 0;
+        const prevTotal = (book.rating || 0) * prevCount;
+        book.ratingCount = prevCount + 1;
+        book.rating      = parseFloat(((prevTotal + rating) / book.ratingCount).toFixed(2));
         localStorage.setItem('books', JSON.stringify(books));
     }
 }
 
+// ===================================
+// ГАЛЕРЕЯ
+// ===================================
+function getBookImages(book) {
+    if (Array.isArray(book.images) && book.images.length > 0) {
+        return book.images.filter(Boolean);
+    }
+    if (typeof book.images === 'string' && book.images.trim()) {
+        return book.images.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (book.image_url) return [book.image_url];
+    if (book.image)     return [book.image];
+    return [];
+}
+
 function changeImage(direction) {
-    const images = currentBook.images || [currentBook.image];
-    currentImageIndex += direction;
-    
-    if (currentImageIndex < 0) currentImageIndex = images.length - 1;
-    if (currentImageIndex >= images.length) currentImageIndex = 0;
-    
+    const images = getBookImages(currentBook);
+    currentImageIndex = (currentImageIndex + direction + images.length) % images.length;
     setImage(currentImageIndex);
 }
 
 function setImage(index) {
-    const images = currentBook.images || [currentBook.image];
+    const images = getBookImages(currentBook);
     currentImageIndex = index;
-    
-    document.getElementById('main-image').src = images[index];
-    
-    document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
-        thumb.classList.toggle('active', i === index);
+
+    const mainImg = document.getElementById('main-image');
+    if (mainImg) {
+        mainImg.style.opacity = '0';
+        setTimeout(() => {
+            mainImg.src = images[index];
+            mainImg.style.opacity = '1';
+        }, 150);
+    }
+
+    document.querySelectorAll('.thumbnail').forEach((t, i) => {
+        t.classList.toggle('active', i === index);
     });
 }
 
-function filterByAuthor(author) {
-    window.location.href = `catalog.html?author=${encodeURIComponent(author)}`;
+// ===================================
+// МОДАЛЬНЕ ВІКНО ФОТО
+// ===================================
+function openImageModal(src) {
+    let modal = document.getElementById('image-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'image-modal';
+        modal.className = 'image-modal';
+        modal.innerHTML = `
+            <span class="modal-close" onclick="closeImageModal()">×</span>
+            <img class="modal-image" id="modal-img" src="" alt="Фото книги">
+        `;
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeImageModal();
+        });
+        document.body.appendChild(modal);
+    }
+
+    document.getElementById('modal-img').src = src;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
 }
 
-function filterByCategory(category) {
-    window.location.href = `catalog.html?category=${encodeURIComponent(category)}`;
+function closeImageModal() {
+    const modal = document.getElementById('image-modal');
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
 }
 
-function filterByPublisher(publisher) {
-    window.location.href = `catalog.html?publisher=${encodeURIComponent(publisher)}`;
+// Закриття по Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeImageModal();
+});
+
+// ===================================
+// ВПОДОБАННЯ НА СТОРІНЦІ КНИГИ
+// ===================================
+function toggleFavoriteDetail(bookId) {
+    const btn = document.getElementById('detail-fav-btn');
+    toggleFavorite(bookId, btn);
+
+    // Оновлюємо title кнопки
+    const nowFav = isInFavorites(bookId);
+    if (btn) btn.title = nowFav ? 'Видалити з вподобань' : 'Додати до вподобань';
 }
 
-async function displaySimilarBooks(mainCategory, additionalCategories, currentBookId) {
+// ===================================
+// ПОДІЛИТИСЬ
+// ===================================
+function shareBook() {
+    if (navigator.share) {
+        navigator.share({
+            title: currentBook?.title || 'Книга',
+            url:   window.location.href,
+        }).catch(() => {});
+    } else {
+        navigator.clipboard?.writeText(window.location.href).then(() => {
+            showNotification('Посилання скопійовано! 🔗');
+        });
+    }
+}
+
+// ===================================
+// СХОЖІ КНИГИ
+// ===================================
+function displaySimilarBooks(book) {
     const container = document.getElementById('similar-books');
     if (!container) return;
-    
-    const allCategories = [mainCategory, ...(additionalCategories || [])];
-    
-    const similarBooks = books
-        .filter(b => b.id !== currentBookId && allCategories.some(cat => 
-            b.category === cat || (b.categories && b.categories.includes(cat))
-        ))
-        .slice(0, 6);
-    
-    if (similarBooks.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--cinereous);">Схожих книг не знайдено</p>';
+
+    const cats = [book.category, ...(Array.isArray(book.categories) ? book.categories : [])];
+
+    const similar = books
+        .filter(b => b.id !== book.id &&
+            cats.some(cat => b.category === cat ||
+                (Array.isArray(b.categories) && b.categories.includes(cat))))
+        .slice(0, 4);
+
+    if (similar.length === 0) {
+        container.innerHTML = '<p style="color:var(--cinereous); text-align:center;">Схожих книг не знайдено</p>';
         return;
     }
-    
-    container.innerHTML = similarBooks.map(book => createBookCard(book)).join('');
+
+    container.innerHTML = similar.map(b => createBookCard(b)).join('');
     attachBookCardListeners();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    displayBookDetails();
-});

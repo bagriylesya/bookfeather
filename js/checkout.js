@@ -1,300 +1,350 @@
-// ====== CHECKOUT.JS - ОФОРМЛЕННЯ ЗАМОВЛЕННЯ ======
-// Цей файл відповідає за повноцінне оформлення замовлення з збереженням в БД/localStorage
+// ===================================
+// BOOKFEATHER - CHECKOUT.JS
+// Оформлення замовлення: форма, доставка, збереження
+// ===================================
 
-// ====== ІНІЦІАЛІЗАЦІЯ ======
+// ===================================
+// ІНІЦІАЛІЗАЦІЯ
+// ===================================
 document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('checkout-form')) return;
+
     loadOrderSummary();
     setupDeliveryListeners();
     setupFormSubmit();
     fillUserData();
+    setupAddressToggle();
 });
 
-// ====== ЗАВАНТАЖЕННЯ ПІДСУМКУ ЗАМОВЛЕННЯ ======
+// ===================================
+// ПІДСУМОК ЗАМОВЛЕННЯ (права колонка)
+// ===================================
 function loadOrderSummary() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const itemsContainer = document.getElementById('order-items');
-    const itemsTotal = document.getElementById('items-total');
-    const deliveryCost = document.getElementById('delivery-cost');
-    const finalTotal = document.getElementById('final-total');
-    
-    if (cart.length === 0) {
+    const cartData = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cartData.length === 0) {
         window.location.href = 'cart.html';
         return;
     }
-    
-    // Відображення товарів
-    itemsContainer.innerHTML = cart.map(item => createOrderItem(item)).join('');
-    
-    // Підрахунок сум
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const delivery = calculateDeliveryCost(subtotal);
-    const total = subtotal + delivery;
-    
-    itemsTotal.textContent = `${subtotal} грн`;
-    deliveryCost.textContent = `${delivery} грн`;
-    finalTotal.textContent = `${total} грн`;
+
+    const container  = document.getElementById('order-items');
+    const itemsTotal = document.getElementById('items-total');
+    const deliveryCostEl = document.getElementById('delivery-cost');
+    const finalTotalEl   = document.getElementById('final-total');
+
+    if (container) {
+        container.innerHTML = cartData.map(item => createOrderItem(item)).join('');
+    }
+
+    recalcTotals();
 }
 
-// ====== СТВОРЕННЯ ЕЛЕМЕНТУ ТОВАРУ ======
+// ===================================
+// КАРТКА ТОВАРУ В ПІДСУМКУ
+// ===================================
 function createOrderItem(item) {
+    const finalPrice = item.discount > 0
+        ? (item.price * (1 - item.discount / 100))
+        : item.price;
+    const qty   = item.quantity || 1;
+    const total = (finalPrice * qty).toFixed(0);
+
+    const imgSrc = item.image || item.image_url || 'https://via.placeholder.com/50x68?text=📚';
+
     return `
-        <div class="summary-item">
-            <img src="${item.image}" alt="${item.title}">
-            <div style="flex: 1;">
-                <div style="font-weight: 600; margin-bottom: 5px;">${item.title}</div>
-                <div style="font-size: 14px; color: var(--cinereous);">${item.author}</div>
-                <div style="margin-top: 5px;">
-                    <span style="font-size: 14px; color: var(--cinereous);">Кількість:</span>
-                    <span style="font-weight: 600;">${item.quantity} шт</span>
-                </div>
+        <div style="display:flex; gap:12px; align-items:center; padding:12px 0; border-bottom:1px solid #f0e8d8;">
+            <img src="${imgSrc}" alt="${item.title}"
+                 style="width:50px; height:68px; object-fit:cover; border-radius:6px; flex-shrink:0;"
+                 onerror="this.src='https://via.placeholder.com/50x68?text=📚'">
+            <div style="flex:1; min-width:0;">
+                <div style="font-weight:600; font-size:14px; margin-bottom:3px;
+                            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+                <div style="font-size:13px; color:var(--cinereous);">${item.author}</div>
+                <div style="font-size:13px; color:var(--cinereous); margin-top:2px;">${qty} шт × ${finalPrice.toFixed(0)} грн</div>
             </div>
-            <div style="text-align: right;">
-                <div style="font-weight: 700; color: var(--blood-red); font-size: 18px;">
-                    ${item.price * item.quantity} грн
-                </div>
+            <div style="font-weight:700; color:var(--blood-red); font-size:16px; flex-shrink:0;">
+                ${total} грн
             </div>
         </div>
     `;
 }
 
-// ====== РОЗРАХУНОК ВАРТОСТІ ДОСТАВКИ ======
-function calculateDeliveryCost(subtotal) {
-    const deliveryMethod = document.querySelector('input[name="delivery"]:checked')?.value || 'novaposhta-warehouse';
-    
-    const costs = {
-        'novaposhta-warehouse': subtotal >= 500 ? 0 : 50,
-        'novaposhta-courier': subtotal >= 800 ? 0 : 80,
-        'ukrposhta': 35
-    };
-    
-    return costs[deliveryMethod] || 50;
-}
+// ===================================
+// ПЕРЕРАХУНОК СУММ
+// ===================================
+function recalcTotals() {
+    const cartData = JSON.parse(localStorage.getItem('cart')) || [];
 
-// ====== ОНОВЛЕННЯ ВАРТОСТІ ДОСТАВКИ ======
-function updateDeliveryCost() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const delivery = calculateDeliveryCost(subtotal);
-    const total = subtotal + delivery;
-    
-    document.getElementById('delivery-cost').textContent = `${delivery} грн`;
-    document.getElementById('final-total').textContent = `${total} грн`;
-    
-    // Оновлення активного стану radio
-    document.querySelectorAll('.radio-option').forEach(option => {
-        const radio = option.querySelector('input[type="radio"]');
-        if (radio.checked) {
-            option.classList.add('selected');
-        } else {
-            option.classList.remove('selected');
-        }
+    let subtotal = 0;
+    cartData.forEach(item => {
+        const price = item.discount > 0
+            ? (item.price * (1 - item.discount / 100))
+            : item.price;
+        subtotal += price * (item.quantity || 1);
     });
+
+    const delivery = calcDeliveryCost(subtotal);
+    const total    = subtotal + delivery;
+
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('items-total',   `${subtotal.toFixed(0)} грн`);
+    set('delivery-cost', delivery === 0 ? 'Безкоштовно' : `${delivery} грн`);
+    set('final-total',   `${total.toFixed(0)} грн`);
+
+    // Підказка
+    const hint = document.getElementById('free-delivery-hint');
+    if (hint) {
+        if (delivery > 0 && subtotal < 500) {
+            hint.innerHTML = `<small style="color:var(--cinereous);">Ще <strong>${(500 - subtotal).toFixed(0)} грн</strong> — і доставка безкоштовна</small>`;
+        } else if (delivery === 0) {
+            hint.innerHTML = `<small style="color:#2d8a4e;">✅ У вас безкоштовна доставка!</small>`;
+        }
+    }
 }
 
-// ====== НАЛАШТУВАННЯ СЛУХАЧІВ ДОСТАВКИ ======
+// ===================================
+// ВАРТІСТЬ ДОСТАВКИ
+// ===================================
+function calcDeliveryCost(subtotal) {
+    const method = document.querySelector('input[name="delivery"]:checked')?.value || 'np-warehouse';
+
+    const thresholds = {
+        'np-warehouse': { free: 500,  price: 50 },
+        'np-courier':   { free: 800,  price: 80 },
+        'ukrposhta':    { free: 9999, price: 35 },
+    };
+
+    const cfg = thresholds[method] || thresholds['np-warehouse'];
+    return subtotal >= cfg.free ? 0 : cfg.price;
+}
+
+// ===================================
+// СЛУХАЧІ ДОСТАВКИ
+// ===================================
 function setupDeliveryListeners() {
     document.querySelectorAll('input[name="delivery"]').forEach(radio => {
-        radio.addEventListener('change', updateDeliveryCost);
+        radio.addEventListener('change', () => {
+            updateDeliveryCost();
+            updateSelectedRadio();
+        });
     });
-    
-    // Клік по всьому radio-option
+
     document.querySelectorAll('.radio-option').forEach(option => {
         option.addEventListener('click', () => {
             const radio = option.querySelector('input[type="radio"]');
-            if (radio) {
-                radio.checked = true;
-                updateDeliveryCost();
+            if (radio) { radio.checked = true; updateDeliveryCost(); updateSelectedRadio(); }
+        });
+    });
+}
+
+function updateSelectedRadio() {
+    document.querySelectorAll('.radio-option').forEach(opt => {
+        const radio = opt.querySelector('input[type="radio"]');
+        opt.classList.toggle('selected', radio?.checked);
+    });
+}
+
+function updateDeliveryCost() {
+    recalcTotals();
+}
+
+// ===================================
+// ПЕРЕКЛЮЧЕННЯ ВИДИМОСТІ АДРЕСИ
+// ===================================
+function setupAddressToggle() {
+    // Якщо вибрали "кур'єр" — показуємо поле вулиці
+    document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const courierFields = document.getElementById('courier-fields');
+            if (courierFields) {
+                courierFields.style.display = radio.value === 'np-courier' ? 'block' : 'none';
             }
         });
     });
 }
 
-// ====== ЗАПОВНЕННЯ ДАНИХ КОРИСТУВАЧА ======
+// ===================================
+// ЗАПОВНЕННЯ ДАНИХ КОРИСТУВАЧА
+// ===================================
 function fillUserData() {
-    const currentUser = getCurrentUser();
-    if (!currentUser) return;
-    
+    const user = getCurrentUser();
+    if (!user) return;
+
     const form = document.getElementById('checkout-form');
-    if (form) {
-        form.elements['name'].value = `${currentUser.name} ${currentUser.surname}`;
-        form.elements['phone'].value = currentUser.phone || '';
-        form.elements['email'].value = currentUser.email || '';
-        
-        // Якщо є збережена адреса
-        if (currentUser.addresses && currentUser.addresses.length > 0) {
-            const lastAddress = currentUser.addresses[currentUser.addresses.length - 1];
-            form.elements['city'].value = lastAddress.city || '';
-            form.elements['warehouse'].value = lastAddress.warehouse || '';
-        }
+    if (!form) return;
+
+    const set = (name, val) => {
+        const el = form.elements[name];
+        if (el && val) el.value = val;
+    };
+
+    set('name',  `${user.name || ''} ${user.surname || ''}`.trim());
+    set('phone', user.phone);
+    set('email', user.email);
+
+    // Остання збережена адреса
+    if (user.addresses?.length > 0) {
+        const last = user.addresses[user.addresses.length - 1];
+        set('city',      last.city);
+        set('warehouse', last.warehouse);
     }
 }
 
-// ====== ОТРИМАННЯ ПОТОЧНОГО КОРИСТУВАЧА ======
-function getCurrentUser() {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || sessionStorage.getItem('currentUser') || 'null');
-    return currentUser;
-}
-
-// ====== НАЛАШТУВАННЯ ВІДПРАВКИ ФОРМИ ======
+// ===================================
+// ВІДПРАВКА ФОРМИ
+// ===================================
 function setupFormSubmit() {
     const form = document.getElementById('checkout-form');
     if (!form) return;
-    
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        const formData = new FormData(form);
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const currentUser = getCurrentUser();
-        
-        // Створення об'єкту замовлення
-        const order = {
-            id: Date.now(),
-            orderNumber: `BF-${Date.now().toString().slice(-8)}`,
-            date: new Date().toISOString(),
-            
-            // Контактні дані
-            customer: {
-                name: formData.get('name'),
-                phone: formData.get('phone'),
-                email: formData.get('email')
-            },
-            
-            // Доставка
-            delivery: {
-                method: formData.get('delivery'),
-                city: formData.get('city'),
-                warehouse: formData.get('warehouse')
-            },
-            
-            // Оплата
-            payment: formData.get('payment'),
-            
-            // Коментар
-            comment: formData.get('comment') || '',
-            
-            // Товари
-            items: cart.map(item => ({
-                id: item.id,
-                title: item.title,
-                author: item.author,
-                price: item.price,
-                quantity: item.quantity,
-                image: item.image
-            })),
-            
-            // Суми
-            subtotal: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-            deliveryCost: calculateDeliveryCost(cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)),
-            total: 0, // буде розраховано нижче
-            
-            // Статус
-            status: 'processing', // processing, confirmed, shipped, delivered, cancelled
-            
-            // ID користувача (якщо залогінений)
-            userId: currentUser ? currentUser.id : null
-        };
-        
-        order.total = order.subtotal + order.deliveryCost;
-        
+
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = '⏳ Оформлюємо...'; }
+
         try {
-            // Збереження замовлення
+            const order = buildOrder(form);
             await saveOrder(order);
-            
-            // Оновлення складу
-            await updateStock(cart);
-            
-            // Очищення кошика
+            await updateStock(order.items);
+
+            if (order.userId) addOrderToUser(order.userId, order);
+
+            // Очищаємо кошик
             localStorage.removeItem('cart');
+            cart = [];
             updateCartCount();
-            
-            // Додавання до профілю користувача
-            if (currentUser) {
-                addOrderToUser(currentUser.id, order);
-            }
-            
-            // Показ повідомлення
-            showNotification(`Замовлення #${order.orderNumber} успішно оформлено!`);
-            
-            // Перенаправлення
+
+            showNotification(`✅ Замовлення #${order.orderNumber} оформлено!`);
+
             setTimeout(() => {
-                window.location.href = `order-success.html?id=${order.id}`;
-            }, 1500);
-            
-        } catch (error) {
-            console.error('Помилка оформлення замовлення:', error);
-            showNotification('Помилка оформлення замовлення. Спробуйте ще раз.', 'error');
+                window.location.href = `order-success.html?id=${order.id}&num=${order.orderNumber}`;
+            }, 1200);
+
+        } catch (err) {
+            console.error(err);
+            showNotification('Помилка оформлення. Спробуйте ще раз.', 'error');
+            if (btn) { btn.disabled = false; btn.textContent = 'Оформити замовлення'; }
         }
     });
 }
 
-// ====== ЗБЕРЕЖЕННЯ ЗАМОВЛЕННЯ ======
+// ===================================
+// ФОРМУВАННЯ ОБ'ЄКТУ ЗАМОВЛЕННЯ
+// ===================================
+function buildOrder(form) {
+    const fd      = new FormData(form);
+    const cartData = JSON.parse(localStorage.getItem('cart')) || [];
+    const user    = getCurrentUser();
+
+    let subtotal = 0;
+    cartData.forEach(item => {
+        const p = item.discount > 0 ? item.price * (1 - item.discount / 100) : item.price;
+        subtotal += p * (item.quantity || 1);
+    });
+
+    const deliveryCost = calcDeliveryCost(subtotal);
+
+    return {
+        id:          Date.now(),
+        orderNumber: `BF-${Date.now().toString().slice(-8)}`,
+        date:        new Date().toISOString(),
+
+        customer: {
+            name:  fd.get('name'),
+            phone: fd.get('phone'),
+            email: fd.get('email'),
+        },
+
+        delivery: {
+            method:    fd.get('delivery'),
+            city:      fd.get('city'),
+            warehouse: fd.get('warehouse'),
+            address:   fd.get('courier-address') || '',
+        },
+
+        payment: fd.get('payment'),
+        comment: fd.get('comment') || '',
+
+        items: cartData.map(item => ({
+            id:       item.id,
+            title:    item.title,
+            author:   item.author,
+            price:    item.price,
+            discount: item.discount || 0,
+            quantity: item.quantity || 1,
+            image:    item.image || item.image_url || '',
+        })),
+
+        subtotal,
+        deliveryCost,
+        total: subtotal + deliveryCost,
+
+        // processing → confirmed → shipped → delivered → cancelled
+        status: 'processing',
+        trackingNumber: null,
+
+        userId: user ? user.id : null,
+    };
+}
+
+// ===================================
+// ЗБЕРЕЖЕННЯ ЗАМОВЛЕННЯ
+// ===================================
 async function saveOrder(order) {
-    // Збереження в localStorage
-    let allOrders = JSON.parse(localStorage.getItem('allOrders')) || [];
-    allOrders.push(order);
-    localStorage.setItem('allOrders', JSON.stringify(allOrders));
-    
-    // TODO: Відправка на сервер (коли буде PHP API)
-    // await fetch('/api/orders', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(order)
-    // });
-    
+    const all = JSON.parse(localStorage.getItem('allOrders') || '[]');
+    all.push(order);
+    localStorage.setItem('allOrders', JSON.stringify(all));
+
+    // Спроба відправити на сервер
+    try {
+        await fetch('php/api.php?action=orders', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(order),
+        });
+    } catch { /* сервер недоступний — не страшно */ }
+
     return order;
 }
 
-// ====== ОНОВЛЕННЯ СКЛАДУ ======
-async function updateStock(cartItems) {
+// ===================================
+// ОНОВЛЕННЯ СКЛАДУ
+// ===================================
+async function updateStock(items) {
     await loadBooks();
-    
-    cartItems.forEach(cartItem => {
-        const book = books.find(b => b.id === cartItem.id);
-        if (book) {
-            // Зменшуємо кількість на складі
-            book.stock = (book.stock || 0) - cartItem.quantity;
-            
-            // Зменшуємо зарезервовану кількість
-            book.reserved = (book.reserved || 0) - cartItem.quantity;
-            
-            // Не допускаємо негативних значень
-            if (book.stock < 0) book.stock = 0;
-            if (book.reserved < 0) book.reserved = 0;
-        }
+
+    items.forEach(orderItem => {
+        const book = books.find(b => b.id === orderItem.id);
+        if (!book) return;
+
+        book.stock    = Math.max(0, (book.stock    || 0) - orderItem.quantity);
+        book.reserved = Math.max(0, (book.reserved || 0) - orderItem.quantity);
     });
-    
-    // Збереження оновлених даних
+
     localStorage.setItem('books', JSON.stringify(books));
-    
-    // TODO: Оновлення на сервері
-    // await fetch('/api/books/update-stock', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(cartItems)
-    // });
+    clearSearchCache?.();
 }
 
-// ====== ДОДАВАННЯ ЗАМОВЛЕННЯ ДО КОРИСТУВАЧА ======
+// ===================================
+// ДОДАВАННЯ ЗАМОВЛЕННЯ ДО ПРОФІЛЮ
+// ===================================
 function addOrderToUser(userId, order) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const userIndex = users.findIndex(u => u.id === userId);
-    
-    if (userIndex !== -1) {
-        if (!users[userIndex].orders) {
-            users[userIndex].orders = [];
-        }
-        users[userIndex].orders.push(order);
-        
-        // Збереження
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        // Оновлення currentUser
-        const storageType = localStorage.getItem('currentUser') ? localStorage : sessionStorage;
-        storageType.setItem('currentUser', JSON.stringify(users[userIndex]));
-    }
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const idx   = users.findIndex(u => u.id === userId);
+    if (idx === -1) return;
+
+    if (!users[idx].orders) users[idx].orders = [];
+    users[idx].orders.unshift(order); // нові зверху
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Оновлюємо currentUser
+    const storage = localStorage.getItem('currentUser') ? localStorage : sessionStorage;
+    storage.setItem('currentUser', JSON.stringify(users[idx]));
 }
 
-// ====== ЕКСПОРТ ФУНКЦІЙ ======
+// ===================================
+// ЕКСПОРТ
+// ===================================
 window.updateDeliveryCost = updateDeliveryCost;
-window.loadOrderSummary = loadOrderSummary;
+window.loadOrderSummary   = loadOrderSummary;

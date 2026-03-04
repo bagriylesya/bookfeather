@@ -181,6 +181,7 @@
                 <div class="admin-tabs">
                     <button class="tab-btn active" data-tab="add-book">Додати книгу</button>
                     <button class="tab-btn" data-tab="manage-books">Керування книгами</button>
+                    <button class="tab-btn" data-tab="manage-categories">Жанри та категорії</button>
                 </div>
 
                 <div class="tab-content active" id="add-book">
@@ -211,17 +212,12 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Категорія*:</label>
-                                <select name="category" required>
-                                    <option value="">Оберіть категорію</option>
-                                    <option value="fiction">Художня література</option>
-                                    <option value="detective">Детективи</option>
-                                    <option value="fantasy">Фентезі</option>
-                                    <option value="psychology">Психологія</option>
-                                    <option value="business">Бізнес</option>
-                                    <option value="science">Наука</option>
-                                    <option value="biography">Біографії</option>
-                                    <option value="history">Історія</option>
-                                </select>
+                                <input type="text" name="category" required
+                                    placeholder="Оберіть або введіть свою"
+                                    list="category-suggestions"
+                                    autocomplete="off">
+                                <datalist id="category-suggestions"></datalist>
+                                <small style="color:var(--cinereous);">Оберіть з списку або введіть нову</small>
                             </div>
                             <div class="form-group">
                                 <label>Мова:</label>
@@ -308,8 +304,26 @@
                         </div>
 
                         <div class="form-group">
-                            <label>URL обкладинки*:</label>
-                            <input type="url" name="image" placeholder="https://example.com/image.jpg" required>
+                            <label>URL обкладинки (головне фото)*:</label>
+                            <input type="url" name="image" placeholder="https://example.com/cover.jpg" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Додаткові фото (через кому, необов'язково):</label>
+                            <textarea name="images" rows="2" placeholder="https://example.com/photo2.jpg, https://example.com/photo3.jpg"></textarea>
+                            <small style="color:var(--cinereous);">Перше фото буде головним. Додаткові — для галереї на сторінці книги.</small>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Кількість на складі*:</label>
+                                <input type="number" name="stock" min="0" value="0" required>
+                                <small style="color:var(--cinereous);">0 = немає в наявності</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Знижка (%):</label>
+                                <input type="number" name="discount" min="0" max="100" value="0">
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -346,11 +360,154 @@
                     <h2 style="font-size: 32px; margin-bottom: 30px;">Керування книгами</h2>
                     <div id="admin-books-list"></div>
                 </div>
+
+                <!-- ТАБ: КАТЕГОРІЇ -->
+                <div class="tab-content" id="manage-categories">
+                    <h2 style="font-size: 32px; margin-bottom: 10px;">Жанри та категорії</h2>
+                    <p style="color:var(--cinereous); margin-bottom:30px;">
+                        Вбудованих жанрів: 49. Тут можна додати власні або видалити додані раніше.
+                    </p>
+
+                    <!-- Додати новий жанр -->
+                    <div style="background:#f9f3e3; padding:24px; border-radius:12px; margin-bottom:30px;">
+                        <h3 style="font-size:20px; margin-bottom:16px;">➕ Додати новий жанр</h3>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+                            <div style="flex:1; min-width:200px;">
+                                <label style="display:block; margin-bottom:6px; font-weight:600;">Назва жанру*</label>
+                                <input type="text" id="new-category-name" placeholder="Наприклад: Графічний роман"
+                                    style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-family:var(--font-body); font-size:15px;">
+                            </div>
+                            <div style="width:100px;">
+                                <label style="display:block; margin-bottom:6px; font-weight:600;">Іконка</label>
+                                <input type="text" id="new-category-icon" placeholder="📚" maxlength="4"
+                                    style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-family:var(--font-body); font-size:22px; text-align:center;">
+                            </div>
+                            <button class="btn btn-primary" onclick="adminAddCategory()" style="padding:12px 24px;">
+                                Додати
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Власні категорії -->
+                    <div id="custom-categories-list" style="margin-bottom:40px;"></div>
+
+                    <!-- Всі вбудовані жанри (для довідки) -->
+                    <div>
+                        <h3 style="font-size:20px; margin-bottom:16px; color:var(--cinereous);">
+                            📋 Вбудовані жанри (49 штук)
+                        </h3>
+                        <div id="default-categories-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <script src="js/main.js"></script>
     <script src="js/admin.js"></script>
+    <script>
+    // ===== ТАБИ =====
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(btn.dataset.tab).classList.add('active');
+
+            if (btn.dataset.tab === 'manage-categories') renderCategoriesTab();
+        });
+    });
+
+    // ===== ВХІД В АДМІНКУ =====
+    const ADMIN_PASSWORD = 'admin123'; // змініть на свій пароль
+
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pass = document.getElementById('admin-password').value;
+        if (pass === ADMIN_PASSWORD) {
+            document.getElementById('admin-login').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            loadBooks().then(() => {
+                loadAdminBooks();
+                loadCategoryOptions();
+            });
+        } else {
+            showNotification('Невірний пароль!', 'error');
+        }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        document.getElementById('admin-panel').style.display = 'none';
+        document.getElementById('admin-login').style.display = 'block';
+    });
+
+    // ===== КАТЕГОРІЇ: datalist у формі =====
+    function loadCategoryOptions() {
+        const datalist = document.getElementById('category-suggestions');
+        if (!datalist) return;
+        const cats = getAllCategories();
+        datalist.innerHTML = cats.map(c => `<option value="${c.name}">${c.icon} ${c.name}</option>`).join('');
+    }
+
+    // ===== КАТЕГОРІЇ: таб =====
+    function renderCategoriesTab() {
+        // Кастомні
+        const customList = document.getElementById('custom-categories-list');
+        const custom = JSON.parse(localStorage.getItem('customCategories') || '[]');
+
+        if (custom.length === 0) {
+            customList.innerHTML = '<p style="color:var(--cinereous); margin-bottom:20px;">Власних жанрів ще немає. Додайте вище.</p>';
+        } else {
+            customList.innerHTML = `
+                <h3 style="font-size:20px; margin-bottom:14px;">✏️ Ваші додані жанри</h3>
+                <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                    ${custom.map(c => `
+                        <div style="display:flex; align-items:center; gap:8px; background:white; padding:10px 16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                            <span style="font-size:20px;">${c.icon}</span>
+                            <span style="font-weight:600;">${c.name}</span>
+                            <button onclick="adminRemoveCategory('${c.id}')"
+                                style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:18px; line-height:1;" title="Видалити">✕</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Вбудовані
+        const grid = document.getElementById('default-categories-grid');
+        grid.innerHTML = DEFAULT_CATEGORIES.map(c => `
+            <div style="background:#f9f3e3; padding:10px 14px; border-radius:8px; font-size:14px; display:flex; align-items:center; gap:8px;">
+                <span style="font-size:18px;">${c.icon}</span>
+                <span>${c.name}</span>
+            </div>
+        `).join('');
+    }
+
+    function adminAddCategory() {
+        const name = document.getElementById('new-category-name').value.trim();
+        const icon = document.getElementById('new-category-icon').value.trim() || '📚';
+
+        if (!name) { showNotification('Введіть назву жанру', 'error'); return; }
+
+        const added = addCustomCategory(name, icon);
+        if (added) {
+            showNotification(`Жанр "${name}" додано!`);
+            document.getElementById('new-category-name').value = '';
+            document.getElementById('new-category-icon').value = '';
+            renderCategoriesTab();
+            loadCategoryOptions();
+        } else {
+            showNotification('Такий жанр вже існує', 'error');
+        }
+    }
+
+    function adminRemoveCategory(id) {
+        if (!confirm(`Видалити жанр "${id}"?`)) return;
+        removeCustomCategory(id);
+        showNotification('Жанр видалено');
+        renderCategoriesTab();
+        loadCategoryOptions();
+    }
+    </script>
 </body>
 </html>

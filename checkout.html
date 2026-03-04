@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформлення замовлення - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 28px;
+            margin-top: 28px;
+        }
+
+        /* СЕКЦІЇ ФОРМИ */
+        .checkout-section {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(49,14,16,0.07);
+        }
+
+        .checkout-section h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-num {
+            background: var(--blood-red);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ПОЛЯ ФОРМИ */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--black-bean);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0d8cc;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--black-bean);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #fdfaf5;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--blood-red);
+            box-shadow: 0 0 0 3px rgba(116,7,14,0.08);
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input.error { border-color: #dc3545; }
+
+        /* РАДІО ОПЦІЇ */
+        .radio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 2px solid #e0d8cc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover { border-color: var(--cinereous); }
+
+        .radio-option.selected {
+            border-color: var(--blood-red);
+            background: #fdf5f5;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-top: 3px;
+            accent-color: var(--blood-red);
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .radio-label {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        .radio-desc {
+            font-size: 13px;
+            color: var(--cinereous);
+            line-height: 1.5;
+        }
+
+        .radio-price {
+            margin-left: auto;
+            font-weight: 700;
+            color: var(--blood-red);
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        /* ПОЛЕ КYРЄР */
+        #courier-fields {
+            display: none;
+            margin-top: 14px;
+            padding: 16px;
+            background: #fdf8ef;
+            border-radius: 10px;
+        }
+
+        /* ПРАВА КОЛОНКА: ПІДСУМОК */
+        .order-summary-box {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 24px;
+            box-shadow: 0 2px 10px rgba(49,14,16,0.07);
+            position: sticky;
+            top: 90px;
+            height: fit-content;
+        }
+
+        .order-summary-box h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-items {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-right: 4px;
+        }
+
+        .summary-items::-webkit-scrollbar { width: 4px; }
+        .summary-items::-webkit-scrollbar-track { background: #f0e8d8; border-radius: 2px; }
+        .summary-items::-webkit-scrollbar-thumb { background: var(--cinereous); border-radius: 2px; }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 15px;
+            border-bottom: 1px solid #f5ede0;
+        }
+
+        .summary-row:last-child { border-bottom: none; }
+
+        .summary-row.total {
+            font-weight: 700;
+            font-size: 20px;
+            padding-top: 14px;
+            border-top: 2px solid #f0e8d8;
+            border-bottom: none;
+            margin-top: 4px;
+        }
+
+        .summary-row.total span:last-child { color: var(--blood-red); }
+
+        /* КНОПКА ОФОРМИТИ */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 17px;
+            margin-top: 16px;
+            border-radius: 10px;
+        }
+
+        .safe-hint {
+            text-align: center;
+            font-size: 12px;
+            color: var(--cinereous);
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        /* ГІСТЬ / ЗАРЕЄСТРОВАНИЙ */
+        .guest-banner {
+            background: #fdf8ef;
+            border: 1px solid #f0e0b0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .guest-banner a { color: var(--blood-red); font-weight: 600; }
+
+        @media (max-width: 900px) {
+            .checkout-layout { grid-template-columns: 1fr; }
+            .order-summary-box { position: static; }
+        }
+
+        @media (max-width: 600px) {
+            .checkout-section { padding: 20px 18px; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="books-section">
+    <div class="container">
+
+        <!-- Хлібні крихти -->
+        <nav style="font-size:14px; color:var(--cinereous); margin-bottom:16px;">
+            <a href="cart.html" style="color:var(--blood-red);">← Повернутись до кошика</a>
+        </nav>
+
+        <h1 class="page-title">Оформлення замовлення</h1>
+
+        <form id="checkout-form" novalidate>
+        <div class="checkout-layout">
+
+            <!-- ЛІВА: ФОРМА -->
+            <div>
+
+                <!-- Банер для гостя -->
+                <div class="guest-banner" id="guest-banner">
+                    💡 У вас є акаунт?
+                    <a href="login.html?redirect=checkout.html">Увійдіть</a>
+                    — і ваші дані заповняться автоматично.
+                </div>
+
+                <!-- 1. КОНТАКТНІ ДАНІ -->
+                <div class="checkout-section">
+                    <h2>
+                        <span class="section-num">1</span>
+                        Контактні дані
+                    </h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Ім'я та прізвище *</label>
+                            <input type="text" id="name" name="name"
+                                   placeholder="Іван Петренко" autocomplete="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Телефон *</label>
+                            <input type="tel" id="phone" name="phone"
+                                   placeholder="+380 XX XXX XX XX" autocomplete="tel" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email (для підтвердження замовлення)</label>
+                        <input type="email" id="email" name="email"
+                               placeholder="your@email.com" autocomplete="email">
+                    </div>
+                </div>
+
+                <!-- 2. ДОСТАВКА -->
+                <div class="checkout-section">
+                    <h2>
+                        <span class="section-num">2</span>
+                        Спосіб доставки
+                    </h2>
+
+                    <div class="radio-options">
+                        <label class="radio-option selected">
+                            <input type="radio" name="delivery" value="np-warehouse" checked>
+                            <div style="flex:1;">
+                                <div class="radio-label">🏢 Нова Пошта — відділення</div>
+                                <div class="radio-desc">Доставка 1–3 дні. Оплата при отриманні або онлайн</div>
+                            </div>
+                            <div class="radio-price" id="price-np-warehouse">50 грн</div>
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio" name="delivery" value="np-courier">
+                            <div style="flex:1;">
+                                <div class="radio-label">🚚 Нова Пошта — кур'єр</div>
+                                <div class="radio-desc">Доставка до дверей. 1–3 дні</div>
+                            </div>
+                            <div class="radio-price" id="price-np-courier">80 грн</div>
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio" name="delivery" value="ukrposhta">
+                            <div style="flex:1;">
+                                <div class="radio-label">📮 Укрпошта</div>
+                                <div class="radio-desc">Доставка 3–7 днів</div>
+                            </div>
+                            <div class="radio-price">35 грн</div>
+                        </label>
+                    </div>
+
+                    <!-- Адреса -->
+                    <div style="margin-top:20px;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="city">Місто *</label>
+                                <input type="text" id="city" name="city"
+                                       placeholder="Київ, Харків, Одеса..." required>
+                            </div>
+                            <div class="form-group" id="warehouse-group">
+                                <label for="warehouse">Відділення *</label>
+                                <input type="text" id="warehouse" name="warehouse"
+                                       placeholder="№ відділення або назва" required>
+                            </div>
+                        </div>
+
+                        <!-- Поле для кур'єра -->
+                        <div id="courier-fields">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label for="courier-address">Вулиця, будинок, квартира *</label>
+                                <input type="text" id="courier-address" name="courier-address"
+                                       placeholder="вул. Хрещатик, 1, кв. 5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. ОПЛАТА -->
+                <div class="checkout-section">
+                    <h2>
+                        <span class="section-num">3</span>
+                        Спосіб оплати
+                    </h2>
+
+                    <div class="radio-options">
+                        <label class="radio-option selected">
+                            <input type="radio" name="payment" value="cod" checked>
+                            <div>
+                                <div class="radio-label">💵 Накладений платіж</div>
+                                <div class="radio-desc">Оплата при отриманні в Новій Пошті (+20 грн комісія НП)</div>
+                            </div>
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio" name="payment" value="card">
+                            <div>
+                                <div class="radio-label">💳 Оплата карткою онлайн</div>
+                                <div class="radio-desc">Visa, MasterCard. Безпечна оплата</div>
+                            </div>
+                        </label>
+
+                        <label class="radio-option">
+                            <input type="radio" name="payment" value="transfer">
+                            <div>
+                                <div class="radio-label">🏦 Банківський переказ</div>
+                                <div class="radio-desc">Деталі для оплати прийдуть на email</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4. КОМЕНТАР -->
+                <div class="checkout-section">
+                    <h2>
+                        <span class="section-num">4</span>
+                        Коментар до замовлення
+                    </h2>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <textarea name="comment" id="comment"
+                                  placeholder="Необов'язково. Наприклад: подарункове пакування, уточнення по товару..."></textarea>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ПРАВА: ПІДСУМОК -->
+            <div>
+                <div class="order-summary-box">
+                    <h3>📋 Ваше замовлення</h3>
+
+                    <div class="summary-items" id="order-items"></div>
+
+                    <div class="summary-row">
+                        <span>Товари:</span>
+                        <span id="items-total">0 грн</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Доставка:</span>
+                        <span id="delivery-cost">50 грн</span>
+                    </div>
+
+                    <div id="free-delivery-hint"
+                         style="padding:8px 0; font-size:13px; text-align:center;"></div>
+
+                    <div class="summary-row total">
+                        <span>Разом:</span>
+                        <span id="final-total">0 грн</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary submit-btn"
+                            id="checkout-submit-btn">
+                        ✅ Оформити замовлення
+                    </button>
+
+                    <div class="safe-hint">
+                        🔒 Ваші дані захищені<br>
+                        Скасувати або змінити замовлення можна зателефонувавши нам
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </form>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+                <p>Тел: +380 XX XXX XX XX</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="return.html">Повернення</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/checkout.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Гість/залогінений
+    const user = getCurrentUser();
+    if (user) {
+        document.getElementById('guest-banner').style.display = 'none';
+    }
+
+    // Підсвічування вибраного радіо при кліку
+    document.querySelectorAll('.radio-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            const name = opt.querySelector('input[type="radio"]')?.name;
+            if (!name) return;
+            document.querySelectorAll(`.radio-option input[name="${name}"]`).forEach(r => {
+                r.closest('.radio-option').classList.remove('selected');
+            });
+            opt.classList.add('selected');
+        });
+    });
+
+    // Показ поля адреси кур'єра
+    document.querySelectorAll('input[name="delivery"]').forEach(r => {
+        r.addEventListener('change', () => {
+            const courierFields  = document.getElementById('courier-fields');
+            const warehouseGroup = document.getElementById('warehouse-group');
+            const isCourier      = r.value === 'np-courier';
+            if (courierFields)  courierFields.style.display  = isCourier ? 'block' : 'none';
+            if (warehouseGroup) warehouseGroup.style.display = isCourier ? 'none'  : 'block';
+        });
+    });
+
+    // Оновлення ціни доставки на радіо кнопках
+    function updateDeliveryPrices() {
+        const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
+        let subtotal = 0;
+        cartData.forEach(item => {
+            const p = item.discount > 0 ? item.price * (1 - item.discount / 100) : item.price;
+            subtotal += p * (item.quantity || 1);
+        });
+
+        const npFree = document.getElementById('price-np-warehouse');
+        const npcFree = document.getElementById('price-np-courier');
+        if (npFree)  npFree.textContent  = subtotal >= 500 ? 'Безкоштовно 🎉' : '50 грн';
+        if (npcFree) npcFree.textContent = subtotal >= 800 ? 'Безкоштовно 🎉' : '80 грн';
+    }
+    updateDeliveryPrices();
+
+    // Валідація полів при втраті фокусу
+    ['name','phone','city','warehouse'].forEach(id => {
+        document.getElementById(id)?.addEventListener('blur', function() {
+            this.classList.toggle('error', !this.value.trim());
+        });
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,70 +1,33 @@
 // ===================================
-// BOOKFEATHER - ADMIN.JS ПОВНА ВЕРСІЯ
-// Адмін панель з динамічними категоріями, складом, галереями
+// BOOKFEATHER - ADMIN.JS
+// Адмін панель: книги, склад, кілька фото, категорії
+// ВАЖЛИВО: не оголошуємо `let books` — використовуємо з main.js
 // ===================================
-
-let books = [];
 
 // ===================================
 // ІНІЦІАЛІЗАЦІЯ
 // ===================================
 document.addEventListener('DOMContentLoaded', () => {
-    loadBooks();
-    loadAdminBooks();
-    loadCategoryOptions();
-    setupFormHandler();
+    // Нічого не робимо до входу — все запускається після login
 });
 
-// ===================================
-// ЗАВАНТАЖЕННЯ КНИГ
-// ===================================
-async function loadBooks() {
-    // Спроба завантажити з сервера
-    try {
-        const response = await fetch('/api/books');
-        if (response.ok) {
-            books = await response.json();
-            localStorage.setItem('books', JSON.stringify(books));
-            return books;
-        }
-    } catch (e) {
-        console.log('Сервер недоступний, використовуємо localStorage');
-    }
-    
-    // Завантаження з localStorage
-    const savedBooks = localStorage.getItem('books');
-    if (savedBooks) {
-        books = JSON.parse(savedBooks);
-    } else {
-        books = getDefaultBooks();
-        localStorage.setItem('books', JSON.stringify(books));
-    }
-    return books;
+// Викликається після успішного входу адміна
+async function initAdminPanel() {
+    await loadBooks();
+    loadAdminBooks();
+    loadCategoryOptions();
 }
 
 // ===================================
-// ОТРИМАННЯ ВСІХ КАТЕГОРІЙ
-// ===================================
-function getAllCategories() {
-    const categories = new Set();
-    books.forEach(book => {
-        if (book.category) {
-            categories.add(book.category);
-        }
-    });
-    return Array.from(categories).sort();
-}
-
-// ===================================
-// ЗАВАНТАЖЕННЯ ОПЦІЙ КАТЕГОРІЙ (для datalist)
+// ЗАВАНТАЖЕННЯ ОПЦІЙ КАТЕГОРІЙ (datalist у формі)
 // ===================================
 function loadCategoryOptions() {
     const datalist = document.getElementById('category-suggestions');
     if (!datalist) return;
-    
-    const categories = getAllCategories();
-    datalist.innerHTML = categories.map(cat => 
-        `<option value="${cat}">`
+
+    const cats = getAllCategories();
+    datalist.innerHTML = cats.map(c =>
+        `<option value="${c.name}">${c.icon} ${c.name}</option>`
     ).join('');
 }
 
@@ -74,73 +37,151 @@ function loadCategoryOptions() {
 function loadAdminBooks() {
     const container = document.getElementById('admin-books-list');
     if (!container) return;
-    
-    if (books.length === 0) {
+
+    if (!books || books.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; padding: 60px; color: var(--cinereous);">
-                <div style="font-size: 60px; margin-bottom: 20px;">📚</div>
-                <h3>Поки що немає книг</h3>
+            <div style="text-align:center; padding:60px; color:var(--cinereous);">
+                <div style="font-size:60px; margin-bottom:20px;">📚</div>
+                <h3>Книг ще немає</h3>
                 <p>Додайте першу книгу через форму вище</p>
             </div>
         `;
         return;
     }
-    
-    container.innerHTML = books.map(book => {
-        const availableStock = (book.stock || 0) - (book.reserved || 0);
-        
-        // Індикатор складу
-        let stockIndicator = '';
-        if (availableStock <= 0) {
-            stockIndicator = '❌ Немає';
-        } else if (availableStock <= 15) {
-            stockIndicator = `⚠️ ${availableStock} шт`;
-        } else {
-            stockIndicator = `✅ ${availableStock} шт`;
-        }
-        
-        return `
-            <div class="admin-book-item" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="display: flex; gap: 20px; align-items: start;">
-                    <img src="${book.image || book.image_url || 'https://via.placeholder.com/100x140'}" 
-                         alt="${book.title}" 
-                         style="width: 100px; height: 140px; object-fit: cover; border-radius: 8px;">
-                    
-                    <div style="flex: 1;">
-                        <h3 style="margin-bottom: 8px; color: var(--blood-red);">${book.title}</h3>
-                        <p style="color: var(--cinereous); margin-bottom: 8px;">${book.author}</p>
-                        
-                        <div style="display: flex; gap: 20px; margin-bottom: 10px; font-size: 14px;">
-                            <span><strong>Категорія:</strong> ${book.category}</span>
-                            <span><strong>Ціна:</strong> ${book.price} грн</span>
-                            <span><strong>Склад:</strong> ${stockIndicator}</span>
-                        </div>
-                        
-                        ${book.discount > 0 ? `<span class="badge" style="background: var(--blood-red); color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px;">Знижка ${book.discount}%</span>` : ''}
-                        ${book.isNew ? `<span class="badge" style="background: #28a745; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin-left: 5px;">Новинка</span>` : ''}
-                        ${book.isTop ? `<span class="badge" style="background: #ffc107; color: var(--black-bean); padding: 4px 10px; border-radius: 12px; font-size: 12px; margin-left: 5px;">Топ</span>` : ''}
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-outline btn-small" onclick="editBook(${book.id})" style="padding: 8px 16px;">✏️ Редагувати</button>
-                        <button class="btn btn-outline btn-small" onclick="deleteBook(${book.id})" style="padding: 8px 16px; border-color: #dc3545; color: #dc3545;">🗑️ Видалити</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
+
+    container.innerHTML = books.map(book => createAdminBookCard(book)).join('');
 }
 
 // ===================================
-// НАЛАШТУВАННЯ ОБРОБНИКА ФОРМИ
+// КАРТКА КНИГИ В АДМІНЦІ
+// ===================================
+function createAdminBookCard(book) {
+    const availableStock = (book.stock || 0) - (book.reserved || 0);
+
+    let stockColor = '#28a745';
+    let stockText  = `✅ ${availableStock} шт`;
+    if (availableStock <= 0) {
+        stockColor = '#dc3545';
+        stockText  = '❌ Немає';
+    } else if (availableStock <= 15) {
+        stockColor = '#ffc107';
+        stockText  = `⚠️ ${availableStock} шт`;
+    }
+
+    // Кілька зображень
+    const allImages = getBookImages(book);
+    const imagesPreview = allImages.slice(0, 3).map((url, i) => `
+        <img src="${url}"
+             style="width:50px; height:70px; object-fit:cover; border-radius:4px; border:2px solid ${i === 0 ? 'var(--blood-red)' : '#ddd'};"
+             onerror="this.style.display='none'"
+             title="${i === 0 ? 'Головне фото' : 'Додаткове фото'}">
+    `).join('');
+
+    return `
+        <div style="background:white; padding:20px; border-radius:12px; margin-bottom:14px;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.07); border-left:4px solid var(--blood-red);">
+            <div style="display:flex; gap:20px; align-items:flex-start;">
+
+                <!-- Фото -->
+                <div style="display:flex; gap:6px; flex-shrink:0;">
+                    ${imagesPreview || `<div style="width:80px; height:110px; background:#f0e8d8; border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--cinereous);">📷</div>`}
+                </div>
+
+                <!-- Інфо -->
+                <div style="flex:1; min-width:0;">
+                    <h3 style="margin-bottom:6px; color:var(--blood-red); font-size:18px;">${book.title}</h3>
+                    <p style="color:var(--cinereous); margin-bottom:10px; font-size:14px;">${book.author}</p>
+
+                    <div style="display:flex; flex-wrap:wrap; gap:16px; font-size:14px; margin-bottom:10px;">
+                        <span>📂 <strong>${getCategoryIcon(book.category)} ${book.category}</strong></span>
+                        <span>💰 <strong>${book.price} грн</strong>
+                            ${book.discount > 0 ? `<span style="color:var(--blood-red);">(-${book.discount}%)</span>` : ''}
+                        </span>
+                        <span style="color:${stockColor}; font-weight:600;">
+                            ${stockText}
+                            <small style="color:var(--cinereous); font-weight:400;">(заброньовано: ${book.reserved || 0})</small>
+                        </span>
+                    </div>
+
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        ${book.isNew  ? '<span style="background:#2d8a4e; color:white; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600;">Новинка</span>' : ''}
+                        ${book.isTop  ? '<span style="background:#d4a017; color:white; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600;">Топ</span>' : ''}
+                        ${allImages.length > 1 ? `<span style="background:#6c757d; color:white; padding:3px 10px; border-radius:12px; font-size:12px;">📷 ${allImages.length} фото</span>` : ''}
+                    </div>
+                </div>
+
+                <!-- Дії -->
+                <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0;">
+                    <button class="btn btn-outline btn-small" onclick="editBook(${book.id})">✏️ Редагувати</button>
+                    <button class="btn btn-small"
+                            onclick="quickEditStock(${book.id})"
+                            style="border:2px solid #0d6efd; color:#0d6efd; background:white; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                        📦 Склад
+                    </button>
+                    <button class="btn btn-small"
+                            onclick="deleteBook(${book.id})"
+                            style="border:2px solid #dc3545; color:#dc3545; background:white; padding:7px 14px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                        🗑️ Видалити
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+// ===================================
+// ДОПОМІЖНА: отримати масив фото книги
+// ===================================
+function getBookImages(book) {
+    // Підтримка обох форматів: рядок через кому або масив
+    if (Array.isArray(book.images) && book.images.length > 0) {
+        return book.images.filter(Boolean);
+    }
+    if (typeof book.images === 'string' && book.images.trim()) {
+        return book.images.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (book.image_url) return [book.image_url];
+    if (book.image)     return [book.image];
+    return [];
+}
+
+// ===================================
+// ШВИДКЕ РЕДАГУВАННЯ СКЛАДУ
+// ===================================
+function quickEditStock(bookId) {
+    const book = books.find(b => b.id === bookId);
+    if (!book) return;
+
+    const current = book.stock || 0;
+    const newStock = prompt(
+        `📦 Книга: "${book.title}"\n\nПоточний склад: ${current} шт\nЗарезервовано: ${book.reserved || 0} шт\n\nВведіть нову кількість:`,
+        current
+    );
+
+    if (newStock === null) return; // скасували
+    const parsed = parseInt(newStock);
+    if (isNaN(parsed) || parsed < 0) {
+        showNotification('Некоректне число', 'error');
+        return;
+    }
+
+    const idx = books.findIndex(b => b.id === bookId);
+    books[idx].stock = parsed;
+    saveAdminBooks();
+    loadAdminBooks();
+    showNotification(`Склад "${book.title}" оновлено: ${parsed} шт`);
+}
+
+// ===================================
+// НАЛАШТУВАННЯ ФОРМИ
 // ===================================
 function setupFormHandler() {
     const form = document.getElementById('add-book-form');
     if (!form) return;
-    
+
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        
         const editId = form.dataset.editId;
         if (editId) {
             updateBook(parseInt(editId));
@@ -151,179 +192,173 @@ function setupFormHandler() {
 }
 
 // ===================================
+// ЗБІР ДАНИХ З ФОРМИ
+// ===================================
+function collectFormData(form) {
+    const formData = new FormData(form);
+
+    // Головне фото + додаткові
+    const mainImage   = (formData.get('image')  || '').trim();
+    const extraImages = (formData.get('images') || '').trim();
+
+    // Збираємо всі URL в масив
+    const allUrls = [mainImage, ...extraImages.split(',').map(s => s.trim())]
+        .filter(url => url && url.startsWith('http'));
+
+    // Видалення дублів
+    const uniqueUrls = [...new Set(allUrls)];
+
+    return {
+        title:            formData.get('title')?.trim() || '',
+        author:           formData.get('author')?.trim() || '',
+        originalTitle:    formData.get('originalTitle')?.trim() || '',
+        publisher:        formData.get('publisher')?.trim() || '',
+        category:         formData.get('category')?.trim() || '',
+        language:         formData.get('language') || 'Українська',
+        price:            parseFloat(formData.get('price')) || 0,
+        discount:         parseInt(formData.get('discount')) || 0,
+        rating:           parseFloat(formData.get('rating')) || 0,
+        ratingCount:      parseInt(formData.get('ratingCount')) || 0,
+        pages:            parseInt(formData.get('pages')) || 0,
+        year:             parseInt(formData.get('year')) || new Date().getFullYear(),
+        cover:            formData.get('cover') || 'Тверда',
+        translator:       formData.get('translator')?.trim() || '',
+        isbn:             formData.get('isbn')?.trim() || '',
+        barcode:          formData.get('barcode')?.trim() || '',
+        size:             formData.get('size')?.trim() || '',
+        weight:           parseInt(formData.get('weight')) || 0,
+        illustrations:    formData.get('illustrations') || '',
+        // Фото
+        image:            uniqueUrls[0] || '',
+        image_url:        uniqueUrls[0] || '',
+        images:           uniqueUrls,   // зберігаємо як масив
+        // Описи
+        shortDescription: formData.get('shortDescription')?.trim() || '',
+        description:      formData.get('description')?.trim() || '',
+        // Мітки
+        isNew:            formData.get('isNew') === 'on',
+        isTop:            formData.get('isTop') === 'on',
+        // Склад
+        stock:            parseInt(formData.get('stock')) || 0,
+        reserved:         0,
+    };
+}
+
+// ===================================
 // ДОДАВАННЯ КНИГИ
 // ===================================
 function addBook() {
     const form = document.getElementById('add-book-form');
-    const formData = new FormData(form);
-    
-    // Обробка кількох зображень (через кому)
-    const imagesInput = formData.get('images') || formData.get('image') || '';
-    const imagesArray = imagesInput.split(',').map(url => url.trim()).filter(url => url);
-    
+    const data = collectFormData(form);
+
+    if (!data.title || !data.author || !data.category || !data.price || !data.image) {
+        showNotification('Заповніть всі обов\'язкові поля!', 'error');
+        return;
+    }
+
     const newBook = {
+        ...data,
         id: Date.now(),
-        title: formData.get('title'),
-        author: formData.get('author'),
-        originalTitle: formData.get('originalTitle') || '',
-        publisher: formData.get('publisher') || '',
-        category: formData.get('category'),
-        language: formData.get('language') || 'Українська',
-        price: parseFloat(formData.get('price')),
-        discount: parseInt(formData.get('discount')) || 0,
-        rating: parseFloat(formData.get('rating')) || 0,
-        ratingCount: parseInt(formData.get('ratingCount')) || 0,
-        pages: parseInt(formData.get('pages')) || 0,
-        year: parseInt(formData.get('year')) || new Date().getFullYear(),
-        cover: formData.get('cover') || '',
-        translator: formData.get('translator') || '',
-        isbn: formData.get('isbn') || '',
-        barcode: formData.get('barcode') || '',
-        size: formData.get('size') || '',
-        weight: parseInt(formData.get('weight')) || 0,
-        illustrations: formData.get('illustrations') || '',
-        
-        // Зображення
-        image: imagesArray[0] || '',
-        image_url: imagesArray[0] || '',
-        images: imagesArray.join(','),
-        
-        // Описи
-        shortDescription: formData.get('shortDescription') || '',
-        description: formData.get('description') || '',
-        
-        // Мітки
-        isNew: formData.get('isNew') === 'on',
-        isTop: formData.get('isTop') === 'on',
-        
-        // СКЛАД (ГОЛОВНЕ!)
-        stock: parseInt(formData.get('stock')) || 0,
-        reserved: 0,
-        
         createdAt: new Date().toISOString()
     };
-    
+
     books.push(newBook);
-    saveBooks();
-    
-    showNotification('Книгу додано успішно!', 'success');
+    saveAdminBooks();
+
+    showNotification(`✅ Книгу "${newBook.title}" додано!`);
     form.reset();
+    delete form.dataset.editId;
+    resetFormButton();
     loadAdminBooks();
-    loadCategoryOptions(); // Оновлюємо список категорій
+    loadCategoryOptions();
+
+    // Переходимо на таб з книгами
+    document.querySelector('[data-tab="manage-books"]')?.click();
 }
 
 // ===================================
-// РЕДАГУВАННЯ КНИГИ
+// РЕДАГУВАННЯ: заповнення форми
 // ===================================
 function editBook(id) {
     const book = books.find(b => b.id === id);
     if (!book) return;
-    
+
     const form = document.getElementById('add-book-form');
     form.dataset.editId = id;
-    
-    // Заповнення форми
-    form.elements['title'].value = book.title;
-    form.elements['author'].value = book.author;
-    form.elements['originalTitle'].value = book.originalTitle || '';
-    form.elements['publisher'].value = book.publisher || '';
-    form.elements['category'].value = book.category;
-    form.elements['language'].value = book.language || 'Українська';
-    form.elements['price'].value = book.price;
-    form.elements['discount'].value = book.discount || 0;
-    form.elements['rating'].value = book.rating || 0;
-    form.elements['ratingCount'].value = book.ratingCount || 0;
-    form.elements['pages'].value = book.pages || '';
-    form.elements['year'].value = book.year || '';
-    form.elements['cover'].value = book.cover || '';
-    form.elements['translator'].value = book.translator || '';
-    form.elements['isbn'].value = book.isbn || '';
-    form.elements['barcode'].value = book.barcode || '';
-    form.elements['size'].value = book.size || '';
-    form.elements['weight'].value = book.weight || '';
-    form.elements['illustrations'].value = book.illustrations || '';
-    
-    // Зображення
-    if (form.elements['images']) {
-        form.elements['images'].value = book.images || book.image_url || book.image || '';
-    }
-    
-    // Описи
-    form.elements['shortDescription'].value = book.shortDescription || '';
-    form.elements['description'].value = book.description || '';
-    
-    // Мітки
-    form.elements['isNew'].checked = book.isNew || false;
-    form.elements['isTop'].checked = book.isTop || false;
-    
-    // СКЛАД
-    form.elements['stock'].value = book.stock || 0;
-    
-    // Зміна кнопки
-    const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.textContent = '💾 Зберегти зміни';
-    
-    // Прокрутка до форми
+
+    // Основні поля
+    const set = (name, val) => { if (form.elements[name]) form.elements[name].value = val ?? ''; };
+
+    set('title',            book.title);
+    set('author',           book.author);
+    set('originalTitle',    book.originalTitle);
+    set('publisher',        book.publisher);
+    set('category',         book.category);
+    set('language',         book.language || 'Українська');
+    set('price',            book.price);
+    set('discount',         book.discount || 0);
+    set('rating',           book.rating || 0);
+    set('ratingCount',      book.ratingCount || 0);
+    set('pages',            book.pages || '');
+    set('year',             book.year || '');
+    set('cover',            book.cover || 'Тверда');
+    set('translator',       book.translator);
+    set('isbn',             book.isbn);
+    set('barcode',          book.barcode);
+    set('size',             book.size);
+    set('weight',           book.weight || '');
+    set('illustrations',    book.illustrations || '');
+    set('shortDescription', book.shortDescription);
+    set('description',      book.description);
+    set('stock',            book.stock || 0);
+
+    // Фото: головне + додаткові
+    const allImages = getBookImages(book);
+    set('image',  allImages[0] || '');
+    set('images', allImages.slice(1).join(', '));
+
+    // Чекбокси
+    if (form.elements['isNew']) form.elements['isNew'].checked = !!book.isNew;
+    if (form.elements['isTop']) form.elements['isTop'].checked = !!book.isTop;
+
+    // Кнопка
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) btn.textContent = '💾 Зберегти зміни';
+
+    // Переходимо на таб форми
+    document.querySelector('[data-tab="add-book"]')?.click();
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showNotification(`Редагування: "${book.title}"`, 'info');
 }
 
 // ===================================
 // ОНОВЛЕННЯ КНИГИ
 // ===================================
 function updateBook(id) {
-    const bookIndex = books.findIndex(b => b.id === id);
-    if (bookIndex === -1) return;
-    
+    const idx = books.findIndex(b => b.id === id);
+    if (idx === -1) return;
+
     const form = document.getElementById('add-book-form');
-    const formData = new FormData(form);
-    
-    // Обробка зображень
-    const imagesInput = formData.get('images') || formData.get('image') || '';
-    const imagesArray = imagesInput.split(',').map(url => url.trim()).filter(url => url);
-    
-    // Оновлення книги
-    books[bookIndex] = {
-        ...books[bookIndex],
-        title: formData.get('title'),
-        author: formData.get('author'),
-        originalTitle: formData.get('originalTitle') || '',
-        publisher: formData.get('publisher') || '',
-        category: formData.get('category'),
-        language: formData.get('language') || 'Українська',
-        price: parseFloat(formData.get('price')),
-        discount: parseInt(formData.get('discount')) || 0,
-        rating: parseFloat(formData.get('rating')) || 0,
-        ratingCount: parseInt(formData.get('ratingCount')) || 0,
-        pages: parseInt(formData.get('pages')) || 0,
-        year: parseInt(formData.get('year')) || new Date().getFullYear(),
-        cover: formData.get('cover') || '',
-        translator: formData.get('translator') || '',
-        isbn: formData.get('isbn') || '',
-        barcode: formData.get('barcode') || '',
-        size: formData.get('size') || '',
-        weight: parseInt(formData.get('weight')) || 0,
-        illustrations: formData.get('illustrations') || '',
-        image: imagesArray[0] || '',
-        image_url: imagesArray[0] || '',
-        images: imagesArray.join(','),
-        shortDescription: formData.get('shortDescription') || '',
-        description: formData.get('description') || '',
-        isNew: formData.get('isNew') === 'on',
-        isTop: formData.get('isTop') === 'on',
-        stock: parseInt(formData.get('stock')) || 0,
+    const data = collectFormData(form);
+
+    if (!data.title || !data.author || !data.category || !data.price) {
+        showNotification('Заповніть всі обов\'язкові поля!', 'error');
+        return;
+    }
+
+    books[idx] = {
+        ...books[idx],
+        ...data,
+        id,
         updatedAt: new Date().toISOString()
     };
-    
-    saveBooks();
-    
-    showNotification('Книгу оновлено успішно!', 'success');
-    
-    // Скидання форми
+
+    saveAdminBooks();
+    showNotification(`✅ Книгу "${data.title}" оновлено!`);
+
     form.reset();
     delete form.dataset.editId;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    submitBtn.textContent = '➕ Додати книгу';
-    
+    resetFormButton();
     loadAdminBooks();
     loadCategoryOptions();
 }
@@ -332,76 +367,51 @@ function updateBook(id) {
 // ВИДАЛЕННЯ КНИГИ
 // ===================================
 function deleteBook(id) {
-    if (!confirm('Ви впевнені, що хочете видалити цю книгу?')) return;
-    
+    const book = books.find(b => b.id === id);
+    if (!book) return;
+
+    if (!confirm(`Видалити книгу "${book.title}"?\n\nЦю дію не можна скасувати.`)) return;
+
     books = books.filter(b => b.id !== id);
-    saveBooks();
-    
-    showNotification('Книгу видалено', 'success');
+    saveAdminBooks();
+    showNotification(`Книгу "${book.title}" видалено`);
     loadAdminBooks();
     loadCategoryOptions();
 }
 
 // ===================================
-// ЗБЕРЕЖЕННЯ КНИГ
+// ЗБЕРЕЖЕННЯ
 // ===================================
-function saveBooks() {
+function saveAdminBooks() {
     localStorage.setItem('books', JSON.stringify(books));
-    
-    // Спроба відправити на сервер
-    fetch('/api/books', {
+
+    // Спроба синхронізувати з сервером (якщо є PHP)
+    fetch('php/api.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(books)
-    }).catch(e => console.log('Сервер недоступний'));
+    }).catch(() => {
+        // Сервер недоступний — нічого страшного, дані в localStorage
+    });
 }
 
 // ===================================
-// ПОКАЗ ПОВІДОМЛЕНЬ
+// СКИДАННЯ ФОРМИ
 // ===================================
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
+function resetFormButton() {
+    const btn = document.querySelector('#add-book-form button[type="submit"]');
+    if (btn) btn.textContent = '➕ Додати книгу';
 }
 
 // ===================================
-// ПОЧАТКОВІ КНИГИ (якщо немає даних)
+// ЕКСПОРТ
 // ===================================
-function getDefaultBooks() {
-    return [
-        {
-            id: 1,
-            title: "Майстер і Маргарита",
-            author: "Михайло Булгаков",
-            category: "Художня література",
-            language: "Українська",
-            price: 250,
-            rating: 4.9,
-            ratingCount: 245,
-            stock: 50,
-            reserved: 0,
-            image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
-            image_url: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
-            images: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
-            shortDescription: "Культовий роман про любов і магію",
-            isNew: true,
-            isTop: true
-        }
-    ];
-}
-
-// ===================================
-// ЕКСПОРТ ФУНКЦІЙ
-// ===================================
-window.loadBooks = loadBooks;
-window.addBook = addBook;
-window.editBook = editBook;
-window.updateBook = updateBook;
-window.deleteBook = deleteBook;
+window.initAdminPanel   = initAdminPanel;
+window.loadAdminBooks   = loadAdminBooks;
+window.loadCategoryOptions = loadCategoryOptions;
+window.editBook         = editBook;
+window.updateBook       = updateBook;
+window.deleteBook       = deleteBook;
+window.quickEditStock   = quickEditStock;
+window.setupFormHandler = setupFormHandler;
+window.addBook          = addBook;

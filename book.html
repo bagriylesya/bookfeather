@@ -5,514 +5,423 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Книга - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        .book-detail {
-            background-color: white;
-            border-radius: 12px;
-            padding: 50px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 50px;
-        }
-        
-        /* ГАЛЕРЕЯ ЗОБРАЖЕНЬ */
+        /* ГАЛЕРЕЯ */
         .book-gallery {
-            position: relative;
+            position: sticky;
+            top: 90px;
+            height: fit-content;
         }
-        
+
         .main-image-container {
-            width: 100%;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            overflow: hidden;
             position: relative;
-            height: 500px;
-            background-color: #f5f5f5;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 6px 30px rgba(49,14,16,0.15);
+            background: #f5ede0;
+            margin-bottom: 12px;
+            cursor: zoom-in;
         }
-        
+
         .main-image {
             width: 100%;
-            height: 100%;
+            max-height: 500px;
             object-fit: contain;
-            cursor: zoom-in;
-            transition: transform 0.3s;
+            display: block;
+            transition: opacity 0.2s;
         }
-        
-        .main-image:hover {
-            transform: scale(1.02);
-        }
-        
+
         .gallery-nav {
             position: absolute;
-            top: 50%;
-            width: 100%;
+            bottom: 12px;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: space-between;
-            padding: 0 10px;
-            transform: translateY(-50%);
-            pointer-events: none;
+            padding: 0 12px;
         }
-        
+
         .gallery-nav button {
-            background-color: rgba(116, 7, 14, 0.9);
-            color: white;
+            background: rgba(255,255,255,0.9);
             border: none;
-            width: 45px;
-            height: 45px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
+            font-size: 20px;
             cursor: pointer;
-            font-size: 22px;
-            pointer-events: all;
-            transition: all 0.3s;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        
-        .gallery-nav button:hover {
-            background-color: var(--blood-red);
-            transform: scale(1.1);
-        }
-        
-        .gallery-nav button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-        
-        .gallery-thumbnails {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
             display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-        
-        .thumbnail {
-            min-width: 90px;
-            width: 90px;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: all 0.3s;
-            border: 3px solid transparent;
-        }
-        
-        .thumbnail:hover {
-            opacity: 0.9;
-            transform: translateY(-3px);
-        }
-        
-        .thumbnail.active {
-            opacity: 1;
-            border-color: var(--blood-red);
-            box-shadow: 0 3px 10px rgba(116, 7, 14, 0.3);
-        }
-        
-        /* МОДАЛЬНЕ ВІКНО ДЛЯ ПОВНОЕКРАННОГО ПЕРЕГЛЯДУ */
-        .image-modal {
-            display: none;
-            position: fixed;
-            z-index: 10000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.95);
             align-items: center;
             justify-content: center;
         }
-        
-        .image-modal.show {
+
+        .gallery-nav button:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .gallery-thumbnails {
             display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        
-        .modal-close {
-            position: absolute;
-            top: 25px;
-            right: 45px;
-            font-size: 50px;
-            color: white;
+
+        .thumbnail {
+            width: 72px;
+            height: 96px;
+            object-fit: cover;
+            border-radius: 8px;
             cursor: pointer;
-            transition: color 0.3s;
-            z-index: 10001;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            opacity: 0.7;
         }
-        
-        .modal-close:hover {
+
+        .thumbnail:hover { opacity: 1; }
+
+        .thumbnail.active {
+            border-color: var(--blood-red);
+            opacity: 1;
+        }
+
+        /* ДЕТАЛІ КНИГИ */
+        .book-detail {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 48px;
+            align-items: start;
+        }
+
+        .page-title {
+            font-size: 32px;
+            line-height: 1.3;
+            margin-bottom: 10px;
+        }
+
+        .book-detail-price {
+            font-family: var(--font-heading);
+            font-size: 36px;
+            font-weight: 700;
             color: var(--blood-red);
+            margin: 16px 0;
         }
-        
+
+        /* ХАРАКТЕРИСТИКИ */
+        .book-meta {
+            border: 1px solid #f0e8d8;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .meta-row {
+            display: flex;
+            padding: 10px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f5ede0;
+        }
+
+        .meta-row:last-child { border-bottom: none; }
+        .meta-row:nth-child(even) { background: #fdfaf5; }
+
+        .meta-label {
+            color: var(--cinereous);
+            width: 170px;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+
+        /* РЕЙТИНГ */
+        .rating-interactive {
+            background: #fdf8ef;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+
+        .stars-display {
+            color: #d4a017;
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .rating-info {
+            font-size: 14px;
+            color: var(--cinereous);
+        }
+
+        .user-rating-label {
+            font-size: 14px;
+            color: var(--cinereous);
+            margin-bottom: 8px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .rating-stars .star {
+            font-size: 28px;
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.15s, transform 0.15s;
+            user-select: none;
+        }
+
+        .rating-stars .star:hover,
+        .rating-stars .star.filled { color: #d4a017; }
+
+        .rating-stars .star:hover  { transform: scale(1.2); }
+
+        .selected-rating {
+            font-size: 13px;
+            color: var(--cinereous);
+            min-height: 20px;
+        }
+
+        /* КНОПКИ */
+        .book-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 24px 0 16px;
+        }
+
+        .fav-btn {
+            background: white;
+            border: 2px solid #e0d8cc;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--cinereous);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fav-btn:hover,
+        .fav-btn.active {
+            border-color: #e8435a;
+            color: #e8435a;
+            background: #fff5f7;
+        }
+
+        /* МОДАЛЬНЕ ВІКНО */
+        .image-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .image-modal.show { display: flex; }
+
         .modal-image {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 90vw;
+            max-height: 90vh;
             object-fit: contain;
             border-radius: 8px;
         }
-        
-        /* ІНФОРМАЦІЯ ПРО КНИГУ */
-        .book-info-section {
-            display: flex;
-            flex-direction: column;
+
+        .modal-close {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            color: white;
+            font-size: 38px;
+            cursor: pointer;
+            line-height: 1;
+            opacity: 0.8;
+            transition: opacity 0.2s;
         }
-        
-        .page-title {
-            font-size: 42px;
-            margin-bottom: 15px;
-            line-height: 1.3;
-            color: var(--black-bean);
+
+        .modal-close:hover { opacity: 1; }
+
+        /* СХОЖІ КНИГИ */
+        .similar-section {
+            margin-top: 70px;
+            padding-top: 40px;
+            border-top: 1px solid #f0e8d8;
         }
-        
-        .book-detail-author {
-            font-size: 24px;
+
+        /* ХЛІБНІ КРИХТИ */
+        .breadcrumb {
+            font-size: 14px;
             color: var(--cinereous);
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-        
-        .book-badges {
+            margin-bottom: 24px;
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 6px;
             flex-wrap: wrap;
         }
-        
-        /* РЕЙТИНГ */
-        .rating-interactive {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 25px 0;
-            padding: 25px;
-            background-color: #f9f3e3;
-            border-radius: 12px;
+
+        .breadcrumb a { color: var(--blood-red); text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { color: var(--cinereous); }
+
+        @media (max-width: 900px) {
+            .book-detail { grid-template-columns: 1fr; gap: 28px; }
+            .book-gallery { position: static; }
         }
-        
-        .current-rating {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .stars-display {
-            font-size: 32px;
-            color: #ffa500;
-            letter-spacing: 3px;
-        }
-        
-        .rating-info {
-            font-size: 19px;
-            color: var(--drab-brown);
-            font-weight: 600;
-        }
-        
-        .user-rating {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .user-rating-label {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--black-bean);
-        }
-        
-        .rating-stars {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .star {
-            font-size: 40px;
-            color: #ddd;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-        
-        .star:hover {
-            transform: scale(1.15);
-        }
-        
-        .star.filled {
-            color: #ffa500;
-            text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
-        }
-        
-        .selected-rating {
-            font-size: 17px;
-            color: var(--blood-red);
-            font-weight: 600;
-            margin-top: 5px;
-        }
-        
-        /* ЦІНА ТА КНОПКИ */
-        .book-detail-price {
-            font-size: 44px;
-            color: var(--blood-red);
-            font-weight: 700;
-            margin: 25px 0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .price-old {
-            font-size: 28px;
-            color: var(--cinereous);
-            text-decoration: line-through;
-            font-weight: 400;
-        }
-        
-        .stock-info {
-            padding: 15px 20px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        .stock-info.available {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .stock-info.low-stock {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-        
-        .stock-info.out-of-stock {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        .book-actions {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .book-actions .btn {
-            flex: 1;
-            padding: 18px 0;
-            font-size: 19px;
-        }
-        
-        .book-actions .btn-icon {
-            width: 60px;
-            height: 60px;
-            font-size: 28px;
-        }
-        
-        /* МЕТАІНФОРМАЦІЯ */
-        .book-meta {
-            background-color: #f9f3e3;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-        
-        .meta-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--blood-red);
-        }
-        
-        .meta-row {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            padding: 14px 0;
-            border-bottom: 1px solid #e0d8c0;
-            font-size: 17px;
-        }
-        
-        .meta-row:last-child {
-            border-bottom: none;
-        }
-        
-        .meta-label {
-            font-weight: 700;
-            color: var(--drab-brown);
-        }
-        
-        .meta-value {
-            color: var(--black-bean);
-        }
-        
-        .meta-value.clickable {
-            color: var(--blood-red);
-            cursor: pointer;
-            text-decoration: underline;
-            transition: color 0.3s;
-        }
-        
-        .meta-value.clickable:hover {
-            color: #5a0509;
-        }
-        
-        /* ОПИС */
-        .book-description {
-            margin-top: 30px;
-        }
-        
-        .description-title {
-            font-size: 26px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--black-bean);
-        }
-        
-        .description-text {
-            font-size: 18px;
-            line-height: 1.8;
-            color: #333;
-            white-space: pre-wrap;
-        }
-        
-        .short-description {
-            font-size: 20px;
-            line-height: 1.7;
-            color: var(--drab-brown);
-            margin-bottom: 25px;
-            padding: 20px;
-            background-color: #f9f3e3;
-            border-left: 4px solid var(--blood-red);
-            border-radius: 8px;
-        }
-        
-        @media (max-width: 768px) {
-            .book-detail {
-                grid-template-columns: 1fr;
-                padding: 30px 20px;
-            }
-            
-            .page-title {
-                font-size: 32px;
-            }
-            
-            .book-detail-price {
-                font-size: 36px;
-            }
-            
-            .meta-row {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
+
+        @media (max-width: 600px) {
+            .page-title { font-size: 24px; }
+            .book-detail-price { font-size: 28px; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <div class="header-search">
+                    <input type="text" id="header-search"
+                           placeholder="Пошук книг..." autocomplete="off">
+                    <div class="search-suggestions" id="search-suggestions"></div>
                 </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </nav>
-                <div class="header-icons">
-                    <!-- ПОШУК В HEADER -->
-                    <div class="header-search">
-                        <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
-                        <div class="search-suggestions" id="search-suggestions"></div>
-                    </div>
-                    
-                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
-                        ♥ <span class="fav-count">0</span>
-                    </button>
-                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
-                        🛒 <span class="cart-count">0</span>
-                    </button>
-                    <div class="profile-wrapper">
-                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
-                            👤
-                        </button>
-                        <div class="profile-menu" id="profile-menu">
-                            <a href="login.html">Увійти</a>
-                            <a href="register.html">Реєстрація</a>
-                            <a href="profile.html">Мій профіль</a>
-                        </div>
-                    </div>
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section class="books-section">
-        <div class="container">
-            <a href="javascript:history.back()" class="back-link" style="display: inline-block; margin-bottom: 25px; color: var(--blood-red); font-weight: 600; font-size: 18px; text-decoration: none;">
-                ← Назад до каталогу
-            </a>
+<section class="books-section">
+    <div class="container">
 
-            <div class="book-detail" id="book-detail">
-                <div class="book-loading" style="text-align: center; padding: 80px; font-size: 20px; grid-column: 1 / -1;">
+        <!-- ХЛІБНІ КРИХТИ (заповнюються через JS) -->
+        <nav class="breadcrumb" id="breadcrumb">
+            <a href="index.html">Головна</a>
+            <span>›</span>
+            <a href="catalog.html">Каталог</a>
+            <span>›</span>
+            <span id="breadcrumb-title">Книга</span>
+        </nav>
+
+        <!-- ВМІСТ КНИГИ (заповнюється через book.js) -->
+        <div class="book-detail" id="book-detail">
+            <div style="background:#f5ede0; border-radius:14px; height:480px;
+                        display:flex; align-items:center; justify-content:center; font-size:60px;">
+                📚
+            </div>
+            <div style="padding:20px 0;">
+                <p style="color:var(--cinereous); text-align:center; padding:40px;">
                     Завантаження...
-                </div>
+                </p>
             </div>
         </div>
-    </section>
 
-    <section class="books-section" style="background-color: #f9f3e3;">
-        <div class="container">
+        <!-- СХОЖІ КНИГИ -->
+        <div class="similar-section">
             <h2 class="section-title">Схожі книги</h2>
             <div class="books-grid" id="similar-books">
-                <p style="text-align: center; padding: 40px;">Завантаження...</p>
+                <p style="text-align:center; color:var(--cinereous); padding:30px;
+                           grid-column:1/-1;">Завантаження...</p>
             </div>
         </div>
-    </section>
 
-    <!-- МОДАЛЬНЕ ВІКНО ДЛЯ ПОВНОЕКРАННОГО ПЕРЕГЛЯДУ ФОТО -->
-    <div class="image-modal" id="image-modal" onclick="closeImageModal()">
-        <span class="modal-close">&times;</span>
-        <img src="" alt="" class="modal-image" id="modal-image">
     </div>
+</section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>BOOKFEATHER</h3>
-                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Навігація</h4>
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
-                    <p>Тел: +380 XX XXX XX XX</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Підтримка</h4>
-                    <ul>
-                        <li><a href="delivery.html">Доставка і оплата</a></li>
-                        <li><a href="return.html">Повернення товару</a></li>
-                        <li><a href="faq.html">Часті питання</a></li>
-                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
-                    </ul>
-                </div>
+<!-- МОДАЛЬНЕ ВІКНО ФОТО -->
+<div class="image-modal" id="image-modal">
+    <span class="modal-close" onclick="closeImageModal()">×</span>
+    <img class="modal-image" id="modal-img" src="" alt="Фото книги">
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+                <p>Тел: +380 XX XXX XX XX</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="return.html">Повернення</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Зв'язатись</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+        </div>
+    </div>
+</footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/book.js"></script>
-    <script src="js/search.js"></script>
+<script src="js/main.js"></script>
+<script src="js/book.js"></script>
+<script src="js/search.js"></script>
+
+<script>
+// Хлібні крихти оновлюються після завантаження книги
+document.addEventListener('DOMContentLoaded', () => {
+    // book.js встановить currentBook після завантаження
+    // Чекаємо і оновлюємо breadcrumb
+    const checkBook = setInterval(() => {
+        if (window.currentBook) {
+            clearInterval(checkBook);
+            const title = document.getElementById('breadcrumb-title');
+            if (title) title.textContent = currentBook.title;
+            document.title = `${currentBook.title} - BOOKFEATHER`;
+        }
+    }, 100);
+});
+
+// Клік поза модальним — закрити
+document.getElementById('image-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeImageModal();
+});
+</script>
+
 </body>
 </html>

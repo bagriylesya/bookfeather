@@ -5,375 +5,806 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мій профіль - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        .profile-sidebar {
-            background-color: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 28px;
+            margin-top: 28px;
         }
-        
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
+
+        /* БІЧНА ПАНЕЛЬ */
+        .profile-sidebar {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 20px;
+            box-shadow: 0 2px 12px rgba(49,14,16,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 90px;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background-color: var(--blood-red);
-            color: white;
+            background: linear-gradient(135deg, var(--blood-red), var(--black-bean));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            margin: 0 auto 20px;
-        }
-        
-        .profile-name {
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .profile-email {
-            text-align: center;
-            color: var(--cinereous);
-            margin-bottom: 30px;
-        }
-        
-        .profile-nav {
-            list-style: none;
-        }
-        
-        .profile-nav li {
-            margin-bottom: 10px;
-        }
-        
-        .profile-nav a {
-            display: block;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: var(--drab-brown);
-            transition: all 0.3s;
-            font-size: 17px;
-        }
-        
-        .profile-nav a:hover,
-        .profile-nav a.active {
-            background-color: var(--blood-red);
+            font-size: 32px;
             color: white;
+            margin: 0 auto 14px;
         }
-        
+
+        .user-name-sidebar {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-email-sidebar {
+            text-align: center;
+            font-size: 13px;
+            color: var(--cinereous);
+            margin-bottom: 24px;
+            word-break: break-all;
+        }
+
+        .profile-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .profile-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--black-bean);
+            transition: all 0.2s;
+            text-align: left;
+            width: 100%;
+        }
+
+        .profile-nav-btn:hover    { background: #fdf0f0; color: var(--blood-red); }
+        .profile-nav-btn.active   { background: var(--blood-red); color: white; }
+
+        .profile-nav-btn .nav-icon { font-size: 18px; width: 24px; flex-shrink: 0; }
+
+        /* ЗМІСТ ТАБУ */
         .profile-content {
-            background-color: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+            background: white;
+            border-radius: 14px;
+            padding: 32px 36px;
+            box-shadow: 0 2px 12px rgba(49,14,16,0.08);
         }
-        
-        .profile-section {
-            display: none;
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* ФОРМА ПРОФІЛЮ */
+        .profile-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         }
-        
-        .profile-section.active {
+
+        .profile-form .input-group {
+            margin-bottom: 18px;
+        }
+
+        .profile-form label {
             display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            font-size: 14px;
         }
-        
-        .order-item {
-            background-color: #f9f3e3;
-            padding: 25px;
+
+        .profile-form input,
+        .profile-form select,
+        .profile-form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0d8cc;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            transition: border-color 0.3s;
+            background: #fdfaf5;
+        }
+
+        .profile-form input:focus,
+        .profile-form select:focus {
+            outline: none;
+            border-color: var(--blood-red);
+            background: white;
+        }
+
+        /* ЗАМОВЛЕННЯ */
+        .order-card {
+            border: 1px solid #f0e8d8;
             border-radius: 12px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s;
         }
-        
+
+        .order-card:hover {
+            box-shadow: 0 4px 16px rgba(49,14,16,0.1);
+        }
+
         .order-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--vanilla);
+            align-items: flex-start;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        
+
+        .order-number {
+            font-family: var(--font-heading);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--blood-red);
+        }
+
+        .order-date {
+            font-size: 13px;
+            color: var(--cinereous);
+            margin-top: 2px;
+        }
+
         .order-status {
-            padding: 6px 15px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
         }
-        
-        .status-processing {
-            background-color: #fff3cd;
-            color: #856404;
+
+        .status-processing { background: #fff3cd; color: #856404; }
+        .status-confirmed  { background: #cce5ff; color: #004085; }
+        .status-shipped    { background: #d4edda; color: #155724; }
+        .status-delivered  { background: #c3e6cb; color: #155724; }
+        .status-cancelled  { background: #f8d7da; color: #721c24; }
+
+        .order-items-preview {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
         }
-        
-        .status-shipped {
-            background-color: #d1ecf1;
-            color: #0c5460;
+
+        .order-item-thumb {
+            width: 50px;
+            height: 68px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #e0d8cc;
         }
-        
-        .status-delivered {
-            background-color: #d4edda;
-            color: #155724;
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #f5ede0;
+            font-size: 14px;
+            color: var(--cinereous);
         }
-        
-        @media (max-width: 768px) {
-            .profile-layout {
-                grid-template-columns: 1fr;
-            }
+
+        .order-total-amount {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--blood-red);
+        }
+
+        /* АДРЕСИ */
+        .address-card {
+            border: 2px solid #f0e8d8;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+
+        .address-card.default {
+            border-color: var(--blood-red);
+            background: #fdf9f5;
+        }
+
+        .address-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .address-label {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .address-text {
+            color: var(--cinereous);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 900px) {
+            .profile-layout { grid-template-columns: 1fr; }
+            .profile-sidebar { position: static; }
+            .profile-nav { flex-direction: row; flex-wrap: wrap; }
+        }
+
+        @media (max-width: 600px) {
+            .profile-content { padding: 20px 18px; }
+            .profile-form .form-row { grid-template-columns: 1fr; gap: 0; }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <div class="header-search">
+                    <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                    <div class="search-suggestions" id="search-suggestions"></div>
                 </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="books-section">
+    <div class="container">
+        <h1 class="page-title">Мій профіль</h1>
+
+        <div class="profile-layout">
+
+            <!-- БІЧНА ПАНЕЛЬ -->
+            <aside class="profile-sidebar">
+                <div class="user-avatar" id="user-avatar">👤</div>
+                <div class="user-name-sidebar"  id="sidebar-name">Завантаження...</div>
+                <div class="user-email-sidebar" id="sidebar-email"></div>
+
+                <nav class="profile-nav">
+                    <button class="profile-nav-btn active" data-tab="data">
+                        <span class="nav-icon">👤</span> Мої дані
+                    </button>
+                    <button class="profile-nav-btn" data-tab="orders">
+                        <span class="nav-icon">📦</span> Замовлення
+                        <span id="orders-badge" style="margin-left:auto; background:var(--blood-red);
+                               color:white; border-radius:20px; padding:1px 8px; font-size:12px;"></span>
+                    </button>
+                    <button class="profile-nav-btn" data-tab="addresses">
+                        <span class="nav-icon">📍</span> Адреси
+                    </button>
+                    <button class="profile-nav-btn" data-tab="password">
+                        <span class="nav-icon">🔒</span> Пароль
+                    </button>
+                    <button class="profile-nav-btn" data-tab="favorites-tab">
+                        <span class="nav-icon">♥</span> Вподобання
+                    </button>
+                    <button class="profile-nav-btn" id="logout-btn"
+                            style="margin-top:16px; color:#dc3545;"
+                            onclick="handleLogout()">
+                        <span class="nav-icon">🚪</span> Вийти
+                    </button>
                 </nav>
-                <div class="header-icons">
-                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
-                        ♥ <span class="fav-count">0</span>
-                    </button>
-                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
-                        🛒 <span class="cart-count">0</span>
-                    </button>
-                    <div class="profile-wrapper">
-                        <button class="icon-btn profile-btn active" onclick="toggleProfileMenu(event)" title="Профіль">
-                            👤
+            </aside>
+
+            <!-- ЗМІСТ -->
+            <div class="profile-content">
+
+                <!-- ТАБ: МОЇ ДАНІ -->
+                <div class="tab-pane active" id="tab-data">
+                    <h2 style="font-size:26px; margin-bottom:24px;">Мої дані</h2>
+                    <form class="profile-form" id="profile-form">
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label>Ім'я *</label>
+                                <input type="text" id="p-name" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Прізвище *</label>
+                                <input type="text" id="p-surname">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Email *</label>
+                            <input type="email" id="p-email" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Телефон</label>
+                            <input type="tel" id="p-phone" placeholder="+380 XX XXX XX XX">
+                        </div>
+                        <div class="input-group">
+                            <label>Дата народження</label>
+                            <input type="date" id="p-birthday">
+                        </div>
+                        <div class="form-row">
+                            <div class="input-group">
+                                <label>Місто</label>
+                                <input type="text" id="p-city" placeholder="Наприклад: Київ">
+                            </div>
+                            <div class="input-group">
+                                <label>Відділення Нова Пошта</label>
+                                <input type="text" id="p-warehouse" placeholder="№ відділення">
+                            </div>
+                        </div>
+                        <label style="display:flex; align-items:center; gap:10px; margin-bottom:24px; cursor:pointer; font-size:14px;">
+                            <input type="checkbox" id="p-newsletter" style="width:16px; height:16px; accent-color:var(--blood-red);">
+                            Отримувати новини про акції та новинки
+                        </label>
+                        <button type="submit" class="btn btn-primary" style="padding:13px 36px;">
+                            💾 Зберегти зміни
                         </button>
-                        <div class="profile-menu" id="profile-menu">
-                            <a href="login.html">Увійти</a>
-                            <a href="register.html">Реєстрація</a>
-                            <a href="profile.html">Мій профіль</a>
-                        </div>
+                    </form>
+                </div>
+
+                <!-- ТАБ: ЗАМОВЛЕННЯ -->
+                <div class="tab-pane" id="tab-orders">
+                    <h2 style="font-size:26px; margin-bottom:24px;">Мої замовлення</h2>
+                    <div id="orders-list">
+                        <p style="text-align:center; padding:40px; color:var(--cinereous);">Завантаження...</p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </header>
 
-    <section class="books-section">
-        <div class="container">
-            <div class="profile-layout" style="display: grid; grid-template-columns: 320px 1fr; gap: 30px;">
-                
-                <!-- Сайдбар -->
-                <aside class="profile-sidebar">
-                    <div class="profile-avatar" id="profile-avatar">П</div>
-                    <h2 class="profile-name" id="profile-name">Ім'я Користувача</h2>
-                    <p class="profile-email" id="profile-email">email@example.com</p>
-                    
-                    <ul class="profile-nav">
-                        <li><a href="#" class="profile-nav-link active" data-section="overview">📊 Огляд</a></li>
-                        <li><a href="#" class="profile-nav-link" data-section="orders">📦 Мої замовлення</a></li>
-                        <li><a href="#" class="profile-nav-link" data-section="personal">👤 Особисті дані</a></li>
-                        <li><a href="#" class="profile-nav-link" data-section="addresses">📍 Адреси доставки</a></li>
-                        <li><a href="#" class="profile-nav-link" data-section="password">🔐 Змінити пароль</a></li>
-                    </ul>
-                    
-                    <button class="btn btn-outline" onclick="logout()" style="width: 100%; margin-top: 30px;">Вийти</button>
-                </aside>
-                
-                <!-- Контент -->
-                <div class="profile-content">
-                    
-                    <!-- Огляд -->
-                    <div class="profile-section active" id="section-overview">
-                        <h1 style="font-size: 36px; margin-bottom: 30px;">Мій профіль</h1>
-                        
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px;">
-                            <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 42px; font-weight: bold; color: var(--blood-red); margin-bottom: 10px;" id="orders-count">0</div>
-                                <div style="font-size: 18px; color: var(--drab-brown);">Всього замовлень</div>
-                            </div>
-                            
-                            <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 42px; font-weight: bold; color: var(--blood-red); margin-bottom: 10px;" id="favorites-count">0</div>
-                                <div style="font-size: 18px; color: var(--drab-brown);">Вподобань</div>
-                            </div>
-                            
-                            <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; text-align: center;">
-                                <div style="font-size: 42px; font-weight: bold; color: var(--blood-red); margin-bottom: 10px;">🎉</div>
-                                <div style="font-size: 18px; color: var(--drab-brown);">Бонуси незабаром!</div>
-                            </div>
-                        </div>
-                        
-                        <h2 style="font-size: 28px; margin-bottom: 20px;">Останні замовлення</h2>
-                        <div id="recent-orders">
-                            <p style="text-align: center; color: var(--cinereous); padding: 40px;">Ви ще не зробили жодного замовлення</p>
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: 30px;">
-                            <a href="catalog.html" class="btn btn-primary">Перейти до каталогу</a>
-                        </div>
-                    </div>
-                    
-                    <!-- Мої замовлення -->
-                    <div class="profile-section" id="section-orders">
-                        <h1 style="font-size: 36px; margin-bottom: 30px;">Мої замовлення</h1>
-                        
-                        <div id="all-orders">
-                            <p style="text-align: center; color: var(--cinereous); padding: 80px; font-size: 20px;">
-                                У вас поки немає замовлень
-                            </p>
-                            <div style="text-align: center;">
-                                <a href="catalog.html" class="btn btn-primary">Почати покупки</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Особисті дані -->
-                    <div class="profile-section" id="section-personal">
-                        <h1 style="font-size: 36px; margin-bottom: 30px;">Особисті дані</h1>
-                        
-                        <form id="personal-data-form">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 25px;">
-                                <div>
-                                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Ім'я*:</label>
-                                    <input type="text" name="name" id="edit-name" required 
-                                        style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                <!-- ТАБ: АДРЕСИ -->
+                <div class="tab-pane" id="tab-addresses">
+                    <h2 style="font-size:26px; margin-bottom:24px;">Збережені адреси</h2>
+                    <div id="addresses-list"></div>
+                    <button class="btn btn-outline" onclick="showAddAddressForm()" style="margin-top:8px;">
+                        ➕ Додати адресу
+                    </button>
+
+                    <!-- Форма нової адреси -->
+                    <div id="add-address-form" style="display:none; margin-top:20px; background:#fdf8ef;
+                         padding:24px; border-radius:12px;">
+                        <h3 style="margin-bottom:16px; font-size:18px;">Нова адреса</h3>
+                        <div class="profile-form">
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label>Назва (для себе)</label>
+                                    <input type="text" id="new-addr-label" placeholder="Наприклад: Робота">
                                 </div>
-                                <div>
-                                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">Прізвище*:</label>
-                                    <input type="text" name="surname" id="edit-surname" required
-                                        style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                                <div class="input-group">
+                                    <label>Місто *</label>
+                                    <input type="text" id="new-addr-city" placeholder="Київ">
                                 </div>
                             </div>
-                            
-                            <div style="margin-bottom: 25px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Email*:</label>
-                                <input type="email" name="email" id="edit-email" required
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                            <div class="input-group">
+                                <label>Відділення / адреса *</label>
+                                <input type="text" id="new-addr-warehouse" placeholder="Відділення №15 або вулиця">
                             </div>
-                            
-                            <div style="margin-bottom: 25px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Телефон*:</label>
-                                <input type="tel" name="phone" id="edit-phone" required
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 30px;">
-                                <label style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
-                                    <input type="checkbox" name="newsletter" id="edit-newsletter" style="transform: scale(1.3);">
-                                    <span style="font-size: 17px;">Отримувати новини та спеціальні пропозиції</span>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Зберегти зміни</button>
-                        </form>
-                    </div>
-                    
-                    <!-- Адреси -->
-                    <div class="profile-section" id="section-addresses">
-                        <h1 style="font-size: 36px; margin-bottom: 30px;">Адреси доставки</h1>
-                        
-                        <div id="saved-addresses">
-                            <p style="text-align: center; color: var(--cinereous); padding: 60px; font-size: 18px;">
-                                У вас немає збережених адрес
-                            </p>
-                        </div>
-                        
-                        <button class="btn btn-primary" onclick="showAddAddressForm()">+ Додати адресу</button>
-                        
-                        <div id="add-address-form" style="display: none; margin-top: 30px; padding: 30px; background-color: #f9f3e3; border-radius: 12px;">
-                            <h3 style="font-size: 24px; margin-bottom: 25px;">Нова адреса</h3>
-                            
-                            <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Місто*:</label>
-                                <input type="text" id="address-city" required placeholder="Київ"
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
-                            </div>
-                            
-                            <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Відділення Нової Пошти / Адреса*:</label>
-                                <input type="text" id="address-details" required placeholder="Відділення №1 або вул. Хрещатик, 22, кв. 5"
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
-                            </div>
-                            
-                            <div style="display: flex; gap: 15px;">
-                                <button class="btn btn-primary" onclick="saveAddress()">Зберегти</button>
-                                <button class="btn btn-outline" onclick="hideAddAddressForm()">Скасувати</button>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                <button class="btn btn-primary" onclick="saveNewAddress()">Зберегти</button>
+                                <button class="btn btn-outline" onclick="hideAddressForm()">Скасувати</button>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Зміна пароля -->
-                    <div class="profile-section" id="section-password">
-                        <h1 style="font-size: 36px; margin-bottom: 30px;">Змінити пароль</h1>
-                        
-                        <form id="change-password-form" style="max-width: 500px;">
-                            <div style="margin-bottom: 25px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Поточний пароль*:</label>
-                                <input type="password" name="current-password" required
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
+                </div>
+
+                <!-- ТАБ: ПАРОЛЬ -->
+                <div class="tab-pane" id="tab-password">
+                    <h2 style="font-size:26px; margin-bottom:24px;">Зміна пароля</h2>
+                    <form class="profile-form" id="password-form" style="max-width:420px;" novalidate>
+                        <div class="input-group">
+                            <label>Поточний пароль *</label>
+                            <input type="password" id="current-password" placeholder="Введіть поточний пароль">
+                            <div style="color:#dc3545; font-size:13px; margin-top:4px; display:none;" id="cur-pass-error">
+                                Невірний поточний пароль
                             </div>
-                            
-                            <div style="margin-bottom: 25px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Новий пароль*:</label>
-                                <input type="password" name="new-password" required minlength="6"
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
-                                <small style="color: var(--cinereous);">Мінімум 6 символів</small>
+                        </div>
+                        <div class="input-group">
+                            <label>Новий пароль *</label>
+                            <input type="password" id="new-password" placeholder="Мінімум 6 символів">
+                        </div>
+                        <div class="input-group">
+                            <label>Підтвердіть новий пароль *</label>
+                            <input type="password" id="confirm-new-password" placeholder="Повторіть новий пароль">
+                            <div style="color:#dc3545; font-size:13px; margin-top:4px; display:none;" id="conf-pass-error">
+                                Паролі не збігаються
                             </div>
-                            
-                            <div style="margin-bottom: 30px;">
-                                <label style="display: block; margin-bottom: 10px; font-weight: 600;">Підтвердіть новий пароль*:</label>
-                                <input type="password" name="confirm-new-password" required minlength="6"
-                                    style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-size: 17px;">
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Змінити пароль</button>
-                        </form>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding:13px 36px;">
+                            🔒 Змінити пароль
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ТАБ: ВПОДОБАННЯ -->
+                <div class="tab-pane" id="tab-favorites-tab">
+                    <h2 style="font-size:26px; margin-bottom:24px;">Мої вподобання</h2>
+                    <div class="books-grid" id="profile-favorites"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/search.js"></script>
+<script>
+let currentUser = null;
+
+// ===== ІНІЦІАЛІЗАЦІЯ =====
+document.addEventListener('DOMContentLoaded', async () => {
+    currentUser = getCurrentUser();
+    if (!currentUser) {
+        window.location.href = 'login.html?redirect=profile.html';
+        return;
+    }
+
+    fillProfile();
+    setupTabs();
+    setupForms();
+    await loadBooks();
+    renderOrders();
+    renderAddresses();
+
+    // Відкрити таб з URL якщо є
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab) switchTab(tab);
+});
+
+// ===== ЗАПОВНЕННЯ ДАНИХ =====
+function fillProfile() {
+    // Аватар — перші літери імені
+    const initials = (currentUser.name?.[0] || '') + (currentUser.surname?.[0] || '');
+    const av = document.getElementById('user-avatar');
+    if (av) av.textContent = initials || '👤';
+
+    document.getElementById('sidebar-name').textContent  = `${currentUser.name || ''} ${currentUser.surname || ''}`.trim();
+    document.getElementById('sidebar-email').textContent = currentUser.email || '';
+
+    document.getElementById('p-name').value       = currentUser.name     || '';
+    document.getElementById('p-surname').value    = currentUser.surname  || '';
+    document.getElementById('p-email').value      = currentUser.email    || '';
+    document.getElementById('p-phone').value      = currentUser.phone    || '';
+    document.getElementById('p-birthday').value   = currentUser.birthday || '';
+    document.getElementById('p-newsletter').checked = !!currentUser.newsletter;
+
+    if (currentUser.addresses?.length > 0) {
+        const last = currentUser.addresses[currentUser.addresses.length - 1];
+        const cityEl = document.getElementById('p-city');
+        const whEl   = document.getElementById('p-warehouse');
+        if (cityEl) cityEl.value = last.city || '';
+        if (whEl)   whEl.value  = last.warehouse || '';
+    }
+
+    // Лічильник замовлень
+    const cnt = (currentUser.orders || []).length;
+    const badge = document.getElementById('orders-badge');
+    if (badge && cnt > 0) badge.textContent = cnt;
+}
+
+// ===== ТАБИ =====
+function setupTabs() {
+    document.querySelectorAll('.profile-nav-btn[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+}
+
+function switchTab(tabId) {
+    document.querySelectorAll('.profile-nav-btn[data-tab]').forEach(b =>
+        b.classList.toggle('active', b.dataset.tab === tabId)
+    );
+    document.querySelectorAll('.tab-pane').forEach(p =>
+        p.classList.toggle('active', p.id === `tab-${tabId}`)
+    );
+
+    if (tabId === 'favorites-tab') renderFavorites();
+    if (tabId === 'orders')        renderOrders();
+    if (tabId === 'addresses')     renderAddresses();
+}
+
+// ===== ФОРМА ДАНИХ =====
+function setupForms() {
+    document.getElementById('profile-form').addEventListener('submit', e => {
+        e.preventDefault();
+        saveProfileData();
+    });
+
+    document.getElementById('password-form').addEventListener('submit', e => {
+        e.preventDefault();
+        changePassword();
+    });
+}
+
+function saveProfileData() {
+    currentUser.name       = document.getElementById('p-name').value.trim();
+    currentUser.surname    = document.getElementById('p-surname').value.trim();
+    currentUser.email      = document.getElementById('p-email').value.trim();
+    currentUser.phone      = document.getElementById('p-phone').value.trim();
+    currentUser.birthday   = document.getElementById('p-birthday').value;
+    currentUser.newsletter = document.getElementById('p-newsletter').checked;
+
+    const city = document.getElementById('p-city').value.trim();
+    const wh   = document.getElementById('p-warehouse').value.trim();
+    if (city || wh) {
+        if (!currentUser.addresses) currentUser.addresses = [];
+        const existing = currentUser.addresses.find(a => a.city === city);
+        if (!existing && city) currentUser.addresses.push({ label: 'Основна', city, warehouse: wh });
+    }
+
+    updateUserInStorage(currentUser);
+    fillProfile();
+    showNotification('✅ Дані збережено!');
+}
+
+// ===== ЗМІНА ПАРОЛЯ =====
+function changePassword() {
+    const current = document.getElementById('current-password').value;
+    const newPass  = document.getElementById('new-password').value;
+    const confirm  = document.getElementById('confirm-new-password').value;
+    const curErr   = document.getElementById('cur-pass-error');
+    const confErr  = document.getElementById('conf-pass-error');
+
+    curErr.style.display  = 'none';
+    confErr.style.display = 'none';
+
+    if (current !== currentUser.password) {
+        curErr.style.display = 'block';
+        return;
+    }
+    if (newPass.length < 6) {
+        showNotification('Новий пароль має бути мінімум 6 символів', 'error');
+        return;
+    }
+    if (newPass !== confirm) {
+        confErr.style.display = 'block';
+        return;
+    }
+
+    currentUser.password = newPass;
+    updateUserInStorage(currentUser);
+    document.getElementById('password-form').reset();
+    showNotification('🔒 Пароль успішно змінено!');
+}
+
+// ===== ОНОВЛЕННЯ ЮЗЕРА В СХОВИЩІ =====
+function updateUserInStorage(user) {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const idx   = users.findIndex(u => u.id === user.id);
+    if (idx !== -1) {
+        users[idx] = user;
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    const store = localStorage.getItem('currentUser') ? localStorage : sessionStorage;
+    store.setItem('currentUser', JSON.stringify(user));
+    currentUser = user;
+    updateProfileMenu();
+}
+
+// ===== ЗАМОВЛЕННЯ =====
+function renderOrders() {
+    const list = document.getElementById('orders-list');
+    if (!list) return;
+
+    const orders = (currentUser.orders || []).slice().reverse(); // нові зверху
+
+    if (orders.length === 0) {
+        list.innerHTML = `
+            <div style="text-align:center; padding:60px 20px; color:var(--cinereous);">
+                <div style="font-size:52px; margin-bottom:16px;">📦</div>
+                <h3 style="margin-bottom:10px;">Замовлень ще немає</h3>
+                <p style="margin-bottom:24px;">Час обрати щось цікаве!</p>
+                <a href="catalog.html" class="btn btn-primary">До каталогу</a>
+            </div>
+        `;
+        return;
+    }
+
+    const statusLabels = {
+        processing: ['В обробці',   'status-processing'],
+        confirmed:  ['Підтверджено','status-confirmed'],
+        shipped:    ['Відправлено', 'status-shipped'],
+        delivered:  ['Доставлено',  'status-delivered'],
+        cancelled:  ['Скасовано',   'status-cancelled'],
+    };
+
+    list.innerHTML = orders.map(order => {
+        const [statusLabel, statusClass] = statusLabels[order.status] || ['Невідомо', ''];
+        const dateStr = new Date(order.date).toLocaleDateString('uk-UA', {
+            day: '2-digit', month: 'long', year: 'numeric'
+        });
+        const thumbs = (order.items || []).slice(0, 4).map(item =>
+            `<img src="${item.image || 'https://via.placeholder.com/50x68?text=📚'}"
+                  class="order-item-thumb"
+                  onerror="this.src='https://via.placeholder.com/50x68?text=📚'"
+                  alt="${item.title}">`
+        ).join('');
+        const extraCount = (order.items?.length || 0) - 4;
+
+        return `
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <div class="order-number">${order.orderNumber}</div>
+                        <div class="order-date">${dateStr}</div>
                     </div>
-                    
+                    <span class="order-status ${statusClass}">${statusLabel}</span>
                 </div>
+                <div class="order-items-preview">
+                    ${thumbs}
+                    ${extraCount > 0 ? `<div style="width:50px; height:68px; background:#f0e8d8; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:var(--cinereous);">+${extraCount}</div>` : ''}
+                </div>
+                <div class="order-footer">
+                    <span>${(order.items || []).reduce((s, i) => s + (i.quantity || 1), 0)} книг · ${order.delivery?.city || ''}</span>
+                    <span class="order-total-amount">${order.total?.toFixed(0) || 0} грн</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ===== АДРЕСИ =====
+function renderAddresses() {
+    const list = document.getElementById('addresses-list');
+    if (!list) return;
+
+    const addrs = currentUser.addresses || [];
+
+    if (addrs.length === 0) {
+        list.innerHTML = `<p style="color:var(--cinereous); margin-bottom:16px;">Збережених адрес немає.</p>`;
+        return;
+    }
+
+    list.innerHTML = addrs.map((addr, i) => `
+        <div class="address-card ${i === 0 ? 'default' : ''}">
+            <div class="address-card-header">
+                <span class="address-label">
+                    ${i === 0 ? '⭐ ' : ''}${addr.label || `Адреса ${i + 1}`}
+                </span>
+                <button onclick="removeAddress(${i})"
+                        style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:18px;"
+                        title="Видалити">✕</button>
+            </div>
+            <div class="address-text">
+                📍 ${addr.city || '—'}<br>
+                🏢 ${addr.warehouse || '—'}
             </div>
         </div>
-    </section>
+    `).join('');
+}
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>BOOKFEATHER</h3>
-                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Навігація</h4>
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
-                    <p>Тел: +380 XX XXX XX XX</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Підтримка</h4>
-                    <ul>
-                        <li><a href="delivery.html">Доставка і оплата</a></li>
-                        <li><a href="return.html">Повернення товару</a></li>
-                        <li><a href="faq.html">Часті питання</a></li>
-                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
-            </div>
-        </div>
-    </footer>
+function showAddAddressForm()  { document.getElementById('add-address-form').style.display = 'block'; }
+function hideAddressForm()     { document.getElementById('add-address-form').style.display = 'none'; }
 
-    <script src="js/main.js"></script>
-    <script src="js/profile.js"></script>
+function saveNewAddress() {
+    const label     = document.getElementById('new-addr-label').value.trim() || 'Нова адреса';
+    const city      = document.getElementById('new-addr-city').value.trim();
+    const warehouse = document.getElementById('new-addr-warehouse').value.trim();
+
+    if (!city || !warehouse) {
+        showNotification('Заповніть місто та відділення', 'error');
+        return;
+    }
+
+    if (!currentUser.addresses) currentUser.addresses = [];
+    currentUser.addresses.push({ label, city, warehouse });
+    updateUserInStorage(currentUser);
+    renderAddresses();
+    hideAddressForm();
+    document.getElementById('new-addr-label').value     = '';
+    document.getElementById('new-addr-city').value      = '';
+    document.getElementById('new-addr-warehouse').value = '';
+    showNotification('📍 Адресу збережено!');
+}
+
+function removeAddress(idx) {
+    if (!confirm('Видалити цю адресу?')) return;
+    currentUser.addresses.splice(idx, 1);
+    updateUserInStorage(currentUser);
+    renderAddresses();
+    showNotification('Адресу видалено');
+}
+
+// ===== ВПОДОБАННЯ =====
+async function renderFavorites() {
+    const container = document.getElementById('profile-favorites');
+    if (!container) return;
+
+    await loadBooks();
+    const favBooks = books.filter(b => favorites.includes(b.id));
+
+    if (favBooks.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--cinereous);">
+                <div style="font-size:48px; margin-bottom:14px;">♥</div>
+                <h3 style="margin-bottom:10px;">Вподобань ще немає</h3>
+                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = favBooks.map(b => createBookCard(b)).join('');
+    attachBookCardListeners();
+}
+
+// ===== ВИХІД =====
+function handleLogout() {
+    if (!confirm('Вийти з облікового запису?')) return;
+    logout();
+    window.location.href = 'index.html';
+}
+</script>
+
 </body>
 </html>

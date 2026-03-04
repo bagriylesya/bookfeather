@@ -15,52 +15,99 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ЗАВАНТАЖЕННЯ КАТЕГОРІЙ В ФІЛЬТР
+// Показує всі категорії системи (не тільки ті що є в книгах)
 function loadCategoryFilter() {
     const select = document.getElementById('category-filter');
     if (!select) return;
-    
-    const categories = [...new Set(books.map(b => b.category))].sort();
-    select.innerHTML = '<option value="">Всі категорії</option>' + 
-        categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+
+    const allCats = getAllCategories();
+    const usedCatIds = new Set(books.map(b => b.category).filter(Boolean));
+
+    const used  = allCats.filter(c => usedCatIds.has(c.id));
+    const other = allCats.filter(c => !usedCatIds.has(c.id));
+
+    let html = '<option value="">Всі категорії</option>';
+
+    if (used.length) {
+        html += '<optgroup label="── Є в каталозі ──">';
+        html += used.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+        html += '</optgroup>';
+    }
+    if (other.length) {
+        html += '<optgroup label="── Інші жанри ──">';
+        html += other.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+        html += '</optgroup>';
+    }
+
+    select.innerHTML = html;
+
+    // Відновлюємо вибране значення з URL
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category');
+    if (cat) select.value = cat;
 }
 
 // ЗАСТОСУВАННЯ ФІЛЬТРІВ З URL
 function applyUrlFilters() {
     const params = new URLSearchParams(window.location.search);
-    const category = params.get('category');
     const search = params.get('search');
-    
-    if (category) {
-        const select = document.getElementById('category-filter');
-        if (select) select.value = category;
-    }
-    
+    const author = params.get('author');
+    const publisher = params.get('publisher');
+
     if (search) {
         const input = document.getElementById('search-input');
         if (input) input.value = search;
+    }
+
+    if (author) {
+        const input = document.getElementById('search-input');
+        if (input) input.value = author;
     }
 }
 
 // ФІЛЬТРАЦІЯ КНИГ
 function filterBooks() {
-    const categoryFilter = document.getElementById('category-filter')?.value || '';
-    const sortFilter = document.getElementById('sort-filter')?.value || 'popular';
-    const languageFilter = document.getElementById('language-filter')?.value || '';
-    const searchQuery = document.getElementById('search-input')?.value.toLowerCase() || '';
-    
-    // Фільтруємо
+    const categoryFilter  = document.getElementById('category-filter')?.value  || '';
+    const sortFilter      = document.getElementById('sort-filter')?.value       || 'popular';
+    const languageFilter  = document.getElementById('language-filter')?.value  || '';
+    const searchQuery     = document.getElementById('search-input')?.value.toLowerCase().trim() || '';
+    const priceMin        = parseFloat(document.getElementById('price-min')?.value)  || 0;
+    const priceMax        = parseFloat(document.getElementById('price-max')?.value)  || Infinity;
+    const onlyInStock     = document.getElementById('in-stock-filter')?.checked  || false;
+    const onlyDiscount    = document.getElementById('discount-filter')?.checked  || false;
+    const onlyNew         = document.getElementById('new-filter')?.checked       || false;
+
     filteredBooks = books.filter(book => {
+        // Категорія
         if (categoryFilter && book.category !== categoryFilter) return false;
+        // Мова
         if (languageFilter && book.language !== languageFilter) return false;
+        // Пошук
         if (searchQuery) {
-            const searchStr = `${book.title} ${book.author} ${book.description || ''}`.toLowerCase();
-            if (!searchStr.includes(searchQuery)) return false;
+            const str = `${book.title} ${book.author} ${book.description || ''} ${book.publisher || ''}`.toLowerCase();
+            if (!str.includes(searchQuery)) return false;
         }
+        // Ціна
+        const finalPrice = book.discount > 0
+            ? book.price * (1 - book.discount / 100)
+            : book.price;
+        if (finalPrice < priceMin) return false;
+        if (priceMax !== Infinity && finalPrice > priceMax) return false;
+        // Наявність
+        if (onlyInStock) {
+            const avail = (book.stock || 0) - (book.reserved || 0);
+            if (avail <= 0) return false;
+        }
+        // Знижка
+        if (onlyDiscount && !(book.discount > 0)) return false;
+        // Новинки
+        if (onlyNew && !book.isNew) return false;
+
         return true;
     });
-    
-    // Сортуємо
-    switch(sortFilter) {
+
+    // Сортування
+    switch (sortFilter) {
         case 'new':
             filteredBooks.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
             break;
@@ -73,12 +120,15 @@ function filterBooks() {
         case 'rating':
             filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
             break;
+        case 'discount':
+            filteredBooks.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+            break;
         case 'popular':
         default:
             filteredBooks.sort((a, b) => (b.isTop ? 1 : 0) - (a.isTop ? 1 : 0));
             break;
     }
-    
+
     displayBooks();
 }
 
@@ -165,12 +215,13 @@ function createBookCard(book) {
 
 // СКИДАННЯ ФІЛЬТРІВ
 function resetFilters() {
-    document.getElementById('category-filter').value = '';
+    const ids = ['category-filter','sort-filter','language-filter','search-input','price-min','price-max'];
+    ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+
+    const checks = ['in-stock-filter','discount-filter','new-filter'];
+    checks.forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+
     document.getElementById('sort-filter').value = 'popular';
-    document.getElementById('language-filter').value = '';
-    if (document.getElementById('search-input')) {
-        document.getElementById('search-input').value = '';
-    }
     window.history.pushState({}, '', 'catalog.html');
     filterBooks();
 }

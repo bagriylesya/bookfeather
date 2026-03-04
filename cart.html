@@ -5,255 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Кошик - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        .cart-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 35px;
-            margin-top: 40px;
-        }
-        
-        .cart-items {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-        }
-        
-        .cart-item {
-            display: flex;
-            gap: 25px;
-            padding: 25px;
-            border-bottom: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .cart-item:hover {
-            background-color: #f9f3e3;
-        }
-        
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-        
-        .cart-item-image {
-            width: 110px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .cart-item-info {
-            flex: 1;
-        }
-        
-        .cart-item-title {
-            font-size: 22px;
-            margin-bottom: 8px;
-            font-family: var(--font-heading);
-        }
-        
-        .cart-item-author {
-            color: var(--cinereous);
-            margin-bottom: 12px;
-            font-size: 17px;
-        }
-        
-        .cart-item-price {
-            font-size: 26px;
-            color: var(--blood-red);
-            font-weight: bold;
-        }
-        
-        .cart-item-remove {
-            padding: 10px 18px;
-            background-color: transparent;
-            border: 2px solid var(--blood-red);
-            color: var(--blood-red);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .cart-item-remove:hover {
-            background-color: var(--blood-red);
-            color: white;
-        }
-        
-        .empty-cart {
-            text-align: center;
-            padding: 80px;
-            grid-column: 1 / -1;
-            background-color: white;
-            border-radius: 12px;
-        }
-        
-        .empty-cart p {
-            font-size: 22px;
-            margin-bottom: 25px;
-            color: var(--cinereous);
-        }
-        
-        .cart-summary {
-            background-color: white;
-            border-radius: 12px;
-            padding: 35px;
-            height: fit-content;
-            position: sticky;
-            top: 110px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-        }
-        
-        .cart-summary h3 {
-            margin-bottom: 25px;
-            font-size: 26px;
-        }
-        
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 17px;
-        }
-        
-        .summary-row.total {
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--blood-red);
-            border-top: 2px solid var(--black-bean);
-            border-bottom: none;
-            margin-top: 12px;
-            padding-top: 18px;
-        }
-        
-        @media (max-width: 768px) {
-            .cart-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .cart-item {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-        }
-    </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+            </div>
+
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-icons">
+                <div class="header-search">
+                    <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                    <div class="search-suggestions" id="search-suggestions"></div>
                 </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </nav>
-                <div class="header-icons">
-                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
-                        ♥ <span class="fav-count">0</span>
-                    </button>
-                    <button class="icon-btn active" onclick="window.location.href='cart.html'" title="Кошик">
-                        🛒 <span class="cart-count">0</span>
-                    </button>
-                    <div class="profile-wrapper">
-                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
-                            👤
-                        </button>
-                        <div class="profile-menu" id="profile-menu">
-                            <a href="login.html">Увійти</a>
-                            <a href="register.html">Реєстрація</a>
-                            <a href="profile.html">Мій профіль</a>
-                        </div>
-                    </div>
+
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn active" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section class="books-section">
-        <div class="container">
-            <h1 class="page-title">Кошик</h1>
+<!-- ЗМІСТ -->
+<section class="books-section">
+    <div class="container">
+        <h1 class="page-title">🛒 Кошик</h1>
 
-            <div class="cart-content">
+        <div class="cart-content">
+
+            <!-- ЛІВА: ТОВАРИ -->
+            <div>
                 <div class="cart-items" id="cart-items"></div>
 
-                <div class="empty-cart" id="empty-cart" style="display: none;">
-                    <p>Ваш кошик порожній</p>
-                    <a href="catalog.html" class="btn btn-primary">Перейти до каталогу</a>
+                <!-- ПОРОЖНІЙ КОШИК -->
+                <div class="empty-cart" id="empty-cart" style="display:none;">
+                    <div style="font-size:64px; margin-bottom:16px;">🛒</div>
+                    <p style="font-size:20px; color:var(--cinereous); margin-bottom:24px;">
+                        Ваш кошик порожній
+                    </p>
+                    <a href="catalog.html" class="btn btn-primary btn-large">Перейти до каталогу</a>
+                </div>
+            </div>
+
+            <!-- ПРАВА: ПІДСУМОК -->
+            <div class="cart-summary" id="cart-summary" style="display:none;">
+                <h3 style="margin-bottom:20px;">Підсумок</h3>
+
+                <div class="summary-row">
+                    <span>Товарів:</span>
+                    <span id="items-count">0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Вартість:</span>
+                    <span id="subtotal">0 грн</span>
+                </div>
+                <div class="summary-row">
+                    <span>Доставка:</span>
+                    <span id="delivery">50 грн</span>
                 </div>
 
-                <div class="cart-summary" id="cart-summary" style="display: none;">
-                    <h3>Підсумок замовлення</h3>
-                    <div class="summary-row">
-                        <span>Товарів:</span>
-                        <span id="items-count">0</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Вартість товарів:</span>
-                        <span id="subtotal">0 грн</span>
-                    </div>
-                    <div class="summary-row">
-                        <span>Доставка:</span>
-                        <span id="delivery">Безкоштовно</span>
-                    </div>
-                    <div class="summary-row total">
-                        <span>Разом:</span>
-                        <span id="total">0 грн</span>
-                    </div>
-                    <button class="btn btn-primary btn-full" id="checkout-btn">Оформити замовлення</button>
-                    <button class="btn btn-outline btn-full" id="clear-cart">Очистити кошик</button>
+                <!-- Підказка про безкоштовну доставку -->
+                <div id="delivery-hint" style="margin:8px 0 12px; padding:8px 12px;
+                     background:#fdf8ef; border-radius:8px; text-align:center;"></div>
+
+                <div class="summary-row total">
+                    <span>Разом:</span>
+                    <span id="total">0 грн</span>
                 </div>
+
+                <button class="btn btn-primary btn-full" id="checkout-btn"
+                        style="margin-top:16px; padding:15px; font-size:17px;">
+                    Оформити замовлення →
+                </button>
+                <button class="btn btn-outline btn-full" id="clear-cart"
+                        style="margin-top:10px;">
+                    Очистити кошик
+                </button>
+
+                <!-- Переваги -->
+                <div style="margin-top:20px; padding-top:20px; border-top:1px solid #f0e8d8;
+                            font-size:13px; color:var(--cinereous); line-height:2;">
+                    ✅ Тільки оригінальні книги<br>
+                    🚚 Доставка Нова Пошта / Укрпошта<br>
+                    🔄 Повернення протягом 14 днів<br>
+                    💳 Оплата при отриманні або онлайн
+                </div>
+            </div>
+
+        </div>
+
+        <!-- НЕЩОДАВНО ПЕРЕГЛЯНУТІ -->
+        <div id="recently-viewed-section" style="display:none; margin-top:60px;">
+            <h2 class="section-title">Нещодавно переглянуті</h2>
+            <div class="books-grid" id="recently-viewed"></div>
+        </div>
+
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+                <p>Тел: +380 XX XXX XX XX</p>
+                <p>Пн–Пт: 9:00–18:00</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="return.html">Повернення</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Зв'язатись з нами</a></li>
+                </ul>
             </div>
         </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>BOOKFEATHER</h3>
-                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Навігація</h4>
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
-                    <p>Тел: +380 XX XXX XX XX</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Підтримка</h4>
-                    <ul>
-                        <li><a href="delivery.html">Доставка і оплата</a></li>
-                        <li><a href="return.html">Повернення товару</a></li>
-                        <li><a href="faq.html">Часті питання</a></li>
-                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 BOOKFEATHER. Всі права захищені.</p>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
         </div>
-    </footer>
+    </div>
+</footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/search.js"></script>
+
+<script>
+// Показуємо нещодавно переглянуті
+document.addEventListener('DOMContentLoaded', async () => {
+    if (recentlyViewed.length === 0) return;
+    await loadBooks();
+    const section    = document.getElementById('recently-viewed-section');
+    const container  = document.getElementById('recently-viewed');
+    const recentBooks = recentlyViewed.slice(0, 4)
+        .map(id => books.find(b => b.id === id))
+        .filter(Boolean);
+
+    if (recentBooks.length > 0) {
+        section.style.display = 'block';
+        container.innerHTML   = recentBooks.map(b => createBookCard(b)).join('');
+        attachBookCardListeners();
+    }
+});
+</script>
+
 </body>
 </html>
