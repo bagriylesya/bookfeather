@@ -3,515 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель керування - BOOKFEATHER</title>
-        <script>
-        // Базовий шлях для API та даних (файл знаходиться в panel/)
-        window.BASE_PATH = '../';
-    </script>
-    <link rel="stylesheet" href="../css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>BOOKFEATHER - Онлайн книгарня</title>
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        .admin-login {
-            max-width: 450px;
-            margin: 80px auto;
-            background-color: white;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+        /* === КАТЕГОРІЇ СЛАЙДЕР === */
+        .categories-section {
+            padding: 50px 0;
+            background: white;
         }
-        
-        .admin-login h2 {
-            margin-bottom: 35px;
+
+        .categories-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .categories-track {
+            display: flex;
+            gap: 16px;
+            transition: transform 0.4s ease;
+        }
+
+        .category-card {
+            flex-shrink: 0;
+            width: 180px;
+            background: var(--vanilla);
+            border-radius: 12px;
+            padding: 24px 16px;
             text-align: center;
-            font-size: 32px;
-        }
-        
-        .admin-panel {
-            background-color: white;
-            border-radius: 12px;
-            padding: 50px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-        }
-        
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
-        
-        .admin-tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 35px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .tab-btn {
-            padding: 18px 35px;
-            background-color: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
             cursor: pointer;
-            font-size: 18px;
-            font-family: var(--font-body);
-            color: var(--drab-brown);
             transition: all 0.3s;
-        }
-        
-        .tab-btn:hover {
-            color: var(--blood-red);
-        }
-        
-        .tab-btn.active {
-            color: var(--blood-red);
-            border-bottom-color: var(--blood-red);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: var(--black-bean);
             display: block;
         }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+
+        .category-card:hover {
+            border-color: var(--blood-red);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(116,7,14,0.12);
+            color: var(--blood-red);
         }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
+
+        .category-icon {
+            font-size: 36px;
             margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 17px;
         }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid var(--cinereous);
-            border-radius: 8px;
-            font-family: var(--font-body);
-            font-size: 17px;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-        }
-        
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            transform: scale(1.3);
-        }
-        
-        .admin-book-item {
-            display: flex;
-            gap: 25px;
-            padding: 25px;
-            background-color: #f9f3e3;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .admin-book-image {
-            width: 90px;
-            height: 125px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .admin-book-info {
-            flex: 1;
-        }
-        
-        .admin-book-title {
-            font-size: 22px;
-            margin-bottom: 8px;
+
+        .category-name {
             font-family: var(--font-heading);
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.3;
         }
-        
-        .admin-book-actions {
+
+        .slider-controls {
             display: flex;
+            justify-content: center;
             gap: 12px;
+            margin-top: 20px;
+        }
+
+        .slider-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--blood-red);
+            background: white;
+            color: var(--blood-red);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
             align-items: center;
+            justify-content: center;
+        }
+
+        .slider-btn:hover {
+            background: var(--blood-red);
+            color: white;
+        }
+
+        /* === HERO === */
+        .hero {
+            background: linear-gradient(135deg, var(--blood-red) 0%, var(--black-bean) 100%);
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        /* === БАНЕР АКЦІЇ === */
+        .promo-banner {
+            background: linear-gradient(90deg, var(--drab-brown), var(--cinereous));
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .promo-banner a {
+            color: var(--vanilla);
+            text-decoration: underline;
+            margin-left: 8px;
+        }
+
+        /* === НЕЩОДАВНО ПЕРЕГЛЯНУТІ === */
+        .recently-section {
+            padding: 50px 0;
+            background: #fdf8ef;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1><a href="../index.html">BOOKFEATHER</a></h1>
+
+<!-- БАНЕР -->
+<div class="promo-banner">
+    🎁 Безкоштовна доставка при замовленні від 500 грн!
+    <a href="catalog.html">Обрати книги →</a>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                         onerror="this.style.display='none'">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
+            </div>
+
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html" class="active">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-icons">
+                <div class="header-search">
+                    <input type="text" id="header-search"
+                           placeholder="Пошук книг..." autocomplete="off">
+                    <div class="search-suggestions" id="search-suggestions"></div>
+                </div>
+
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section class="books-section">
-        <div class="container">
-            <div class="admin-login" id="admin-login">
-                <h2>Вхід в панель керування</h2>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label>Пароль:</label>
-                        <input type="password" id="admin-password" placeholder="Введіть пароль" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Увійти</button>
-                </form>
-            </div>
-
-            <div class="admin-panel" id="admin-panel" style="display: none;">
-                <div class="admin-header">
-                    <h1>Панель керування</h1>
-                    <button id="logout-btn" class="btn btn-outline">Вийти</button>
-                </div>
-
-                <div class="admin-tabs">
-                    <button class="tab-btn active" data-tab="add-book">Додати книгу</button>
-                    <button class="tab-btn" data-tab="manage-books">Керування книгами</button>
-                    <button class="tab-btn" data-tab="manage-categories">Жанри та категорії</button>
-                </div>
-
-                <div class="tab-content active" id="add-book">
-                    <h2 style="font-size: 32px; margin-bottom: 30px;">Додати нову книгу</h2>
-                    <form id="add-book-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Назва книги*:</label>
-                                <input type="text" name="title" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Автор*:</label>
-                                <input type="text" name="author" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Оригінальна назва:</label>
-                                <input type="text" name="originalTitle">
-                            </div>
-                            <div class="form-group">
-                                <label>Видавництво:</label>
-                                <input type="text" name="publisher">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Категорія*:</label>
-                                <input type="text" name="category" required
-                                    placeholder="Оберіть або введіть свою"
-                                    list="category-suggestions"
-                                    autocomplete="off">
-                                <datalist id="category-suggestions"></datalist>
-                                <small style="color:var(--cinereous);">Оберіть з списку або введіть нову</small>
-                            </div>
-                            <div class="form-group">
-                                <label>Мова:</label>
-                                <input type="text" name="language" value="Українська">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Ціна (грн)*:</label>
-                                <input type="number" name="price" min="0" step="0.01" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Знижка (%):</label>
-                                <input type="number" name="discount" min="0" max="100" value="0">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Рейтинг (1-10):</label>
-                                <input type="number" name="rating" min="1" max="10" step="0.1" value="8">
-                            </div>
-                            <div class="form-group">
-                                <label>Кількість оцінок:</label>
-                                <input type="number" name="ratingCount" min="0" value="0">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Кількість сторінок:</label>
-                                <input type="number" name="pages" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>Рік видання:</label>
-                                <input type="number" name="year" min="1900" max="2030" value="2024">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Обкладинка:</label>
-                                <select name="cover">
-                                    <option value="Тверда">Тверда</option>
-                                    <option value="М'яка">М'яка</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Перекладач:</label>
-                                <input type="text" name="translator">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>ISBN:</label>
-                                <input type="text" name="isbn">
-                            </div>
-                            <div class="form-group">
-                                <label>Штрих-код:</label>
-                                <input type="text" name="barcode">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Розмір (мм):</label>
-                                <input type="text" name="size" placeholder="150x210x30">
-                            </div>
-                            <div class="form-group">
-                                <label>Вага (г):</label>
-                                <input type="number" name="weight" min="0">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ілюстрації:</label>
-                            <select name="illustrations">
-                                <option value="Без ілюстрацій">Без ілюстрацій</option>
-                                <option value="Кольорові">Кольорові</option>
-                                <option value="Чорно-білі">Чорно-білі</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>URL обкладинки (головне фото)*:</label>
-                            <input type="url" name="image" placeholder="https://example.com/cover.jpg" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Додаткові фото (через кому, необов'язково):</label>
-                            <textarea name="images" rows="2" placeholder="https://example.com/photo2.jpg, https://example.com/photo3.jpg"></textarea>
-                            <small style="color:var(--cinereous);">Перше фото буде головним. Додаткові — для галереї на сторінці книги.</small>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Кількість на складі*:</label>
-                                <input type="number" name="stock" min="0" value="0" required>
-                                <small style="color:var(--cinereous);">0 = немає в наявності</small>
-                            </div>
-                            <div class="form-group">
-                                <label>Знижка (%):</label>
-                                <input type="number" name="discount" min="0" max="100" value="0">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Короткий опис*:</label>
-                            <textarea name="shortDescription" rows="2" required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Повний опис*:</label>
-                            <textarea name="description" rows="5" required></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group checkbox-group">
-                                <label>
-                                    <input type="checkbox" name="isNew" value="true">
-                                    Новинка
-                                </label>
-                            </div>
-                            <div class="form-group checkbox-group">
-                                <label>
-                                    <input type="checkbox" name="isTop" value="true">
-                                    Топ продажів
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" style="margin-right: 10px;">Додати книгу</button>
-                        <button type="reset" class="btn btn-outline">Очистити форму</button>
-                    </form>
-                </div>
-
-                <div class="tab-content" id="manage-books">
-                    <h2 style="font-size: 32px; margin-bottom: 30px;">Керування книгами</h2>
-                    <div id="admin-books-list"></div>
-                </div>
-
-                <!-- ТАБ: КАТЕГОРІЇ -->
-                <div class="tab-content" id="manage-categories">
-                    <h2 style="font-size: 32px; margin-bottom: 10px;">Жанри та категорії</h2>
-                    <p style="color:var(--cinereous); margin-bottom:30px;">
-                        Вбудованих жанрів: 49. Тут можна додати власні або видалити додані раніше.
-                    </p>
-
-                    <!-- Додати новий жанр -->
-                    <div style="background:#f9f3e3; padding:24px; border-radius:12px; margin-bottom:30px;">
-                        <h3 style="font-size:20px; margin-bottom:16px;">➕ Додати новий жанр</h3>
-                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                            <div style="flex:1; min-width:200px;">
-                                <label style="display:block; margin-bottom:6px; font-weight:600;">Назва жанру*</label>
-                                <input type="text" id="new-category-name" placeholder="Наприклад: Графічний роман"
-                                    style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-family:var(--font-body); font-size:15px;">
-                            </div>
-                            <div style="width:100px;">
-                                <label style="display:block; margin-bottom:6px; font-weight:600;">Іконка</label>
-                                <input type="text" id="new-category-icon" placeholder="📚" maxlength="4"
-                                    style="width:100%; padding:12px; border:2px solid #ddd; border-radius:8px; font-family:var(--font-body); font-size:22px; text-align:center;">
-                            </div>
-                            <button class="btn btn-primary" onclick="adminAddCategory()" style="padding:12px 24px;">
-                                Додати
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Власні категорії -->
-                    <div id="custom-categories-list" style="margin-bottom:40px;"></div>
-
-                    <!-- Всі вбудовані жанри (для довідки) -->
-                    <div>
-                        <h3 style="font-size:20px; margin-bottom:16px; color:var(--cinereous);">
-                            📋 Вбудовані жанри (49 штук)
-                        </h3>
-                        <div id="default-categories-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px;"></div>
-                    </div>
-                </div>
+<!-- HERO -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Світ книг чекає на вас</h1>
+            <p class="hero-subtitle">
+                Тисячі книг українською та іноземними мовами.<br>
+                Швидка доставка по всій Україні.
+            </p>
+            <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+                <a href="catalog.html" class="btn btn-primary btn-large">
+                    📚 Переглянути каталог
+                </a>
+                <a href="catalog.html?sort=new" class="btn btn-large"
+                   style="background:transparent; border:2px solid rgba(244,227,178,0.6);
+                          color:var(--vanilla); padding:15px 38px; font-size:17px;">
+                    ✨ Новинки
+                </a>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <script src="../js/main.js"></script>
-    <script src="../js/admin.js"></script>
-    <script>
-    // ===== ТАБИ =====
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(btn.dataset.tab).classList.add('active');
+<!-- КАТЕГОРІЇ -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Жанри та категорії</h2>
+        <div class="categories-wrapper">
+            <div class="categories-track" id="categories-track" data-position="0"></div>
+        </div>
+        <div class="slider-controls">
+            <button class="slider-btn" onclick="scrollCategories(-1)" title="Назад">‹</button>
+            <button class="slider-btn" onclick="scrollCategories(1)"  title="Вперед">›</button>
+        </div>
+        <div style="text-align:center; margin-top:24px;">
+            <a href="catalog.html" class="btn btn-outline">
+                Переглянути всі жанри →
+            </a>
+        </div>
+    </div>
+</section>
 
-            if (btn.dataset.tab === 'manage-categories') renderCategoriesTab();
-        });
-    });
+<!-- ТОП ПРОДАЖІВ -->
+<section class="books-section">
+    <div class="container">
+        <h2 class="section-title">🔥 Топ продажів</h2>
+        <div class="books-grid" id="top-books">
+            <p style="text-align:center; padding:40px; color:var(--cinereous);">Завантаження...</p>
+        </div>
+        <div style="text-align:center; margin-top:32px;">
+            <a href="catalog.html?sort=popular" class="btn btn-outline">Всі бестселери →</a>
+        </div>
+    </div>
+</section>
 
-    // ===== ВХІД В АДМІНКУ =====
-    const ADMIN_PASSWORD = 'admin123'; // змініть на свій пароль
+<!-- НОВИНКИ -->
+<section class="books-section" style="background:white;">
+    <div class="container">
+        <h2 class="section-title">⭐ Новинки</h2>
+        <div class="books-grid" id="new-books">
+            <p style="text-align:center; padding:40px; color:var(--cinereous);">Завантаження...</p>
+        </div>
+        <div style="text-align:center; margin-top:32px;">
+            <a href="catalog.html?sort=new" class="btn btn-outline">Всі новинки →</a>
+        </div>
+    </div>
+</section>
 
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const pass = document.getElementById('admin-password').value;
-        if (pass === ADMIN_PASSWORD) {
-            document.getElementById('admin-login').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'block';
-            loadBooks().then(() => {
-                loadAdminBooks();
-                loadCategoryOptions();
-            });
-        } else {
-            showNotification('Невірний пароль!', 'error');
-        }
-    });
+<!-- НЕЩОДАВНО ПЕРЕГЛЯНУТІ -->
+<section class="recently-section" id="recently-viewed-section" style="display:none;">
+    <div class="container">
+        <h2 class="section-title">👁️ Нещодавно переглянуті</h2>
+        <div class="books-grid" id="recently-viewed"></div>
+    </div>
+</section>
 
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        document.getElementById('admin-panel').style.display = 'none';
-        document.getElementById('admin-login').style.display = 'block';
-    });
-
-    // ===== КАТЕГОРІЇ: datalist у формі =====
-    function loadCategoryOptions() {
-        const datalist = document.getElementById('category-suggestions');
-        if (!datalist) return;
-        const cats = getAllCategories();
-        datalist.innerHTML = cats.map(c => `<option value="${c.name}">${c.icon} ${c.name}</option>`).join('');
-    }
-
-    // ===== КАТЕГОРІЇ: таб =====
-    function renderCategoriesTab() {
-        // Кастомні
-        const customList = document.getElementById('custom-categories-list');
-        const custom = JSON.parse(localStorage.getItem('customCategories') || '[]');
-
-        if (custom.length === 0) {
-            customList.innerHTML = '<p style="color:var(--cinereous); margin-bottom:20px;">Власних жанрів ще немає. Додайте вище.</p>';
-        } else {
-            customList.innerHTML = `
-                <h3 style="font-size:20px; margin-bottom:14px;">✏️ Ваші додані жанри</h3>
-                <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                    ${custom.map(c => `
-                        <div style="display:flex; align-items:center; gap:8px; background:white; padding:10px 16px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
-                            <span style="font-size:20px;">${c.icon}</span>
-                            <span style="font-weight:600;">${c.name}</span>
-                            <button onclick="adminRemoveCategory('${c.id}')"
-                                style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:18px; line-height:1;" title="Видалити">✕</button>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
-        // Вбудовані
-        const grid = document.getElementById('default-categories-grid');
-        grid.innerHTML = DEFAULT_CATEGORIES.map(c => `
-            <div style="background:#f9f3e3; padding:10px 14px; border-radius:8px; font-size:14px; display:flex; align-items:center; gap:8px;">
-                <span style="font-size:18px;">${c.icon}</span>
-                <span>${c.name}</span>
+<!-- ПЕРЕВАГИ -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title" style="margin-bottom:40px;">Чому обирають нас</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">📦</div>
+                <h3>Швидка доставка</h3>
+                <p>Нова Пошта 1–3 дні<br>Безкоштовно від 500 грн</p>
             </div>
-        `).join('');
-    }
+            <div class="feature-item">
+                <div class="feature-icon">✅</div>
+                <h3>Тільки оригінали</h3>
+                <p>Офіційні видання<br>від перевірених видавництв</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💳</div>
+                <h3>Зручна оплата</h3>
+                <p>Готівка, картка<br>або накладений платіж</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🇺🇦</div>
+                <h3>Українські книги</h3>
+                <p>Великий вибір<br>українською мовою</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-    function adminAddCategory() {
-        const name = document.getElementById('new-category-name').value.trim();
-        const icon = document.getElementById('new-category-icon').value.trim() || '📚';
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99f0f7fff6d9fbf6f6f2fffcf8edf1fcebb7faf6f4">[email&#160;protected]</a></p>
+                <p>Тел: +380 XX XXX XX XX</p>
+                <p>Пн–Пт: 9:00–18:00</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="return.html">Повернення</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Зв'язатись з нами</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+        </div>
+    </div>
+</footer>
 
-        if (!name) { showNotification('Введіть назву жанру', 'error'); return; }
+<script src="js/main.js"></script>
+<script src="js/search.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadBooks();
+    loadCategoriesSlider();
+});
 
-        const added = addCustomCategory(name, icon);
-        if (added) {
-            showNotification(`Жанр "${name}" додано!`);
-            document.getElementById('new-category-name').value = '';
-            document.getElementById('new-category-icon').value = '';
-            renderCategoriesTab();
-            loadCategoryOptions();
-        } else {
-            showNotification('Такий жанр вже існує', 'error');
-        }
-    }
+function loadCategoriesSlider() {
+    const track = document.getElementById('categories-track');
+    if (!track) return;
 
-    function adminRemoveCategory(id) {
-        if (!confirm(`Видалити жанр "${id}"?`)) return;
-        removeCustomCategory(id);
-        showNotification('Жанр видалено');
-        renderCategoriesTab();
-        loadCategoryOptions();
-    }
-    </script>
+    const usedIds = [...new Set(books.map(b => b.category).filter(Boolean))];
+    const allCats = getAllCategories();
+    const toShow  = allCats.filter(c => usedIds.includes(c.id));
+    const list    = toShow.length > 0 ? toShow : allCats.slice(0, 12);
+
+    track.innerHTML = list.map(cat => `
+        <a href="catalog.html?category=${encodeURIComponent(cat.id)}"
+           class="category-card">
+            <div class="category-icon">${cat.icon}</div>
+            <div class="category-name">${cat.name}</div>
+        </a>
+    `).join('');
+}
+</script>
+
 </body>
 </html>
