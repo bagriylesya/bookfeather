@@ -5,111 +5,286 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вподобання - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .fav-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .fav-count-text {
+            font-size: 16px;
+            color: var(--cinereous);
+        }
+
+        .fav-count-text strong { color: var(--black-bean); }
+
+        .empty-favorites {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--cinereous);
+        }
+
+        .empty-favorites .big-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .empty-favorites h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: var(--black-bean);
+        }
+
+        .empty-favorites p {
+            font-size: 16px;
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+
+        /* Картка вподобань — трохи більша дія */
+        .fav-card-actions {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px 16px;
+        }
+
+        .fav-move-to-cart {
+            flex: 1;
+            padding: 9px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <div class="header-search">
+                    <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                    <div class="search-suggestions" id="search-suggestions"></div>
                 </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </nav>
-                <div class="header-icons">
-                    <button class="icon-btn active" onclick="window.location.href='favorites.html'" title="Вподобання">
-                        ♥ <span class="fav-count">0</span>
-                    </button>
-                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
-                        🛒 <span class="cart-count">0</span>
-                    </button>
-                    <div class="profile-wrapper">
-                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
-                            👤
-                        </button>
-                        <div class="profile-menu" id="profile-menu">
-                            <a href="login.html">Увійти</a>
-                            <a href="register.html">Реєстрація</a>
-                            <a href="profile.html">Мій профіль</a>
-                        </div>
-                    </div>
+                <button class="icon-btn active" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section class="books-section">
-        <div class="container">
-            <h1 class="page-title">Вподобання</h1>
+<section class="books-section">
+    <div class="container">
+        <h1 class="page-title">♥ Вподобання</h1>
 
-            <div class="books-grid" id="favorites-books"></div>
-
-            <div class="empty-state" id="empty-favorites" style="display: none;">
-                <p style="font-size: 22px; margin-bottom: 25px;">Ви ще не додали жодної книги у вподобання</p>
-                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
+        <div class="fav-topbar">
+            <div class="fav-count-text" id="fav-count-text">Завантаження...</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-outline btn-small"
+                        id="add-all-to-cart"
+                        onclick="addAllFavsToCart()"
+                        style="display:none;">
+                    🛒 Всі до кошика
+                </button>
+                <button class="btn btn-small"
+                        id="clear-favorites-btn"
+                        onclick="clearAllFavorites()"
+                        style="display:none; border:2px solid #dc3545; color:#dc3545;
+                               background:white; padding:7px 16px; border-radius:8px;
+                               font-family:var(--font-body); font-size:13px; cursor:pointer;">
+                    ✕ Очистити всі
+                </button>
             </div>
         </div>
-    </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>BOOKFEATHER</h3>
-                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Навігація</h4>
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
-                    <p>Тел: +380 XX XXX XX XX</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Підтримка</h4>
-                    <ul>
-                        <li><a href="delivery.html">Доставка і оплата</a></li>
-                        <li><a href="return.html">Повернення товару</a></li>
-                        <li><a href="faq.html">Часті питання</a></li>
-                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
-                    </ul>
-                </div>
+        <!-- СІТКА ВПОДОБАНЬ -->
+        <div class="books-grid" id="favorites-grid"></div>
+
+        <!-- ПОРОЖНІ ВПОДОБАННЯ -->
+        <div class="empty-favorites" id="empty-favorites" style="display:none;">
+            <div class="big-icon">♥</div>
+            <h2>Вподобань ще немає</h2>
+            <p>
+                Натискайте ♥ на картках книг,<br>
+                щоб зберігати улюблені видання тут.
+            </p>
+            <a href="catalog.html" class="btn btn-primary btn-large">
+                Переглянути каталог
+            </a>
+        </div>
+
+        <!-- РЕКОМЕНДОВАНІ (якщо вподобань немає) -->
+        <div id="recommended-section" style="display:none; margin-top:60px;">
+            <h2 class="section-title">Можливо, вам сподобається</h2>
+            <div class="books-grid" id="recommended-books"></div>
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+                <p>Тел: +380 XX XXX XX XX</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="return.html">Повернення</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+        </div>
+    </div>
+</footer>
 
-    <script src="js/main.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadBooks();
-            
-            const container = document.getElementById('favorites-books');
-            const emptyState = document.getElementById('empty-favorites');
-            
-            if (favorites.length === 0) {
-                container.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
+<script src="js/main.js"></script>
+<script src="js/search.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadBooks();
+    renderFavorites();
+});
+
+function renderFavorites() {
+    const grid      = document.getElementById('favorites-grid');
+    const empty     = document.getElementById('empty-favorites');
+    const countText = document.getElementById('fav-count-text');
+    const addAllBtn = document.getElementById('add-all-to-cart');
+    const clearBtn  = document.getElementById('clear-favorites-btn');
+    const recSection = document.getElementById('recommended-section');
+
+    const favBooks = books.filter(b => favorites.includes(b.id));
+
+    // Лічильник
+    if (countText) {
+        countText.innerHTML = favBooks.length > 0
+            ? `Збережено: <strong>${favBooks.length}</strong> ${pluralBooks(favBooks.length)}`
+            : '';
+    }
+
+    if (favBooks.length === 0) {
+        grid.innerHTML = '';
+        if (empty)    empty.style.display    = 'block';
+        if (addAllBtn) addAllBtn.style.display = 'none';
+        if (clearBtn)  clearBtn.style.display  = 'none';
+
+        // Рекомендуємо топ книги
+        if (recSection) {
+            const recommended = books.filter(b => b.isTop || b.rating >= 8).slice(0, 4);
+            if (recommended.length > 0) {
+                recSection.style.display = 'block';
+                document.getElementById('recommended-books').innerHTML =
+                    recommended.map(b => createBookCard(b)).join('');
+                attachBookCardListeners();
             }
-            
-            container.innerHTML = favorites.map(book => createBookCard(book)).join('');
-            attachBookCardListeners();
-        });
-    </script>
+        }
+        return;
+    }
+
+    if (empty)    empty.style.display    = 'none';
+    if (recSection) recSection.style.display = 'none';
+    if (addAllBtn) addAllBtn.style.display = 'inline-flex';
+    if (clearBtn)  clearBtn.style.display  = 'inline-block';
+
+    grid.innerHTML = favBooks.map(book => createBookCard(book)).join('');
+    attachBookCardListeners();
+}
+
+// Відмінювання слова "книга"
+function pluralBooks(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return 'книга';
+    if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'книги';
+    return 'книг';
+}
+
+// Додати всі вподобання до кошика
+function addAllFavsToCart() {
+    const favBooks = books.filter(b => favorites.includes(b.id));
+    let added = 0;
+
+    favBooks.forEach(book => {
+        const avail = (book.stock || 0) - (book.reserved || 0);
+        const inCart = cart.some(i => i.id === book.id);
+        if (!inCart && avail > 0) {
+            cart.push({ ...book, quantity: 1 });
+            added++;
+        }
+    });
+
+    if (added > 0) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        showNotification(`🛒 ${added} ${pluralBooks(added)} додано до кошика!`);
+    } else {
+        showNotification('Всі книги вже в кошику або немає в наявності', 'info');
+    }
+}
+
+// Очистити всі вподобання
+function clearAllFavorites() {
+    if (!confirm('Видалити всі вподобання?')) return;
+    favorites = [];
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    updateFavCount();
+    renderFavorites();
+    showNotification('Вподобання очищено');
+}
+
+// Перерендер після зміни вподобань (щоб картки оновлювались)
+const origToggle = window.toggleFavorite;
+window.toggleFavorite = function(bookId, btn) {
+    origToggle?.(bookId, btn);
+    setTimeout(renderFavorites, 50);
+};
+</script>
+
 </body>
 </html>

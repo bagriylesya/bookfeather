@@ -86,10 +86,23 @@ input, select, textarea { font-family: var(--font-body); }
     font-weight: 700;
     color: var(--blood-red);
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
 }
 
-.logo a { color: var(--blood-red); }
-.logo-img { height: 50px; width: auto; }
+.logo a { color: var(--blood-red); text-decoration: none; }
+.logo-img { height: 64px; width: auto; }
+
+.logo-name {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--blood-red);
+    letter-spacing: 1px;
+    line-height: 1;
+}
 
 /* === НАВІГАЦІЯ === */
 .nav ul {

@@ -22,7 +22,8 @@ async function loadBooks() {
             return books;
         }
 
-        const response = await fetch('data/books.json');
+        const basePath = window.BASE_PATH || '';
+        const response = await fetch(basePath + 'data/books.json');
         if (response.ok) {
             books = await response.json();
             localStorage.setItem('books', JSON.stringify(books));
@@ -42,7 +43,36 @@ async function loadBooks() {
 // ===================================
 function getDemoBooks() {
     return [
-      
+        {
+            id: 1,
+            title: "Майстер і Маргарита",
+            author: "Михайло Булгаков",
+            price: 250,
+            originalTitle: "Мастер и Маргарита",
+            category: "Художня література",
+            categories: ["Художня література", "Фентезі"],
+            rating: 4.9,
+            ratingCount: 245,
+            pages: 480,
+            year: 2023,
+            cover: "Тверда",
+            language: "Українська",
+            translator: "Олександр Мокровольський",
+            publisher: "Фоліо",
+            isbn: "978-966-03-7891-2",
+            image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
+            images: [
+                "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
+                "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400"
+            ],
+            shortDescription: "Культовий роман про любов, магію та боротьбу добра зі злом.",
+            description: "Один з найвідоміших романів XX століття.",
+            isNew: true,
+            isTop: true,
+            discount: 0,
+            stock: 50,
+            reserved: 0
+        },
         {
             id: 2,
             title: "1984",

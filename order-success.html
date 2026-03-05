@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Замовлення оформлено - BOOKFEATHER</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .success-wrapper {
+            min-height: calc(100vh - 220px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .success-box {
+            background: white;
+            border-radius: 20px;
+            padding: 56px 48px;
+            width: 100%;
+            max-width: 640px;
+            box-shadow: 0 10px 50px rgba(49,14,16,0.12);
+            text-align: center;
+        }
+
+        /* Анімована галочка */
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #2d8a4e, #20c997);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            margin: 0 auto 24px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0%   { transform: scale(0); opacity: 0; }
+            80%  { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-title {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: var(--black-bean);
+        }
+
+        .success-subtitle {
+            font-size: 17px;
+            color: var(--cinereous);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* Номер замовлення */
+        .order-number-box {
+            background: #fdf8ef;
+            border: 2px solid #f0e8d8;
+            border-radius: 14px;
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            display: inline-block;
+            min-width: 280px;
+        }
+
+        .order-number-label {
+            font-size: 13px;
+            color: var(--cinereous);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .order-number-value {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--blood-red);
+            letter-spacing: 1px;
+        }
+
+        /* Деталі замовлення */
+        .order-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .detail-card {
+            background: #fdfaf5;
+            border-radius: 10px;
+            padding: 14px 18px;
+            border: 1px solid #f0e8d8;
+        }
+
+        .detail-card-label {
+            font-size: 12px;
+            color: var(--cinereous);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-card-value {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--black-bean);
+        }
+
+        /* Кроки доставки */
+        .delivery-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            margin: 28px 0;
+            flex-wrap: nowrap;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.done .step-circle {
+            background: var(--blood-red);
+            color: white;
+        }
+
+        .step.pending .step-circle {
+            background: #f0e8d8;
+            color: var(--cinereous);
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: #f0e8d8;
+            margin-top: -20px;
+        }
+
+        .step-line.done { background: var(--blood-red); }
+
+        .step-label {
+            font-size: 11px;
+            color: var(--cinereous);
+            text-align: center;
+            line-height: 1.3;
+            max-width: 70px;
+        }
+
+        .step.done .step-label { color: var(--black-bean); font-weight: 600; }
+
+        /* Кнопки дій */
+        .success-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        /* Таймер редіректу */
+        .redirect-hint {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--cinereous);
+        }
+
+        .redirect-hint span {
+            color: var(--blood-red);
+            font-weight: 700;
+        }
+
+        /* Книги в замовленні */
+        .ordered-books {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .ordered-book-thumb {
+            width: 54px;
+            height: 74px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        @media (max-width: 600px) {
+            .success-box { padding: 32px 20px; }
+            .order-details-grid { grid-template-columns: 1fr; }
+            .success-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="success-wrapper">
+    <div class="success-box">
+
+        <div class="success-icon">✓</div>
+
+        <h1 class="success-title">Замовлення оформлено!</h1>
+        <p class="success-subtitle">
+            Дякуємо за покупку! Ми вже обробляємо ваше замовлення<br>
+            і зв'яжемось із вами найближчим часом.
+        </p>
+
+        <!-- Номер замовлення -->
+        <div class="order-number-box">
+            <div class="order-number-label">Номер замовлення</div>
+            <div class="order-number-value" id="order-num">—</div>
+        </div>
+
+        <!-- Мініатюри книг -->
+        <div class="ordered-books" id="ordered-books"></div>
+
+        <!-- Деталі -->
+        <div class="order-details-grid" id="order-details-grid">
+            <div class="detail-card">
+                <div class="detail-card-label">Сума</div>
+                <div class="detail-card-value" id="det-total">—</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-card-label">Оплата</div>
+                <div class="detail-card-value" id="det-payment">—</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-card-label">Доставка</div>
+                <div class="detail-card-value" id="det-delivery">—</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-card-label">Місто</div>
+                <div class="detail-card-value" id="det-city">—</div>
+            </div>
+        </div>
+
+        <!-- Кроки статусу -->
+        <div class="delivery-steps">
+            <div class="step done">
+                <div class="step-circle">✓</div>
+                <div class="step-label">Прийнято</div>
+            </div>
+            <div class="step-line done"></div>
+            <div class="step pending">
+                <div class="step-circle">📦</div>
+                <div class="step-label">В обробці</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step pending">
+                <div class="step-circle">🚚</div>
+                <div class="step-label">Відправлено</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step pending">
+                <div class="step-circle">🏠</div>
+                <div class="step-label">Доставлено</div>
+            </div>
+        </div>
+
+        <!-- Дії -->
+        <div class="success-actions">
+            <a href="catalog.html" class="btn btn-outline btn-large">
+                📚 Продовжити покупки
+            </a>
+            <a href="profile.html?tab=orders" class="btn btn-primary btn-large"
+               id="view-orders-btn" style="display:none;">
+                📦 Мої замовлення
+            </a>
+        </div>
+
+        <div class="redirect-hint" id="redirect-hint" style="display:none;">
+            Перехід до профілю через <span id="countdown">5</span> с
+        </div>
+
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+                <p>Тел: +380 XX XXX XX XX</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
+        </div>
+    </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const params  = new URLSearchParams(window.location.search);
+    const orderId = params.get('id');
+    const orderNum = params.get('num');
+
+    // Показуємо номер з URL одразу
+    if (orderNum) {
+        document.getElementById('order-num').textContent = orderNum;
+    }
+
+    // Знаходимо деталі замовлення
+    const allOrders = JSON.parse(localStorage.getItem('allOrders') || '[]');
+    const order = orderId
+        ? allOrders.find(o => String(o.id) === String(orderId))
+        : allOrders[allOrders.length - 1];
+
+    if (order) {
+        fillOrderDetails(order);
+    }
+
+    // Якщо залогінений — показуємо кнопку "Мої замовлення" і таймер
+    const user = getCurrentUser();
+    if (user) {
+        document.getElementById('view-orders-btn').style.display = 'inline-flex';
+        startRedirectTimer();
+    }
+});
+
+const paymentLabels = {
+    cod:      '💵 Накладений платіж',
+    card:     '💳 Карткою онлайн',
+    transfer: '🏦 Банківський переказ',
+};
+
+const deliveryLabels = {
+    'np-warehouse': '🏢 Нова Пошта (відд.)',
+    'np-courier':   '🚚 Нова Пошта (кур.)',
+    'ukrposhta':    '📮 Укрпошта',
+};
+
+function fillOrderDetails(order) {
+    const set = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && val) el.textContent = val;
+    };
+
+    set('order-num',    order.orderNumber);
+    set('det-total',    `${order.total?.toFixed(0) || 0} грн`);
+    set('det-payment',  paymentLabels[order.payment] || order.payment);
+    set('det-delivery', deliveryLabels[order.delivery?.method] || order.delivery?.method);
+    set('det-city',     order.delivery?.city || '—');
+
+    // Мініатюри книг
+    const thumbsContainer = document.getElementById('ordered-books');
+    if (thumbsContainer && order.items?.length > 0) {
+        const shown = order.items.slice(0, 5);
+        const extra = order.items.length - 5;
+        thumbsContainer.innerHTML = shown.map(item => `
+            <img src="${item.image || 'https://via.placeholder.com/54x74?text=📚'}"
+                 class="ordered-book-thumb"
+                 title="${item.title}"
+                 onerror="this.src='https://via.placeholder.com/54x74?text=📚'"
+                 alt="${item.title}">
+        `).join('') + (extra > 0 ? `
+            <div style="width:54px; height:74px; background:#f0e8d8; border-radius:6px;
+                        display:flex; align-items:center; justify-content:center;
+                        font-size:13px; font-weight:700; color:var(--cinereous);">
+                +${extra}
+            </div>
+        ` : '');
+    }
+}
+
+// Таймер зворотного відліку
+function startRedirectTimer() {
+    const hint      = document.getElementById('redirect-hint');
+    const countdown = document.getElementById('countdown');
+    if (!hint || !countdown) return;
+
+    hint.style.display = 'block';
+    let secs = 8;
+
+    const timer = setInterval(() => {
+        secs--;
+        countdown.textContent = secs;
+        if (secs <= 0) {
+            clearInterval(timer);
+            window.location.href = 'profile.html?tab=orders';
+        }
+    }, 1000);
+
+    // Клік на будь-яку кнопку — зупинити таймер
+    document.querySelectorAll('.success-actions a').forEach(btn => {
+        btn.addEventListener('click', () => {
+            clearInterval(timer);
+            hint.style.display = 'none';
+        });
+    });
+}
+</script>
+
+</body>
+</html>

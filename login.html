@@ -5,178 +5,427 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Вхід - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .auth-wrapper {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 16px;
+            padding: 48px 44px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 8px 40px rgba(49,14,16,0.12);
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .auth-logo span {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            color: var(--blood-red);
+            font-weight: 700;
+        }
+
+        .auth-title {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--cinereous);
+            margin-bottom: 32px;
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--black-bean);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 13px 16px;
+            border: 2px solid #e0d8cc;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--black-bean);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: #fdfaf5;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--blood-red);
+            box-shadow: 0 0 0 3px rgba(116,7,14,0.08);
+            background: white;
+        }
+
+        .input-group input.error { border-color: #dc3545; }
+
+        .field-error {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .field-error.show { display: block; }
+
+        .password-wrapper { position: relative; }
+        .password-wrapper input { padding-right: 46px; }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--cinereous);
+            transition: color 0.2s;
+            padding: 0;
+        }
+
+        .toggle-password:hover { color: var(--blood-red); }
+
+        .check-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .check-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .check-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--blood-red);
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: var(--blood-red);
+            font-size: 14px;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: var(--font-body);
+        }
+
+        .forgot-link:hover { color: var(--black-bean); }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--cinereous);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0d8cc;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 15px;
+            color: var(--cinereous);
+        }
+
+        .auth-footer a {
+            color: var(--blood-red);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 520px) {
+            .auth-box { padding: 32px 24px; }
+        }
+    </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
-                </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </nav>
-                <div class="header-icons">
-                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
-                        ♥ <span class="fav-count">0</span>
-                    </button>
-                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
-                        🛒 <span class="cart-count">0</span>
-                    </button>
-                    <div class="profile-wrapper">
-                        <button class="icon-btn profile-btn active" onclick="toggleProfileMenu(event)" title="Профіль">
-                            👤
-                        </button>
-                        <div class="profile-menu" id="profile-menu">
-                            <a href="login.html">Увійти</a>
-                            <a href="register.html">Реєстрація</a>
-                            <a href="profile.html">Мій профіль</a>
-                        </div>
-                    </div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                         onerror="this.style.display='none'">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section class="books-section">
-        <div class="container">
-            <div style="max-width: 500px; margin: 0 auto; background-color: white; padding: 50px; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.12);">
-                <h1 style="margin-bottom: 15px; text-align: center; font-size: 42px;">Вхід</h1>
-                <p style="text-align: center; color: var(--cinereous); margin-bottom: 40px; font-size: 17px;">
-                    Увійдіть в свій обліковий запис
-                </p>
-                
-                <form id="login-form">
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Email*:</label>
-                        <input type="email" name="email" id="login-email" required placeholder="your@email.com" 
-                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
-                    </div>
-                    
-                    <div style="margin-bottom: 25px;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 16px;">Пароль*:</label>
-                        <input type="password" name="password" id="login-password" required placeholder="Введіть пароль"
-                            style="width: 100%; padding: 14px; border: 2px solid var(--cinereous); border-radius: 8px; font-family: var(--font-body); font-size: 17px;">
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" name="remember" style="transform: scale(1.2);">
-                            <span style="font-size: 16px;">Запам'ятати мене</span>
-                        </label>
-                        <a href="#" id="forgot-password" style="color: var(--blood-red); font-size: 16px; text-decoration: underline;">Забули пароль?</a>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 19px; margin-bottom: 20px;">
-                        Увійти
-                    </button>
-                    
-                    <div style="text-align: center; color: var(--cinereous); margin: 25px 0; font-size: 16px;">
-                        <span>або</span>
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <p style="font-size: 17px; margin-bottom: 15px;">Ще немає облікового запису?</p>
-                        <a href="register.html" class="btn btn-outline" style="width: 100%; padding: 16px; font-size: 19px; display: inline-block; text-align: center;">
-                            Зареєструватися
-                        </a>
-                    </div>
-                </form>
-                
-                <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e0e0e0; text-align: center;">
-                    <p style="font-size: 15px; color: var(--cinereous); line-height: 1.8;">
-                        Входячи в систему, ви погоджуєтесь з нашими<br>
-                        <a href="#" style="color: var(--blood-red); text-decoration: underline;">Умовами використання</a> та 
-                        <a href="#" style="color: var(--blood-red); text-decoration: underline;">Політикою конфіденційності</a>
-                    </p>
+<!-- ФОРМА ВХОДУ -->
+<div class="auth-wrapper">
+    <div class="auth-box">
+
+        <div class="auth-logo">
+            <span>BOOKFEATHER</span>
+        </div>
+
+        <h1 class="auth-title">Вхід</h1>
+        <p class="auth-subtitle">Увійдіть у свій обліковий запис</p>
+
+        <form id="login-form" novalidate>
+
+            <div class="input-group">
+                <label for="login-email">Email *</label>
+                <input type="email" id="login-email" name="email"
+                       placeholder="your@email.com" autocomplete="email">
+                <div class="field-error" id="email-error">Введіть коректний email</div>
+            </div>
+
+            <div class="input-group">
+                <label for="login-password">Пароль *</label>
+                <div class="password-wrapper">
+                    <input type="password" id="login-password" name="password"
+                           placeholder="Ваш пароль" autocomplete="current-password">
+                    <button type="button" class="toggle-password"
+                            onclick="togglePass('login-password', this)">👁</button>
                 </div>
+                <div class="field-error" id="password-error">Введіть пароль</div>
+            </div>
+
+            <div class="check-row">
+                <label class="check-label">
+                    <input type="checkbox" id="remember-me">
+                    Запам'ятати мене
+                </label>
+                <button type="button" class="forgot-link" onclick="handleForgotPassword()">
+                    Забули пароль?
+                </button>
+            </div>
+
+            <div id="login-error"
+                 style="display:none; background:#f8d7da; color:#721c24; padding:12px 16px;
+                        border-radius:8px; margin-bottom:16px; font-size:14px; text-align:center;">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full"
+                    style="padding:15px; font-size:16px;" id="submit-btn">
+                Увійти
+            </button>
+
+        </form>
+
+        <div class="divider">або</div>
+
+        <div class="auth-footer">
+            Ще немає акаунту?
+            <a href="register.html">Зареєструватися</a>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>BOOKFEATHER</h3>
+                <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Навігація</h4>
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Контакти</h4>
+                <p>Email: info@bookfeather.com</p>
+                <p>Тел: +380 XX XXX XX XX</p>
+            </div>
+            <div class="footer-section">
+                <h4>Підтримка</h4>
+                <ul>
+                    <li><a href="delivery.html">Доставка і оплата</a></li>
+                    <li><a href="return.html">Повернення</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Зв'язатись</a></li>
+                </ul>
             </div>
         </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>BOOKFEATHER</h3>
-                    <p>Ми створюємо світ, де кожна книга знаходить свого читача.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Навігація</h4>
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
-                    <p>Тел: +380 XX XXX XX XX</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Підтримка</h4>
-                    <ul>
-                        <li><a href="delivery.html">Доставка і оплата</a></li>
-                        <li><a href="return.html">Повернення товару</a></li>
-                        <li><a href="faq.html">Часті питання</a></li>
-                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 202 BOOKFEATHER. Всі права захищені.</p>
         </div>
-    </footer>
+    </div>
+</footer>
 
-    <script src="js/main.js"></script>
-    <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const remember = document.querySelector('[name="remember"]').checked;
-            
-            // Перевірка облікових даних (демо)
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                // Зберігаємо дані користувача
-                if (remember) {
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-                } else {
-                    sessionStorage.setItem('currentUser', JSON.stringify(user));
-                }
-                
-                showNotification('Успішний вхід! Вітаємо, ' + user.name);
-                
-                // Перенаправлення на профіль
-                setTimeout(() => {
-                    window.location.href = 'profile.html';
-                }, 1500);
-            } else {
-                showNotification('Невірний email або пароль!');
-            }
-        });
-        
-        document.getElementById('forgot-password').addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const email = prompt('Введіть ваш email для відновлення пароля:');
-            
-            if (email) {
-                showNotification('Інструкції з відновлення пароля надіслано на ' + email);
-            }
-        });
-    </script>
+<script src="js/main.js"></script>
+<script>
+
+// ===== ВЖЕ ЗАЛОГІНЕНИЙ — РЕДІРЕКТ =====
+document.addEventListener('DOMContentLoaded', () => {
+    const user = getCurrentUser();
+    if (user) {
+        const params   = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect') || 'profile.html';
+        window.location.href = redirect;
+    }
+});
+
+// ===== ПОКАЗ/ПРИХОВАННЯ ПАРОЛЯ =====
+function togglePass(inputId, btn) {
+    const input     = document.getElementById(inputId);
+    input.type      = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+// ===== ВАЛІДАЦІЯ =====
+function validateEmail(val) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+}
+
+function showFieldError(fieldId, errorId, show) {
+    document.getElementById(fieldId)?.classList.toggle('error', show);
+    document.getElementById(errorId)?.classList.toggle('show',  show);
+}
+
+function showLoginError(msg) {
+    const el = document.getElementById('login-error');
+    if (!el) return;
+    el.textContent   = msg;
+    el.style.display = msg ? 'block' : 'none';
+}
+
+// ===== ВІДПРАВКА ФОРМИ =====
+document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const remember = document.getElementById('remember-me').checked;
+
+    // Скидаємо помилки
+    showFieldError('login-email',    'email-error',    false);
+    showFieldError('login-password', 'password-error', false);
+    showLoginError('');
+
+    // Валідація
+    let valid = true;
+    if (!email || !validateEmail(email)) {
+        showFieldError('login-email', 'email-error', true);
+        valid = false;
+    }
+    if (!password) {
+        showFieldError('login-password', 'password-error', true);
+        valid = false;
+    }
+    if (!valid) return;
+
+    // Кнопка — стан завантаження
+    const btn       = document.getElementById('submit-btn');
+    btn.disabled    = true;
+    btn.textContent = '⏳ Вхід...';
+
+    setTimeout(() => {
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const user  = users.find(u =>
+            u.email.toLowerCase() === email.toLowerCase() && u.password === password
+        );
+
+        if (user) {
+            const storage = remember ? localStorage : sessionStorage;
+            storage.setItem('currentUser', JSON.stringify(user));
+            showNotification(`👋 Вітаємо, ${user.name}!`);
+
+            const params   = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect') || 'profile.html';
+            setTimeout(() => { window.location.href = redirect; }, 1000);
+        } else {
+            showLoginError('Невірний email або пароль. Спробуйте ще раз.');
+            btn.disabled    = false;
+            btn.textContent = 'Увійти';
+            document.getElementById('login-email').classList.add('error');
+            document.getElementById('login-password').classList.add('error');
+        }
+    }, 500);
+});
+
+// ===== ВІДНОВЛЕННЯ ПАРОЛЯ =====
+function handleForgotPassword() {
+    const email   = document.getElementById('login-email')?.value?.trim();
+    const entered = prompt('Введіть ваш email для відновлення пароля:', email || '');
+    if (!entered) return;
+
+    if (!validateEmail(entered)) {
+        showNotification('Введіть коректний email', 'error');
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user  = users.find(u => u.email.toLowerCase() === entered.toLowerCase());
+
+    if (user) {
+        showNotification(`📧 Інструкції надіслано на ${entered}`);
+    } else {
+        showNotification('Акаунт з таким email не знайдено', 'error');
+    }
+}
+
+</script>
 </body>
 </html>

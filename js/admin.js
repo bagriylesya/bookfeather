@@ -386,7 +386,7 @@ function saveAdminBooks() {
     localStorage.setItem('books', JSON.stringify(books));
 
     // Спроба синхронізувати з сервером (якщо є PHP)
-    fetch('php/api.php', {
+    fetch((window.BASE_PATH || '') + 'php/api.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(books)
