@@ -150,68 +150,13 @@ function displayBooks() {
     }
     
     container.innerHTML = filteredBooks.map(book => createBookCard(book)).join('');
+    attachBookCardListeners();
+    // Скрол на початок каталогу, не всієї сторінки
+    const catalogTop = document.querySelector('.catalog-layout') || document.querySelector('.books-section');
+    if (catalogTop) catalogTop.scrollIntoView({ behavior: 'instant', block: 'start' });
 }
 
-// СТВОРЕННЯ КАРТКИ КНИГИ
-function createBookCard(book) {
-    const availableStock = (book.stock || 0) - (book.reserved || 0);
-    const discountPrice = book.discount > 0 ? book.price * (1 - book.discount / 100) : book.price;
-    const isFavorite = isInFavorites(book.id);
-    
-    let stockBadge = '';
-    if (availableStock <= 0) {
-        stockBadge = '<div class="stock-badge out-of-stock">❌ Немає</div>';
-    } else if (availableStock <= 15) {
-        stockBadge = `<div class="stock-badge low-stock">⚠️ Останні ${availableStock} шт</div>`;
-    }
-    
-    let badges = '';
-    if (book.isNew) badges += '<span class="badge badge-new">Новинка</span>';
-    if (book.isTop) badges += '<span class="badge badge-top">Топ</span>';
-    if (book.discount > 0) badges += `<span class="badge badge-discount">-${book.discount}%</span>`;
-    
-    return `
-        <div class="book-card">
-            ${stockBadge}
-            <a href="book.html?id=${book.id}">
-                <img src="${book.image || book.image_url || 'https://via.placeholder.com/250x350'}" 
-                     alt="${book.title}" 
-                     class="book-image">
-            </a>
-            <div class="book-badges">${badges}</div>
-            <div class="book-info">
-                <h3 class="book-title">${book.title}</h3>
-                <p class="book-author">${book.author}</p>
-                <div class="book-rating">
-                    ${'⭐'.repeat(Math.round(book.rating || 4))} 
-                    <span class="rating-count">(${book.ratingCount || 0})</span>
-                </div>
-                <div class="book-footer">
-                    <div class="book-price">
-                        ${book.discount > 0 ? `
-                            <span class="price-old">${book.price} грн</span>
-                            <span class="price-current">${discountPrice.toFixed(0)} грн</span>
-                        ` : `
-                            <span class="price-current">${book.price} грн</span>
-                        `}
-                    </div>
-                    <div class="book-actions">
-                        <button class="btn-icon ${isFavorite ? 'active' : ''}" 
-                                onclick="toggleFavorite(${book.id}); event.stopPropagation();" 
-                                title="Вподобання">♥</button>
-                        ${availableStock > 0 ? `
-                            <button class="btn btn-primary btn-small" 
-                                    onclick="addToCart(${book.id}); event.stopPropagation();">В кошик</button>
-                        ` : `
-                            <button class="btn btn-outline btn-small" 
-                                    onclick="notifyWhenAvailable(${book.id}); event.stopPropagation();">🔔 Повідомити</button>
-                        `}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
+
 
 // СКИДАННЯ ФІЛЬТРІВ
 function resetFilters() {

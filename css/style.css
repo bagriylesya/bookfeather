@@ -92,16 +92,34 @@ input, select, textarea { font-family: var(--font-body); }
     text-decoration: none;
 }
 
-.logo a { color: var(--blood-red); text-decoration: none; }
-.logo-img { height: 64px; width: auto; }
+.logo a {
+    color: var(--blood-red);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    height: 52px;
+    width: auto;
+    display: block;
+    flex-shrink: 0;
+}
+
+.logo-img[style*="display: none"] + .logo-name,
+.logo-img[style*="display:none"] + .logo-name {
+    display: block !important;
+}
 
 .logo-name {
     font-family: var(--font-heading);
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--blood-red);
     letter-spacing: 1px;
     line-height: 1;
+    white-space: nowrap;
 }
 
 /* === НАВІГАЦІЯ === */
@@ -352,14 +370,28 @@ input, select, textarea { font-family: var(--font-body); }
 }
 
 /* === СЕКЦІЇ === */
-.books-section { padding: 60px 0; }
-.books-section:nth-child(even) { background-color: white; }
+.books-section { padding: 60px 0; background: white; }
+.books-section:nth-child(even) { background-color: var(--vanilla); }
 
 .section-title {
     font-size: 34px;
     text-align: center;
     margin-bottom: 36px;
     color: var(--blood-red);
+    position: relative;
+    padding-bottom: 14px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--blood-red);
+    border-radius: 2px;
 }
 
 .page-title {
@@ -545,7 +577,9 @@ input, select, textarea { font-family: var(--font-body); }
 }
 
 /* === FEATURES (головна) === */
-.features { padding: 60px 0; background: white; }
+.features { padding: 60px 0; background: linear-gradient(135deg, var(--black-bean) 0%, #4a1a1e 100%); }
+.features .section-title { color: var(--vanilla); }
+.features .section-title::after { background: var(--vanilla); }
 
 .features-grid {
     display: grid;

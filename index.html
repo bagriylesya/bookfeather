@@ -139,9 +139,9 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <a href="index.html" style="display:flex; align-items:center; gap:10px; text-decoration:none;">
+                <a href="index.html">
                     <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
-                         onerror="this.style.display='none'">
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <span class="logo-name">BOOKFEATHER</span>
                 </a>
             </div>
@@ -190,11 +190,6 @@
                 <a href="catalog.html" class="btn btn-primary btn-large">
                     📚 Переглянути каталог
                 </a>
-                <a href="catalog.html?sort=new" class="btn btn-large"
-                   style="background:transparent; border:2px solid rgba(244,227,178,0.6);
-                          color:var(--vanilla); padding:15px 38px; font-size:17px;">
-                    ✨ Новинки
-                </a>
             </div>
         </div>
     </div>
@@ -211,11 +206,7 @@
             <button class="slider-btn" onclick="scrollCategories(-1)" title="Назад">‹</button>
             <button class="slider-btn" onclick="scrollCategories(1)"  title="Вперед">›</button>
         </div>
-        <div style="text-align:center; margin-top:24px;">
-            <a href="catalog.html" class="btn btn-outline">
-                Переглянути всі жанри →
-            </a>
-        </div>
+
     </div>
 </section>
 
@@ -338,14 +329,44 @@ function loadCategoriesSlider() {
     const toShow  = allCats.filter(c => usedIds.includes(c.id));
     const list    = toShow.length > 0 ? toShow : allCats.slice(0, 12);
 
-    track.innerHTML = list.map(cat => `
-        <a href="catalog.html?category=${encodeURIComponent(cat.id)}"
-           class="category-card">
+    // Картки категорій + остання кнопка "Всі жанри"
+    const catCards = list.map(cat => `
+        <a href="catalog.html?category=${encodeURIComponent(cat.id)}" class="category-card">
             <div class="category-icon">${cat.icon}</div>
             <div class="category-name">${cat.name}</div>
         </a>
     `).join('');
+
+    const allBtn = `
+        <a href="catalog.html" class="category-card" style="background:var(--blood-red); color:white; border-color:var(--blood-red);">
+            <div class="category-icon">📚</div>
+            <div class="category-name" style="color:white;">Переглянути всі жанри</div>
+        </a>
+    `;
+
+    track.innerHTML = catCards + allBtn;
 }
+
+// Нескінченний слайдер — переозначаємо scrollCategories
+window.scrollCategories = function(direction) {
+    const track = document.getElementById('categories-track');
+    const wrapper = document.querySelector('.categories-wrapper');
+    if (!track || !wrapper) return;
+
+    const cardWidth = 196; // 180px + 16px gap
+    const visibleCards = Math.floor(wrapper.offsetWidth / cardWidth);
+    const totalCards = track.children.length;
+
+    let pos = parseInt(track.dataset.position || 0);
+    pos += direction;
+
+    // Нескінченний цикл
+    if (pos < 0) pos = totalCards - visibleCards;
+    if (pos > totalCards - visibleCards) pos = 0;
+
+    track.dataset.position = pos;
+    track.style.transform = `translateX(${-pos * cardWidth}px)`;
+};
 </script>
 
 </body>

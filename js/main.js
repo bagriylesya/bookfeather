@@ -5,7 +5,17 @@
 
 let books = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+// Favorites зберігаємо як масив id (числа)
+let favorites = (() => {
+    const raw = JSON.parse(localStorage.getItem('favorites') || '[]');
+    // Підтримка старого формату (масив об'єктів) — конвертуємо в масив id
+    if (raw.length > 0 && typeof raw[0] === 'object') {
+        const ids = raw.map(f => f.id).filter(Boolean);
+        localStorage.setItem('favorites', JSON.stringify(ids));
+        return ids;
+    }
+    return raw;
+})();
 let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
 
 // ===================================
@@ -376,25 +386,24 @@ function updateCartCount() {
 // ВПОДОБАННЯ
 // ===================================
 function isInFavorites(bookId) {
-    return favorites.some(fav => fav.id === bookId);
+    return favorites.includes(bookId);
 }
 
 function toggleFavorite(bookId, buttonEl) {
     const book = books.find(b => b.id === bookId);
     if (!book) return;
 
-    const index = favorites.findIndex(fav => fav.id === bookId);
+    const index = favorites.indexOf(bookId);
 
     if (index > -1) {
         favorites.splice(index, 1);
-        // Оновлюємо всі кнопки цієї книги
         document.querySelectorAll(`.fav-btn[data-id="${bookId}"]`).forEach(btn => {
             btn.classList.remove('active');
             btn.title = 'Додати до вподобань';
         });
         showNotification(`"${book.title}" видалено з вподобань`);
     } else {
-        favorites.push(book);
+        favorites.push(bookId);
         document.querySelectorAll(`.fav-btn[data-id="${bookId}"]`).forEach(btn => {
             btn.classList.add('active');
             btn.title = 'Видалити з вподобань';

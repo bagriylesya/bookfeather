@@ -237,9 +237,11 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+                <a href="index.html">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
             </div>
 
             <nav class="nav">
@@ -400,7 +402,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: info@bookfeather.com</p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6801060e07280a0707030e0d091c000d1a460b0705">[email&#160;protected]</a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">
@@ -419,7 +421,7 @@
     </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.js"></script>
 <script src="js/catalog.js"></script>
 <script src="js/search.js"></script>
 
@@ -567,12 +569,29 @@ function clearTag(index) {
 // ===== URL ПАРАМЕТРИ =====
 function applyUrlFiltersExtra() {
     const params = new URLSearchParams(window.location.search);
+
+    // sort
     const sort = params.get('sort');
     if (sort) {
-        const sel = document.getElementById('sort-filter');
-        if (sel) sel.value = sort === 'new' ? 'new' : sort;
+        const el = document.getElementById('sort-filter');
+        if (el) el.value = sort;
+    }
+
+    // Якщо sort=popular або sort=new — активуємо відповідний фільтр
+    if (sort === 'new') {
+        const el = document.getElementById('new-filter');
+        if (el) el.checked = true;
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Завжди починаємо зверху
+    window.scrollTo(0, 0);
+    applyUrlFiltersExtra();
+});
+
+// Підключаємо displayBooks до catalog.js
+window.displayBooks = displayBooks;
 </script>
 
 </body>
