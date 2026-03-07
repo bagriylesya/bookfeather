@@ -279,7 +279,7 @@ function clearAllFavorites() {
     showNotification('Вподобання очищено');
 }
 
-// Перерендер після зміни вподобань (щ�об оновити після toggleFavorite з інших сторінок)
+// Перерендер після зміни вподобань (щоб оновити після toggleFavorite з інших сторінок)
 window.addEventListener('storage', (e) => {
     if (e.key === 'favorites') {
         favorites = JSON.parse(e.newValue || '[]');
