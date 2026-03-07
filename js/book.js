@@ -16,17 +16,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayBookDetails();
 });
 
+
 // ===================================
 // ВІДОБРАЖЕННЯ КНИГИ
 // ===================================
 async function displayBookDetails() {
     const urlParams = new URLSearchParams(window.location.search);
-    const bookId    = parseInt(urlParams.get('id'));
+    const rawId     = urlParams.get('id');
+    const bookId    = parseInt(rawId);
     const container = document.getElementById('book-detail');
 
     if (!container) return;
 
-    const book = books.find(b => b.id === bookId);
+    // Переконуємось що книги завантажені
+    if (!books || books.length === 0) {
+        await loadBooks();
+    }
+
+    // Шукаємо по числовому і рядковому id
+    const book = books.find(b => b.id === bookId || b.id === rawId || String(b.id) === String(rawId));
 
     if (!book) {
         container.innerHTML = `
@@ -55,11 +63,14 @@ async function displayBookDetails() {
 
     const priceHtml = book.discount > 0 ? `
         <div class="book-detail-price">
-            <span style="text-decoration:line-through; font-size:20px; color:var(--cinereous); margin-right:10px;">${book.price} грн</span>
-            ${finalPrice} грн
-            <span style="font-size:18px; color:var(--blood-red); margin-left:8px;">(-${book.discount}%)</span>
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+                <span style="font-size:36px; font-weight:700; color:var(--blood-red);">${finalPrice} грн</span>
+                <span style="text-decoration:line-through; font-size:20px; color:var(--cinereous);">${book.price} грн</span>
+                <span style="background:var(--blood-red); color:white; padding:4px 10px;
+                             border-radius:6px; font-size:15px; font-weight:700;">-${book.discount}%</span>
+            </div>
         </div>
-    ` : `<div class="book-detail-price">${book.price} грн</div>`;
+    ` : `<div class="book-detail-price" style="font-size:36px; font-weight:700; color:var(--blood-red); margin-bottom:16px;">${book.price} грн</div>`;
 
     // Стан складу
     let stockHtml = '';
@@ -111,10 +122,14 @@ async function displayBookDetails() {
         <div class="book-detail-info">
             <h1 class="page-title">${book.title}</h1>
 
-            <p style="font-size:18px; color:var(--cinereous); margin-bottom:16px;">
-                ${book.author}
-                ${book.publisher ? `· <span style="font-size:15px;">${book.publisher}</span>` : ''}
-            </p>
+            <div style="margin-bottom:16px;">
+                <a href="catalog.html?author=${encodeURIComponent(book.author)}"
+                   style="font-size:18px; font-weight:600; color:var(--blood-red);
+                          text-decoration:none; font-family:var(--font-heading);">
+                    ${book.author}
+                </a>
+                ${book.publisher ? `<span style="font-size:14px; color:var(--cinereous); margin-left:8px;">· ${book.publisher}</span>` : ''}
+            </div>
 
             ${priceHtml}
             ${stockHtml}
@@ -145,7 +160,7 @@ async function displayBookDetails() {
                 ${metaRow('Оригінальна назва', book.originalTitle)}
                 ${metaRow('Автор', book.author, () => `catalog.html?author=${encodeURIComponent(book.author)}`)}
                 ${metaRow('Видавництво', book.publisher, book.publisher ? () => `catalog.html?publisher=${encodeURIComponent(book.publisher)}` : null)}
-                ${metaRow('Категорія', getCategoryIcon(book.category) + ' ' + getCategoryName(book.category), () => `catalog.html?category=${encodeURIComponent(book.category)}`)}
+                ${metaRow('Категорія', getCategoryIcon(normalizeCategory(book.category)) + ' ' + getCategoryName(normalizeCategory(book.category)), () => `catalog.html?category=${encodeURIComponent(normalizeCategory(book.category))}`)}
                 ${metaRow('Мова', book.language)}
                 ${metaRow('Перекладач', book.translator)}
                 ${metaRow('Обкладинка', book.cover)}

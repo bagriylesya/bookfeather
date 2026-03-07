@@ -79,7 +79,10 @@ function filterBooks() {
 
     filteredBooks = books.filter(book => {
         // Категорія
-        if (categoryFilter && book.category !== categoryFilter) return false;
+        if (categoryFilter) {
+            const bookCat = (window.normalizeCategory || (c => c))(book.category);
+            if (bookCat !== categoryFilter) return false;
+        }
         // Мова
         if (languageFilter && book.language !== languageFilter) return false;
         // Пошук

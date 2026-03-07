@@ -6,7 +6,6 @@
     <title>Книга - BOOKFEATHER</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* ГАЛЕРЕЯ */
         .book-gallery {
             position: sticky;
             top: 90px;
@@ -34,8 +33,7 @@
         .gallery-nav {
             position: absolute;
             bottom: 12px;
-            left: 0;
-            right: 0;
+            left: 0; right: 0;
             display: flex;
             justify-content: space-between;
             padding: 0 12px;
@@ -44,32 +42,21 @@
         .gallery-nav button {
             background: rgba(255,255,255,0.9);
             border: none;
-            width: 38px;
-            height: 38px;
+            width: 38px; height: 38px;
             border-radius: 50%;
             font-size: 20px;
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .gallery-nav button:hover {
-            background: white;
-            transform: scale(1.1);
-        }
+        .gallery-nav button:hover { background: white; transform: scale(1.1); }
 
-        .gallery-thumbnails {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .gallery-thumbnails { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .thumbnail {
-            width: 72px;
-            height: 96px;
+            width: 72px; height: 96px;
             object-fit: cover;
             border-radius: 8px;
             cursor: pointer;
@@ -79,23 +66,19 @@
         }
 
         .thumbnail:hover { opacity: 1; }
+        .thumbnail.active { border-color: var(--blood-red); opacity: 1; }
 
-        .thumbnail.active {
-            border-color: var(--blood-red);
-            opacity: 1;
-        }
-
-        /* ДЕТАЛІ КНИГИ */
         .book-detail {
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 360px 1fr;
             gap: 48px;
             align-items: start;
         }
 
-        .page-title {
+        .book-detail-info h1 {
             font-size: 32px;
             line-height: 1.3;
+            color: var(--black-bean);
             margin-bottom: 10px;
         }
 
@@ -107,11 +90,11 @@
             margin: 16px 0;
         }
 
-        /* ХАРАКТЕРИСТИКИ */
         .book-meta {
             border: 1px solid #f0e8d8;
             border-radius: 12px;
             overflow: hidden;
+            margin: 20px 0;
         }
 
         .meta-row {
@@ -131,7 +114,14 @@
             font-weight: 500;
         }
 
-        /* РЕЙТИНГ */
+        .meta-value.clickable {
+            color: var(--blood-red);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .meta-value.clickable:hover { color: var(--black-bean); }
+
         .rating-interactive {
             background: #fdf8ef;
             border-radius: 12px;
@@ -141,27 +131,14 @@
 
         .stars-display {
             color: #d4a017;
-            font-size: 24px;
+            font-size: 22px;
             letter-spacing: 2px;
             margin-bottom: 4px;
         }
 
-        .rating-info {
-            font-size: 14px;
-            color: var(--cinereous);
-        }
+        .rating-info { font-size: 14px; color: var(--cinereous); }
 
-        .user-rating-label {
-            font-size: 14px;
-            color: var(--cinereous);
-            margin-bottom: 8px;
-        }
-
-        .rating-stars {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 6px;
-        }
+        .rating-stars { display: flex; gap: 4px; margin: 10px 0 6px; }
 
         .rating-stars .star {
             font-size: 28px;
@@ -173,16 +150,10 @@
 
         .rating-stars .star:hover,
         .rating-stars .star.filled { color: #d4a017; }
+        .rating-stars .star:hover { transform: scale(1.2); }
 
-        .rating-stars .star:hover  { transform: scale(1.2); }
+        .selected-rating { font-size: 13px; color: var(--cinereous); min-height: 20px; }
 
-        .selected-rating {
-            font-size: 13px;
-            color: var(--cinereous);
-            min-height: 20px;
-        }
-
-        /* КНОПКИ */
         .book-actions {
             display: flex;
             gap: 12px;
@@ -194,23 +165,19 @@
             background: white;
             border: 2px solid #e0d8cc;
             border-radius: 10px;
+            padding: 12px 16px;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 22px;
             color: var(--cinereous);
             transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .fav-btn:hover,
-        .fav-btn.active {
+        .fav-btn:hover, .fav-btn.active {
             border-color: #e8435a;
             color: #e8435a;
             background: #fff5f7;
         }
 
-        /* МОДАЛЬНЕ ВІКНО */
         .image-modal {
             position: fixed;
             inset: 0;
@@ -233,26 +200,23 @@
 
         .modal-close {
             position: fixed;
-            top: 20px;
-            right: 24px;
+            top: 20px; right: 24px;
             color: white;
             font-size: 38px;
             cursor: pointer;
-            line-height: 1;
             opacity: 0.8;
             transition: opacity 0.2s;
+            line-height: 1;
         }
 
         .modal-close:hover { opacity: 1; }
 
-        /* СХОЖІ КНИГИ */
         .similar-section {
-            margin-top: 70px;
+            margin-top: 60px;
             padding-top: 40px;
             border-top: 1px solid #f0e8d8;
         }
 
-        /* ХЛІБНІ КРИХТИ */
         .breadcrumb {
             font-size: 14px;
             color: var(--cinereous);
@@ -265,7 +229,6 @@
 
         .breadcrumb a { color: var(--blood-red); text-decoration: none; }
         .breadcrumb a:hover { text-decoration: underline; }
-        .breadcrumb span { color: var(--cinereous); }
 
         @media (max-width: 900px) {
             .book-detail { grid-template-columns: 1fr; gap: 28px; }
@@ -273,7 +236,7 @@
         }
 
         @media (max-width: 600px) {
-            .page-title { font-size: 24px; }
+            .book-detail-info h1 { font-size: 24px; }
             .book-detail-price { font-size: 28px; }
         }
     </style>
@@ -285,9 +248,10 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+                <a href="index.html">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
             </div>
             <nav class="nav">
                 <ul>
@@ -299,8 +263,7 @@
             </nav>
             <div class="header-icons">
                 <div class="header-search">
-                    <input type="text" id="header-search"
-                           placeholder="Пошук книг..." autocomplete="off">
+                    <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
                     <div class="search-suggestions" id="search-suggestions"></div>
                 </div>
                 <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
@@ -318,11 +281,12 @@
     </div>
 </header>
 
+<!-- СТОРІНКА КНИГИ -->
 <section class="books-section">
     <div class="container">
 
-        <!-- ХЛІБНІ КРИХТИ (заповнюються через JS) -->
-        <nav class="breadcrumb" id="breadcrumb">
+        <!-- ХЛІБНІ КРИХТИ -->
+        <nav class="breadcrumb">
             <a href="index.html">Головна</a>
             <span>›</span>
             <a href="catalog.html">Каталог</a>
@@ -330,16 +294,14 @@
             <span id="breadcrumb-title">Книга</span>
         </nav>
 
-        <!-- ВМІСТ КНИГИ (заповнюється через book.js) -->
+        <!-- ВМІСТ (заповнюється book.js) -->
         <div class="book-detail" id="book-detail">
-            <div style="background:#f5ede0; border-radius:14px; height:480px;
+            <div style="background:#f5ede0; border-radius:14px; height:460px;
                         display:flex; align-items:center; justify-content:center; font-size:60px;">
                 📚
             </div>
-            <div style="padding:20px 0;">
-                <p style="color:var(--cinereous); text-align:center; padding:40px;">
-                    Завантаження...
-                </p>
+            <div>
+                <p style="color:var(--cinereous); padding:40px 0;">Завантаження...</p>
             </div>
         </div>
 
@@ -347,8 +309,9 @@
         <div class="similar-section">
             <h2 class="section-title">Схожі книги</h2>
             <div class="books-grid" id="similar-books">
-                <p style="text-align:center; color:var(--cinereous); padding:30px;
-                           grid-column:1/-1;">Завантаження...</p>
+                <p style="text-align:center; color:var(--cinereous); grid-column:1/-1; padding:30px;">
+                    Завантаження...
+                </p>
             </div>
         </div>
 
@@ -361,6 +324,7 @@
     <img class="modal-image" id="modal-img" src="" alt="Фото книги">
 </div>
 
+<!-- FOOTER -->
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
@@ -386,7 +350,6 @@
                 <h4>Підтримка</h4>
                 <ul>
                     <li><a href="delivery.html">Доставка і оплата</a></li>
-                    <li><a href="return.html">Повернення</a></li>
                     <li><a href="faq.html">FAQ</a></li>
                     <li><a href="contact.html">Зв'язатись</a></li>
                 </ul>
@@ -401,25 +364,17 @@
 <script src="js/main.js"></script>
 <script src="js/book.js"></script>
 <script src="js/search.js"></script>
-
 <script>
-// Хлібні крихти оновлюються після завантаження книги
 document.addEventListener('DOMContentLoaded', () => {
-    // book.js встановить currentBook після завантаження
-    // Чекаємо і оновлюємо breadcrumb
     const checkBook = setInterval(() => {
         if (window.currentBook) {
             clearInterval(checkBook);
-            const title = document.getElementById('breadcrumb-title');
-            if (title) title.textContent = currentBook.title;
-            document.title = `${currentBook.title} - BOOKFEATHER`;
+            const el = document.getElementById('breadcrumb-title');
+            if (el) el.textContent = currentBook.title;
+            document.title = currentBook.title + ' - BOOKFEATHER';
         }
     }, 100);
-});
-
-// Клік поза модальним — закрити
-document.getElementById('image-modal').addEventListener('click', function(e) {
-    if (e.target === this) closeImageModal();
+    setTimeout(() => clearInterval(checkBook), 5000);
 });
 </script>
 

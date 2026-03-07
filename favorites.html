@@ -68,9 +68,10 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+                <a href="index.html">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
             </div>
             <nav class="nav">
                 <ul>
@@ -167,7 +168,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: info@bookfeather.com</p>
+                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">
@@ -278,13 +279,13 @@ function clearAllFavorites() {
     showNotification('Вподобання очищено');
 }
 
-// Перерендер після зміни вподобань (щоб картки оновлювались)
-const origToggle = window.toggleFavorite;
-window.toggleFavorite = function(bookId, btn) {
-    origToggle?.(bookId, btn);
-    setTimeout(renderFavorites, 50);
-};
+// Перерендер після зміни вподобань (щ�об оновити після toggleFavorite з інших сторінок)
+window.addEventListener('storage', (e) => {
+    if (e.key === 'favorites') {
+        favorites = JSON.parse(e.newValue || '[]');
+        renderFavorites();
+    }
+});
 </script>
-
 </body>
 </html>

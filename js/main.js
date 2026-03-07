@@ -535,6 +535,27 @@ document.addEventListener('click', (e) => {
 // Вбудовані + ті що додав адмін
 // ===================================
 
+// ===================================
+// МАППІНГ КАТЕГОРІЙ (англ → укр)
+// ===================================
+const CATEGORY_MAP = {
+    'fiction':'Художня література','classic':'Класика','classics':'Класика',
+    'fantasy':'Фентезі','sci-fi':'Наукова фантастика','science fiction':'Наукова фантастика',
+    'detective':'Детективи','thriller':'Трилер','romance':'Романтика',
+    'horror':'Жахи','adventure':'Пригоди','humor':'Гумор',
+    'psychology':'Психологія','self-help':'Саморозвиток','business':'Бізнес',
+    'history':'Історія','biography':'Біографії','science':'Наука',
+    'philosophy':'Філософія','children':'Дитяча','comics':'Комікси та манга',
+    'dystopia':'Антиутопія','ukrainian':'Українська література',
+    'foreign':'Зарубіжна література','non-fiction':'Популярна наука',
+};
+
+function normalizeCategory(cat) {
+    if (!cat) return cat;
+    return CATEGORY_MAP[cat.toLowerCase()] || cat;
+}
+window.normalizeCategory = normalizeCategory;
+
 const DEFAULT_CATEGORIES = [
     // Художня література
     { id: 'Художня література',    name: 'Художня література',    icon: '📖' },

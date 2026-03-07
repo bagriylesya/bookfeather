@@ -257,9 +257,10 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <a href="index.html" style="display:none;">BOOKFEATHER</a>
+                <a href="index.html">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
             </div>
             <nav class="nav">
                 <ul>
@@ -482,6 +483,17 @@
     </div>
 </section>
 
+
+    // Валідація при blur
+    ['name','phone','city'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('blur', () => {
+            if (!el.value.trim()) el.style.borderColor = '#dc3545';
+            else el.style.borderColor = '';
+        });
+    });
+});
+</script>
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
@@ -494,19 +506,21 @@
                 <ul>
                     <li><a href="index.html">Головна</a></li>
                     <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: info@bookfeather.com</p>
+                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">
                 <h4>Підтримка</h4>
                 <ul>
                     <li><a href="delivery.html">Доставка і оплата</a></li>
-                    <li><a href="return.html">Повернення</a></li>
                     <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Зв'язатись</a></li>
                 </ul>
             </div>
         </div>
@@ -515,64 +529,6 @@
         </div>
     </div>
 </footer>
-
-<script src="js/main.js"></script>
-<script src="js/checkout.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Гість/залогінений
-    const user = getCurrentUser();
-    if (user) {
-        document.getElementById('guest-banner').style.display = 'none';
-    }
-
-    // Підсвічування вибраного радіо при кліку
-    document.querySelectorAll('.radio-option').forEach(opt => {
-        opt.addEventListener('click', () => {
-            const name = opt.querySelector('input[type="radio"]')?.name;
-            if (!name) return;
-            document.querySelectorAll(`.radio-option input[name="${name}"]`).forEach(r => {
-                r.closest('.radio-option').classList.remove('selected');
-            });
-            opt.classList.add('selected');
-        });
-    });
-
-    // Показ поля адреси кур'єра
-    document.querySelectorAll('input[name="delivery"]').forEach(r => {
-        r.addEventListener('change', () => {
-            const courierFields  = document.getElementById('courier-fields');
-            const warehouseGroup = document.getElementById('warehouse-group');
-            const isCourier      = r.value === 'np-courier';
-            if (courierFields)  courierFields.style.display  = isCourier ? 'block' : 'none';
-            if (warehouseGroup) warehouseGroup.style.display = isCourier ? 'none'  : 'block';
-        });
-    });
-
-    // Оновлення ціни доставки на радіо кнопках
-    function updateDeliveryPrices() {
-        const cartData = JSON.parse(localStorage.getItem('cart') || '[]');
-        let subtotal = 0;
-        cartData.forEach(item => {
-            const p = item.discount > 0 ? item.price * (1 - item.discount / 100) : item.price;
-            subtotal += p * (item.quantity || 1);
-        });
-
-        const npFree = document.getElementById('price-np-warehouse');
-        const npcFree = document.getElementById('price-np-courier');
-        if (npFree)  npFree.textContent  = subtotal >= 500 ? 'Безкоштовно 🎉' : '50 грн';
-        if (npcFree) npcFree.textContent = subtotal >= 800 ? 'Безкоштовно 🎉' : '80 грн';
-    }
-    updateDeliveryPrices();
-
-    // Валідація полів при втраті фокусу
-    ['name','phone','city','warehouse'].forEach(id => {
-        document.getElementById(id)?.addEventListener('blur', function() {
-            this.classList.toggle('error', !this.value.trim());
-        });
-    });
-});
-</script>
 
 </body>
 </html>
