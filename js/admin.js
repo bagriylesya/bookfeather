@@ -247,7 +247,7 @@ function collectFormData(form) {
 // ===================================
 // ДОДАВАННЯ КНИГИ
 // ===================================
-function addBook() {
+async function addBook() {
     const form = document.getElementById('add-book-form');
     const data = collectFormData(form);
 
@@ -256,23 +256,46 @@ function addBook() {
         return;
     }
 
-    const newBook = {
-        ...data,
-        id: Date.now(),
-        createdAt: new Date().toISOString()
-    };
+    const basePath = window.BASE_PATH || '';
 
+    // Спробуємо зберегти в MySQL
+    if (window.USE_API) {
+        try {
+            const resp = await fetch(basePath + 'php/api.php?action=books', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Token': window.ADMIN_TOKEN || 'admin123'
+                },
+                body: JSON.stringify(data)
+            });
+            const json = await resp.json();
+            if (json.success) {
+                showNotification(`✅ Книгу "${data.title}" збережено в базі даних!`);
+                await loadBooks(true); // перезавантажуємо з БД
+                form.reset();
+                delete form.dataset.editId;
+                resetFormButton();
+                loadAdminBooks();
+                loadCategoryOptions();
+                document.querySelector('[data-tab="manage-books"]')?.click();
+                return;
+            }
+        } catch (e) {
+            console.warn('API недоступний, зберігаємо локально');
+        }
+    }
+
+    // Fallback: localStorage
+    const newBook = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
     books.push(newBook);
-    saveAdminBooks();
-
+    localStorage.setItem('books', JSON.stringify(books));
     showNotification(`✅ Книгу "${newBook.title}" додано!`);
     form.reset();
     delete form.dataset.editId;
     resetFormButton();
     loadAdminBooks();
     loadCategoryOptions();
-
-    // Переходимо на таб з книгами
     document.querySelector('[data-tab="manage-books"]')?.click();
 }
 
@@ -334,7 +357,7 @@ function editBook(id) {
 // ===================================
 // ОНОВЛЕННЯ КНИГИ
 // ===================================
-function updateBook(id) {
+async function updateBook(id) {
     const idx = books.findIndex(b => b.id === id);
     if (idx === -1) return;
 
@@ -346,16 +369,39 @@ function updateBook(id) {
         return;
     }
 
-    books[idx] = {
-        ...books[idx],
-        ...data,
-        id,
-        updatedAt: new Date().toISOString()
-    };
+    const basePath = window.BASE_PATH || '';
 
-    saveAdminBooks();
+    // Спробуємо оновити в MySQL
+    if (window.USE_API) {
+        try {
+            const resp = await fetch(basePath + `php/api.php?action=books&id=${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Token': window.ADMIN_TOKEN || 'admin123'
+                },
+                body: JSON.stringify(data)
+            });
+            const json = await resp.json();
+            if (json.success) {
+                showNotification(`✅ Книгу "${data.title}" оновлено в базі даних!`);
+                await loadBooks(true);
+                form.reset();
+                delete form.dataset.editId;
+                resetFormButton();
+                loadAdminBooks();
+                loadCategoryOptions();
+                return;
+            }
+        } catch (e) {
+            console.warn('API недоступний, зберігаємо локально');
+        }
+    }
+
+    // Fallback: localStorage
+    books[idx] = { ...books[idx], ...data, id, updatedAt: new Date().toISOString() };
+    localStorage.setItem('books', JSON.stringify(books));
     showNotification(`✅ Книгу "${data.title}" оновлено!`);
-
     form.reset();
     delete form.dataset.editId;
     resetFormButton();
@@ -366,33 +412,47 @@ function updateBook(id) {
 // ===================================
 // ВИДАЛЕННЯ КНИГИ
 // ===================================
-function deleteBook(id) {
+async function deleteBook(id) {
     const book = books.find(b => b.id === id);
     if (!book) return;
 
     if (!confirm(`Видалити книгу "${book.title}"?\n\nЦю дію не можна скасувати.`)) return;
 
+    const basePath = window.BASE_PATH || '';
+
+    // Спробуємо видалити з MySQL
+    if (window.USE_API) {
+        try {
+            const resp = await fetch(basePath + `php/api.php?action=books&id=${id}`, {
+                method: 'DELETE',
+                headers: { 'X-Admin-Token': window.ADMIN_TOKEN || 'admin123' }
+            });
+            const json = await resp.json();
+            if (json.success) {
+                showNotification(`Книгу "${book.title}" видалено з бази даних`);
+                await loadBooks(true);
+                loadAdminBooks();
+                loadCategoryOptions();
+                return;
+            }
+        } catch (e) {
+            console.warn('API недоступний');
+        }
+    }
+
+    // Fallback: localStorage
     books = books.filter(b => b.id !== id);
-    saveAdminBooks();
+    localStorage.setItem('books', JSON.stringify(books));
     showNotification(`Книгу "${book.title}" видалено`);
     loadAdminBooks();
     loadCategoryOptions();
 }
 
 // ===================================
-// ЗБЕРЕЖЕННЯ
+// ЗБЕРЕЖЕННЯ (legacy fallback)
 // ===================================
 function saveAdminBooks() {
     localStorage.setItem('books', JSON.stringify(books));
-
-    // Спроба синхронізувати з сервером (якщо є PHP)
-    fetch((window.BASE_PATH || '') + 'php/api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(books)
-    }).catch(() => {
-        // Сервер недоступний — нічого страшного, дані в localStorage
-    });
 }
 
 // ===================================

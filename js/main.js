@@ -21,31 +21,84 @@ let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
 // ===================================
 // ЗАВАНТАЖЕННЯ КНИГ
 // ===================================
-async function loadBooks() {
+async function loadBooks(forceReload = false) {
     // Якщо книги вже в пам'яті — не завантажуємо знову
-    if (books && books.length > 0) return books;
+    if (!forceReload && books && books.length > 0) return books;
 
+    const basePath = window.BASE_PATH || '';
+
+    // 1. Спробуємо завантажити з MySQL через PHP API
+    try {
+        const response = await fetch(basePath + 'php/api.php?action=books&limit=100');
+        if (response.ok) {
+            const json = await response.json();
+            if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+                books = json.data.map(mapBookFromDB);
+                localStorage.setItem('books', JSON.stringify(books));
+                window.USE_API = true;
+                return books;
+            }
+        }
+    } catch (e) {
+        console.log('PHP API недоступний, пробуємо localStorage...');
+    }
+
+    // 2. Fallback: localStorage
     try {
         const savedBooks = localStorage.getItem('books');
         if (savedBooks) {
             books = JSON.parse(savedBooks);
-            return books;
+            if (books && books.length > 0) return books;
         }
+    } catch (e) {}
 
-        const basePath = window.BASE_PATH || '';
+    // 3. Fallback: books.json
+    try {
         const response = await fetch(basePath + 'data/books.json');
         if (response.ok) {
             books = await response.json();
             localStorage.setItem('books', JSON.stringify(books));
             return books;
         }
-    } catch (error) {
-        console.log('Завантаження з файлу не вдалось, використовуємо демо-дані');
-    }
+    } catch (e) {}
 
+    // 4. Остання резервна — вбудовані демо-дані
     books = getDemoBooks();
     localStorage.setItem('books', JSON.stringify(books));
     return books;
+}
+
+// Конвертація полів БД (snake_case) у формат фронтенду (camelCase)
+function mapBookFromDB(b) {
+    return {
+        id:               b.id,
+        title:            b.title,
+        author:           b.author,
+        originalTitle:    b.original_title  || b.originalTitle  || '',
+        publisher:        b.publisher       || '',
+        category:         b.category        || '',
+        language:         b.language        || 'Українська',
+        price:            parseFloat(b.price) || 0,
+        discount:         parseInt(b.discount) || 0,
+        rating:           parseFloat(b.rating) || 0,
+        ratingCount:      parseInt(b.rating_count || b.ratingCount) || 0,
+        pages:            parseInt(b.pages)    || 0,
+        year:             parseInt(b.year)     || 0,
+        cover:            b.cover             || 'Тверда',
+        translator:       b.translator        || '',
+        isbn:             b.isbn              || '',
+        barcode:          b.barcode           || '',
+        size:             b.size              || '',
+        weight:           parseInt(b.weight)  || 0,
+        image:            b.image             || '',
+        images:           Array.isArray(b.images) ? b.images : [],
+        shortDescription: b.short_description || b.shortDescription || '',
+        description:      b.description       || '',
+        isNew:            Boolean(b.is_new  ?? b.isNew),
+        isTop:            Boolean(b.is_top  ?? b.isTop),
+        stock:            parseInt(b.stock)    || 0,
+        reserved:         parseInt(b.reserved) || 0,
+    };
 }
 
 // ===================================
