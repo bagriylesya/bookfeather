@@ -78,8 +78,11 @@ function createAdminBookCard(book) {
     `).join('');
 
     return `
-        <div style="background:white; padding:20px; border-radius:12px; margin-bottom:14px;
-                    box-shadow:0 2px 8px rgba(0,0,0,0.07); border-left:4px solid var(--blood-red);">
+        <div class="admin-book-item" style="position:relative; background:white; padding:20px 20px 20px 50px; border-radius:12px; margin-bottom:14px;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.07); border-left:4px solid var(--blood-red);" data-id="${book.id}">
+            <input type="checkbox" class="book-checkbox" data-id="${book.id}"
+                   onchange="window.onBookCheckboxChange && window.onBookCheckboxChange(this)"
+                   style="position:absolute; top:50%; left:16px; transform:translateY(-50%); width:20px; height:20px; accent-color:var(--blood-red); cursor:pointer;">
             <div style="display:flex; gap:20px; align-items:flex-start;">
 
                 <!-- Фото -->

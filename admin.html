@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
@@ -145,6 +145,47 @@
             display: flex;
             gap: 12px;
             align-items: center;
+        }
+
+        /* МАСОВА ЗНИЖКА */
+        .bulk-toolbar {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            background: #fff8ee;
+            border: 2px solid var(--blood-red);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+        }
+        .bulk-toolbar.visible { display: flex; }
+        .bulk-toolbar span { font-weight: 700; color: var(--blood-red); font-size: 15px; }
+
+        .bulk-select-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .admin-book-item {
+            position: relative;
+        }
+        .admin-book-item.selected {
+            border: 2px solid var(--blood-red);
+            background: #fff0f0;
+        }
+        .book-checkbox {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--blood-red);
+            cursor: pointer;
+            z-index: 2;
         }
     </style>
 </head>
@@ -357,7 +398,37 @@
                 </div>
 
                 <div class="tab-content" id="manage-books">
-                    <h2 style="font-size: 32px; margin-bottom: 30px;">Керування книгами</h2>
+                    <h2 style="font-size: 32px; margin-bottom: 20px;">Керування книгами</h2>
+
+                    <!-- Панель вибору -->
+                    <div class="bulk-select-bar">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600;">
+                            <input type="checkbox" id="select-all-books" style="width:18px; height:18px; accent-color:var(--blood-red);">
+                            Вибрати всі
+                        </label>
+                        <button class="btn btn-outline btn-small" onclick="invertSelection()">↕ Інвертувати</button>
+                        <button class="btn btn-outline btn-small" onclick="clearSelection()">✕ Зняти вибір</button>
+                    </div>
+
+                    <!-- Панель масової знижки -->
+                    <div class="bulk-toolbar" id="bulk-toolbar">
+                        <span id="bulk-count-text">Вибрано: 0</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label style="font-weight:600; font-size:14px;">Знижка %:</label>
+                            <input type="number" id="bulk-discount-value" min="0" max="90" value="10"
+                                style="width:70px; padding:8px; border:2px solid #ddd; border-radius:8px;
+                                       font-size:15px; text-align:center;">
+                        </div>
+                        <button class="btn btn-primary btn-small" onclick="applyBulkDiscount()">
+                            🏷 Застосувати знижку
+                        </button>
+                        <button class="btn btn-small" onclick="removeBulkDiscount()"
+                            style="background:#dc3545; color:white; border:none; padding:8px 16px;
+                                   border-radius:8px; cursor:pointer; font-family:var(--font-body);">
+                            ✕ Прибрати знижку
+                        </button>
+                    </div>
+
                     <div id="admin-books-list"></div>
                 </div>
 
@@ -509,5 +580,116 @@
         loadCategoryOptions();
     }
     </script>
+
+    <script>
+    // ===== МАСОВИЙ ВИБІР І ЗНИЖКА =====
+    let selectedBookIds = new Set();
+
+    // Чекбокс "Вибрати всі" — делегування подій
+    document.addEventListener('change', function(e) {
+        if (!e.target || e.target.id !== 'select-all-books') return;
+        const checkboxes = document.querySelectorAll('.book-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = e.target.checked;
+            const id = parseInt(cb.dataset.id);
+            if (e.target.checked) selectedBookIds.add(id);
+            else selectedBookIds.delete(id);
+            cb.closest('.admin-book-item').classList.toggle('selected', e.target.checked);
+        });
+        updateBulkToolbar();
+    });
+
+    function onBookCheckboxChange(checkbox) {
+        const id = parseInt(checkbox.dataset.id);
+        if (checkbox.checked) selectedBookIds.add(id);
+        else selectedBookIds.delete(id);
+        checkbox.closest('.admin-book-item').classList.toggle('selected', checkbox.checked);
+        updateBulkToolbar();
+
+        // Оновлюємо "Вибрати всі"
+        const all = document.querySelectorAll('.book-checkbox');
+        const checked = document.querySelectorAll('.book-checkbox:checked');
+        document.getElementById('select-all-books').checked = all.length > 0 && all.length === checked.length;
+    }
+
+    function updateBulkToolbar() {
+        const toolbar = document.getElementById('bulk-toolbar');
+        const countText = document.getElementById('bulk-count-text');
+        if (selectedBookIds.size > 0) {
+            toolbar.classList.add('visible');
+            countText.textContent = `Вибрано: ${selectedBookIds.size} книг`;
+        } else {
+            toolbar.classList.remove('visible');
+        }
+    }
+
+    function clearSelection() {
+        selectedBookIds.clear();
+        document.querySelectorAll('.book-checkbox').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.admin-book-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('select-all-books').checked = false;
+        updateBulkToolbar();
+    }
+
+    function invertSelection() {
+        document.querySelectorAll('.book-checkbox').forEach(cb => {
+            cb.checked = !cb.checked;
+            const id = parseInt(cb.dataset.id);
+            if (cb.checked) selectedBookIds.add(id);
+            else selectedBookIds.delete(id);
+            cb.closest('.admin-book-item').classList.toggle('selected', cb.checked);
+        });
+        updateBulkToolbar();
+    }
+
+    async function applyBulkDiscount() {
+        if (selectedBookIds.size === 0) return;
+        const discount = parseInt(document.getElementById('bulk-discount-value').value) || 0;
+        if (discount < 0 || discount > 90) {
+            showNotification('Знижка має бути від 0 до 90%', 'error');
+            return;
+        }
+
+        const basePath = window.BASE_PATH || '';
+        const count = selectedBookIds.size;
+
+        for (const id of selectedBookIds) {
+            const book = books.find(b => b.id === id);
+            if (!book) continue;
+
+            // Оновлюємо локально завжди
+            book.discount = discount;
+
+            // Намагаємось зберегти в MySQL
+            try {
+                await fetch(basePath + `php/api.php?action=books&id=${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': 'admin123'
+                    },
+                    body: JSON.stringify({ ...book, discount })
+                });
+            } catch(e) {}
+        }
+
+        // Зберігаємо в localStorage
+        localStorage.setItem('books', JSON.stringify(books));
+
+        loadAdminBooks();
+        clearSelection();
+        showNotification(`🏷 Знижку ${discount}% встановлено для ${count} книг!`);
+    }
+
+    async function removeBulkDiscount() {
+        if (selectedBookIds.size === 0) return;
+        document.getElementById('bulk-discount-value').value = 0;
+        await applyBulkDiscount();
+    }
+
+    // Робимо функцію доступною з admin.js
+    window.onBookCheckboxChange = onBookCheckboxChange;
+    </script>
+
 </body>
-</html> 
+</html>
