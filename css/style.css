@@ -196,7 +196,7 @@ input, select, textarea { font-family: var(--font-body); }
     outline: none;
     border-color: var(--blood-red);
     width: 300px;
-    background: white;
+    background: #fdf6ec;
 }
 
 .header-search input::placeholder { color: var(--cinereous); }
@@ -366,7 +366,7 @@ input, select, textarea { font-family: var(--font-body); }
 }
 
 /* === СЕКЦІЇ === */
-.books-section { padding: 60px 0; background: white; }
+.books-section { padding: 60px 0; background: #fdf6ec; }
 .books-section:nth-child(even) { background-color: var(--vanilla); }
 
 .section-title {
@@ -405,7 +405,7 @@ input, select, textarea { font-family: var(--font-body); }
 
 /* === КАРТКА КНИГИ === */
 .book-card {
-    background: white;
+    background: #fffaf4;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
@@ -1024,7 +1024,7 @@ input, select, textarea { font-family: var(--font-body); }
 
 .cart-items,
 .cart-summary {
-    background: white;
+    background: #fffaf4;
     border-radius: var(--radius);
     padding: 24px;
     box-shadow: var(--shadow-sm);
@@ -1128,7 +1128,7 @@ input, select, textarea { font-family: var(--font-body); }
 
 .checkout-form,
 .checkout-summary {
-    background: white;
+    background: #fffaf4;
     border-radius: var(--radius);
     padding: 30px;
     box-shadow: var(--shadow-sm);
