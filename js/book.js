@@ -78,9 +78,9 @@ async function displayBookDetails() {
         stockHtml = `<div style="background:#f8d7da; color:#721c24; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
             ❌ Немає в наявності
         </div>`;
-    } else if (availableStock <= 15) {
+    } else if (availableStock <= 20) {
         stockHtml = `<div style="background:#fff3cd; color:#856404; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
-            ⚠️ Останні ${availableStock} шт на складі — поспішайте!
+            ⚠️ Поспішайте! Залишилось лише ${availableStock} шт
         </div>`;
     } else {
         stockHtml = `<div style="background:#d4edda; color:#155724; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
@@ -244,7 +244,11 @@ function generateStarsDisplay(rating) {
     const half  = (normalized % 1) >= 0.5;
     const empty = 5 - full - (half ? 1 : 0);
 
-    return '★'.repeat(full) + (half ? '⯨' : '') + '☆'.repeat(Math.max(0, empty));
+    let html = '';
+    for (let i = 0; i < full;  i++) html += `<span style="color:#d4a017; font-size:22px;">★</span>`;
+    if (half)                        html += `<span style="color:#d4a017; font-size:22px;">⯨</span>`;
+    for (let i = 0; i < empty; i++) html += `<span style="color:#ddd; font-size:22px;">★</span>`;
+    return html;
 }
 
 // ===================================

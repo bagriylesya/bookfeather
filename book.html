@@ -239,6 +239,30 @@
             .book-detail-info h1 { font-size: 24px; }
             .book-detail-price { font-size: 28px; }
         }
+
+        /* Зірочки — 5 видно */
+        .stars-display {
+            display: inline-flex;
+            gap: 2px;
+        }
+        .stars-display span {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        /* Наявність — мало залишилось */
+        .stock-low {
+            color: #e65c00 !important;
+            font-weight: 700;
+        }
+        .stock-none {
+            color: #dc3545 !important;
+            font-weight: 700;
+        }
+        .stock-ok {
+            color: #2d8a4e !important;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -343,7 +367,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: info@bookfeather.com</p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="375e595158775558585c515256435f52451954585a">[email&#160;protected]</a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">
@@ -361,7 +385,7 @@
     </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.js"></script>
 <script src="js/book.js"></script>
 <script src="js/search.js"></script>
 <script>

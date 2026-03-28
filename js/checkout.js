@@ -27,16 +27,13 @@ function loadOrderSummary() {
         return;
     }
 
-    const container  = document.getElementById('order-items');
-    const itemsTotal = document.getElementById('items-total');
-    const deliveryCostEl = document.getElementById('delivery-cost');
-    const finalTotalEl   = document.getElementById('final-total');
-
+    const container = document.getElementById('order-items');
     if (container) {
         container.innerHTML = cartData.map(item => createOrderItem(item)).join('');
     }
 
     recalcTotals();
+    updateSelectedRadio();
 }
 
 // ===================================
@@ -94,8 +91,8 @@ function recalcTotals() {
     // Підказка
     const hint = document.getElementById('free-delivery-hint');
     if (hint) {
-        if (delivery > 0 && subtotal < 500) {
-            hint.innerHTML = `<small style="color:var(--cinereous);">Ще <strong>${(500 - subtotal).toFixed(0)} грн</strong> — і доставка безкоштовна</small>`;
+        if (delivery > 0 && subtotal < 899) {
+            hint.innerHTML = `<small style="color:var(--cinereous);">Ще <strong>${(899 - subtotal).toFixed(0)} грн</strong> — і доставка безкоштовна</small>`;
         } else if (delivery === 0) {
             hint.innerHTML = `<small style="color:#2d8a4e;">✅ У вас безкоштовна доставка!</small>`;
         }
@@ -109,7 +106,7 @@ function calcDeliveryCost(subtotal) {
     const method = document.querySelector('input[name="delivery"]:checked')?.value || 'np-warehouse';
 
     const thresholds = {
-        'np-warehouse': { free: 500,  price: 50 },
+        'np-warehouse': { free: 899,  price: 50 },
         'np-courier':   { free: 800,  price: 80 },
         'ukrposhta':    { free: 9999, price: 35 },
     };
@@ -197,8 +194,45 @@ function setupFormSubmit() {
     const form = document.getElementById('checkout-form');
     if (!form) return;
 
+    // Телефон — авто +380
+    const phoneInput = form.elements['phone'];
+    if (phoneInput) {
+        phoneInput.addEventListener('focus', () => {
+            if (!phoneInput.value) phoneInput.value = '+380';
+        });
+        phoneInput.addEventListener('input', () => {
+            if (!phoneInput.value.startsWith('+380')) {
+                const digits = phoneInput.value.replace(/\D/g, '');
+                if (digits.startsWith('380')) phoneInput.value = '+' + digits;
+                else if (digits.startsWith('0')) phoneInput.value = '+38' + digits;
+                else phoneInput.value = '+380' + digits;
+            }
+        });
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // Валідація
+        const name  = form.elements['name']?.value?.trim();
+        const phone = form.elements['phone']?.value?.trim();
+        const city  = form.elements['city']?.value?.trim();
+
+        if (!name) {
+            showNotification("Введіть ваше ім'я", 'error');
+            form.elements['name']?.focus();
+            return;
+        }
+        if (!phone || phone.length < 13) {
+            showNotification('Введіть коректний номер телефону', 'error');
+            form.elements['phone']?.focus();
+            return;
+        }
+        if (!city) {
+            showNotification('Введіть місто доставки', 'error');
+            form.elements['city']?.focus();
+            return;
+        }
 
         const btn = form.querySelector('button[type="submit"]');
         if (btn) { btn.disabled = true; btn.textContent = '⏳ Оформлюємо...'; }
