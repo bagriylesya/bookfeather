@@ -27,7 +27,23 @@ async function loadBooks(forceReload = false) {
 
     const basePath = window.BASE_PATH || '';
 
-    // 1. Спробуємо завантажити з MySQL через PHP API
+    // 1. СПОЧАТКУ — миттєво з localStorage (без затримки)
+    if (!forceReload) {
+        try {
+            const savedBooks = localStorage.getItem('books');
+            if (savedBooks) {
+                const parsed = JSON.parse(savedBooks);
+                if (parsed && parsed.length > 0) {
+                    books = parsed;
+                    // Тихо оновлюємо з API у фоні
+                    _syncFromAPI(basePath);
+                    return books;
+                }
+            }
+        } catch (e) {}
+    }
+
+    // 2. Якщо localStorage порожній — чекаємо API
     try {
         const response = await fetch(basePath + 'php/api.php?action=books&limit=100');
         if (response.ok) {
@@ -40,17 +56,8 @@ async function loadBooks(forceReload = false) {
             }
         }
     } catch (e) {
-        console.log('PHP API недоступний, пробуємо localStorage...');
+        console.log('PHP API недоступний');
     }
-
-    // 2. Fallback: localStorage
-    try {
-        const savedBooks = localStorage.getItem('books');
-        if (savedBooks) {
-            books = JSON.parse(savedBooks);
-            if (books && books.length > 0) return books;
-        }
-    } catch (e) {}
 
     // 3. Fallback: books.json
     try {
@@ -62,10 +69,24 @@ async function loadBooks(forceReload = false) {
         }
     } catch (e) {}
 
-    // 4. Остання резервна — вбудовані демо-дані
+    // 4. Демо-дані
     books = getDemoBooks();
     localStorage.setItem('books', JSON.stringify(books));
     return books;
+}
+
+// Фонове оновлення з API (не блокує рендер)
+async function _syncFromAPI(basePath) {
+    try {
+        const response = await fetch(basePath + 'php/api.php?action=books&limit=100');
+        if (!response.ok) return;
+        const json = await response.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            books = json.data.map(mapBookFromDB);
+            localStorage.setItem('books', JSON.stringify(books));
+            window.USE_API = true;
+        }
+    } catch (e) {}
 }
 
 // Конвертація полів БД (snake_case) у формат фронтенду (camelCase)
