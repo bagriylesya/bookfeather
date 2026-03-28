@@ -239,15 +239,15 @@ function metaRow(label, value, linkFn = null) {
 // ЗІРКИ ДЛЯ ВІДОБРАЖЕННЯ РЕЙТИНГУ
 // ===================================
 function generateStarsDisplay(rating) {
-    const normalized = rating / 2; // з 10 → 5
+    const normalized = rating / 2;
     const full  = Math.floor(normalized);
     const half  = (normalized % 1) >= 0.5;
     const empty = 5 - full - (half ? 1 : 0);
-
-    let html = '';
-    for (let i = 0; i < full;  i++) html += `<span style="color:#d4a017; font-size:22px;">★</span>`;
-    if (half)                        html += `<span style="color:#d4a017; font-size:22px;">⯨</span>`;
-    for (let i = 0; i < empty; i++) html += `<span style="color:#ddd; font-size:22px;">★</span>`;
+    let html = '<span style="display:inline-flex;gap:1px;line-height:1;">';
+    for (let i = 0; i < full;  i++) html += '<span style="color:#d4a017;font-size:22px;">&#9733;</span>';
+    if (half)                        html += '<span style="color:#d4a017;font-size:22px;">&#11368;</span>';
+    for (let i = 0; i < empty; i++) html += '<span style="color:#ccc;font-size:22px;">&#9733;</span>';
+    html += '</span>';
     return html;
 }
 
