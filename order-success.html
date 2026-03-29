@@ -460,15 +460,14 @@ function startRedirectTimer() {
     }, 1000);
 
     // Клік на будь-яку кнопку — зупинити таймер
-    docu
     document.querySelectorAll('.btn').forEach(btn => {
         btn.addEventListener('click', () => {
             clearInterval(timer);
-            const countdown = document.getElementById('countdown');
-            if (countdown) countdown.parentElement.style.display = 'none';
+            const cd = document.getElementById('countdown');
+            if (cd) cd.parentElement.style.display = 'none';
         });
     });
-};
+});
 </script>
 </body>
 </html>

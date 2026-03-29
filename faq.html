@@ -180,7 +180,7 @@
                         </div>
                         <div class="faq-answer">
                             <p><strong>Так!</strong> Ви можете скасувати або змінити замовлення ДО моменту його відправки.</p>
-                            <p>Для цього зателефонуйте нам: <strong>+380 XX XXX XX XX</strong> або напишіть на <strong>info@bookfeather.com</strong></p>
+                            <p>Для цього зателефонуйте нам: <strong>+380 XX XXX XX XX</strong> або напишіть на <strong><a href="mailto:info@bookfeather.com">info@bookfeather.com</a></strong></p>
                             <p>Вкажіть номер замовлення та що саме потрібно змінити.</p>
                         </div>
                     </div>
@@ -367,7 +367,7 @@
                     <h3 style="font-size: 28px; margin-bottom: 20px; color: var(--blood-red);">Не знайшли відповіді?</h3>
                     <p style="font-size: 18px; margin-bottom: 25px;">Наша команда з радістю допоможе!</p>
                     <div style="font-size: 18px; margin-bottom: 25px;">
-                        <p><strong>📧 Email:</strong> info@bookfeather.com</p>
+                        <p><strong>📧 Email:</strong> <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
                         <p><strong>📞 Телефон:</strong> +380 XX XXX XX XX</p>
                         <p><strong>⏰ Графік:</strong> Пн-Пт 9:00-18:00</p>
                     </div>
@@ -394,7 +394,7 @@
                 </div>
                 <div class="footer-section">
                     <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
+                    <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
                     <p>Тел: +380 XX XXX XX XX</p>
                 </div>
                 <div class="footer-section">
@@ -419,16 +419,11 @@
         function toggleFaq(element) {
             // Закрити всі інші
             document.querySelectorAll('.faq-question').forEach(q => {
-                if (q !== element) {
-                    q.classList.remove('active');
-                    q.nextElementSibling.classList.remove('active');
-                }
-            });
-            
-            // Перемкнути поточний
-            element.classList.toggle('active');
-            element.nextElementSibling.classList.toggle('active');
-        }
-    </script>
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            item.classList.toggle('open');
+        });
+    });
+</script>
 </body>
 </html>

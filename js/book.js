@@ -137,7 +137,7 @@ async function displayBookDetails() {
             <!-- РЕЙТИНГ -->
             <div class="rating-interactive">
                 <div class="current-rating">
-                    <div class="stars-display">${generateStarsDisplay(book.rating || 0)}</div>
+                    <div class="stars-display" style="overflow:visible;">${generateStarsDisplay(book.rating || 0)}</div>
                     <span class="rating-info">
                         ${(book.rating || 0).toFixed(1)} / 10
                         · ${book.ratingCount || 0} оцінок
@@ -243,10 +243,10 @@ function generateStarsDisplay(rating) {
     const full  = Math.floor(normalized);
     const half  = (normalized % 1) >= 0.5;
     const empty = 5 - full - (half ? 1 : 0);
-    let html = '<span style="display:inline-flex;gap:1px;line-height:1;">';
-    for (let i = 0; i < full;  i++) html += '<span style="color:#d4a017;font-size:22px;">&#9733;</span>';
-    if (half)                        html += '<span style="color:#d4a017;font-size:22px;">&#11368;</span>';
-    for (let i = 0; i < empty; i++) html += '<span style="color:#ccc;font-size:22px;">&#9733;</span>';
+    let html = '<span style="display:inline-flex;gap:2px;line-height:1;overflow:visible;padding-right:4px;">';
+    for (let i = 0; i < full;  i++) html += '<span style="color:#d4a017;font-size:22px;flex-shrink:0;">&#9733;</span>';
+    if (half)                        html += '<span style="color:#d4a017;font-size:22px;flex-shrink:0;">&#9733;</span>';
+    for (let i = 0; i < empty; i++) html += '<span style="color:#ccc;font-size:22px;flex-shrink:0;">&#9733;</span>';
     html += '</span>';
     return html;
 }

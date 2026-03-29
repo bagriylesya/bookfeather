@@ -74,10 +74,10 @@ function recalcTotals() {
 
     let subtotal = 0;
     cartData.forEach(item => {
-        const price = item.discount > 0
-            ? (item.price * (1 - item.discount / 100))
-            : item.price;
-        subtotal += price * (item.quantity || 1);
+        const price = parseFloat(item.discount) > 0
+            ? (parseFloat(item.price) * (1 - parseFloat(item.discount) / 100))
+            : parseFloat(item.price) || 0;
+        subtotal += price * (parseInt(item.quantity) || 1);
     });
 
     const delivery = calcDeliveryCost(subtotal);
@@ -273,8 +273,8 @@ function buildOrder(form) {
 
     let subtotal = 0;
     cartData.forEach(item => {
-        const p = item.discount > 0 ? item.price * (1 - item.discount / 100) : item.price;
-        subtotal += p * (item.quantity || 1);
+        const p = parseFloat(item.discount) > 0 ? parseFloat(item.price) * (1 - parseFloat(item.discount) / 100) : parseFloat(item.price) || 0;
+        subtotal += p * (parseInt(item.quantity) || 1);
     });
 
     const deliveryCost = calcDeliveryCost(subtotal);

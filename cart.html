@@ -145,7 +145,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection#d8b1b6beb798bab7b7b3bebdb9acb0bdaaf6bbb7b5"><span class="__cf_email__" data-cfemail="620b0c040d22000d0d09040703160a07104c010d0f">[email&#160;protected]</span></a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
                 <p>Пн–Пт: 9:00–18:00</p>
             </div>
@@ -165,7 +165,7 @@
     </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/search.js"></script>
 
@@ -182,7 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const section = document.getElementById('recently-viewed-section');
     if (section) section.style.display = 'block';
-
     const grid = document.getElementById('recently-viewed');
     if (grid) {
         grid.innerHTML = recentBooks.map(b => createBookCard(b)).join('');

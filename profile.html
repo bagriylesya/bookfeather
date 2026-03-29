@@ -789,15 +789,10 @@ async function renderFavorites() {
             <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--cinereous);">
                 <div style="font-size:48px; margin-bottom:14px;">♥</div>
                 <h3 style="margin-bottom:10px;">Вподобань ще немає</h3>
-                <a href="catalog.html" class="btn btn-primary">Переглянути каталог</a>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = favBooks.map(b => createBookCard(b)).join('');
-    attachBookCardListeners();
-}
-</script>
+                <a href="catalog.html" class="btn btn-primary">Перейти до каталогу</a>
+                </div>`;
+            }
+        }
+    </script>
 </body>
 </html>

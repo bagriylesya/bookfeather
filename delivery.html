@@ -8,41 +8,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <h1 style="display: none;"><a href="index.html">BOOKFEATHER</a></h1>
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="BOOKFEATHER" class="logo-img">
+                    <span class="logo-name">BOOKFEATHER</span>
+                </a>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">Головна</a></li>
+                    <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                <div class="header-search">
+                    <input type="text" id="header-search" placeholder="Пошук книг..." autocomplete="off">
+                    <div class="search-suggestions" id="search-suggestions"></div>
                 </div>
-                <nav class="nav">
-                    <ul>
-                        <li><a href="index.html">Головна</a></li>
-                        <li><a href="catalog.html">Каталог</a></li>
-                        <li><a href="about.html">Про нас</a></li>
-                    </ul>
-                </nav>
-                <div class="header-icons">
-                    <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
-                        ♥ <span class="fav-count">0</span>
-                    </button>
-                    <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
-                        🛒 <span class="cart-count">0</span>
-                    </button>
-                    <div class="profile-wrapper">
-                        <button class="icon-btn profile-btn" onclick="toggleProfileMenu(event)" title="Профіль">
-                            👤
-                        </button>
-                        <div class="profile-menu" id="profile-menu">
-                            <a href="login.html">Увійти</a>
-                            <a href="register.html">Реєстрація</a>
-                            <a href="profile.html">Мій профіль</a>
-                        </div>
-                    </div>
+                <button class="icon-btn" onclick="window.location.href='favorites.html'" title="Вподобання">
+                    ♥ <span class="fav-count">0</span>
+                </button>
+                <button class="icon-btn" onclick="window.location.href='cart.html'" title="Кошик">
+                    🛒 <span class="cart-count">0</span>
+                </button>
+                <div class="profile-wrapper">
+                    <button class="icon-btn" onclick="toggleProfileMenu(event)" title="Профіль">👤</button>
+                    <div class="profile-menu" id="profile-menu"></div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
     <section class="books-section">
         <div class="container">
@@ -57,8 +58,8 @@
                     <div style="background-color: #f9f3e3; padding: 30px; border-radius: 12px; margin-bottom: 25px;">
                         <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">🚚 Нова Пошта</h3>
                         <ul style="margin-left: 25px; line-height: 2;">
-                            <li><strong>Доставка у відділення:</strong> 50 грн (безкоштовно при замовленні від 500 грн)</li>
-                            <li><strong>Кур'єром додому:</strong> 80 грн (безкоштовно при замовленні від 800 грн)</li>
+                            <li><strong>Доставка у відділення:</strong> 50 грн (безкоштовно при замовленні від 899 грн)</li>
+                            <li><strong>Кур'єром додому:</strong> 80 грн (безкоштовно при замовленні від 899 грн)</li>
                             <li><strong>Термін доставки:</strong> 1-3 робочих дні</li>
                             <li><strong>Накладений платіж:</strong> доступний (+20 грн до вартості доставки)</li>
                         </ul>
@@ -92,7 +93,7 @@
                         <h3 style="font-size: 24px; margin-bottom: 20px; color: var(--black-bean);">🏦 Безготівковий розрахунок для юридичних осіб</h3>
                         <p style="margin-bottom: 12px;">Для оформлення замовлення зі сплатою за рахунком зв'яжіться з нами:</p>
                         <ul style="margin-left: 25px; line-height: 2;">
-                            <li>Email: <a href="mailto:info@bookfeather.com" style="color: var(--blood-red); text-decoration: underline;">info@bookfeather.com</a></li>
+                            <li>Email: <a href="/cdn-cgi/l/email-protection#d6bfb8b0b996b4b9b9bdb0b3b7a2beb3a4f8b5b9bb"><span class="__cf_email__" data-cfemail="ddb4b3bbb29dbfb2b2b6bbb8bca9b5b8aff3beb2b0">[email&#160;protected]</span></a></li>
                             <li>Телефон: +380 XX XXX XX XX</li>
                         </ul>
                     </div>
@@ -127,7 +128,7 @@
                             <li><strong>Не отримали SMS про відправку:</strong> зверніться до менеджера</li>
                             <li><strong>Посилка пошкоджена:</strong> не оплачуйте, складіть акт у відділенні</li>
                             <li><strong>Не підходить книга:</strong> ознайомтесь з умовами повернення на сторінці <a href="return.html" style="color: var(--blood-red); text-decoration: underline;">"Повернення товару"</a></li>
-                            <li><strong>Є питання:</strong> пишіть на <a href="mailto:info@bookfeather.com" style="color: var(--blood-red); text-decoration: underline;">info@bookfeather.com</a> або телефонуйте +380 XX XXX XX XX</li>
+                            <li><strong>Є питання:</strong> пишіть на <a href="/cdn-cgi/l/email-protection#88e1e6eee7c8eae7e7e3eeede9fce0edfaa6ebe7e5"><span class="__cf_email__" data-cfemail="e0898e868fa0828f8f8b86858194888592ce838f8d">[email&#160;protected]</span></a> або телефонуйте +380 XX XXX XX XX</li>
                         </ul>
                     </div>
                     
@@ -163,7 +164,7 @@
                 </div>
                 <div class="footer-section">
                     <h4>Контакти</h4>
-                    <p>Email: info@bookfeather.com</p>
+                    <p>Email: <a href="/cdn-cgi/l/email-protection#85ecebe3eac5e7eaeaeee3e0e4f1ede0f7abe6eae8"><span class="__cf_email__" data-cfemail="6f060109002f0d000004090a0e1b070a1d410c0002">[email&#160;protected]</span></a></p>
                     <p>Тел: +380 XX XXX XX XX</p>
                 </div>
                 <div class="footer-section">
@@ -172,7 +173,7 @@
                         <li><a href="delivery.html">Доставка і оплата</a></li>
                         <li><a href="return.html">Повернення товару</a></li>
                         <li><a href="faq.html">Часті питання</a></li>
-                        <li><a href="contact.html">Зв'яжіться з нами</a></li>
+                        <li><a href="contact.html">Зв'язатись з нами</a></li>
                     </ul>
                 </div>
             </div>
@@ -181,7 +182,3 @@
             </div>
         </div>
     </footer>
-
-    <script src="js/main.js"></script>
-</body>
-</html>
