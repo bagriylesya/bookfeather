@@ -367,7 +367,7 @@ input, select, textarea { font-family: var(--font-body); }
 
 /* === СЕКЦІЇ === */
 .books-section { padding: 60px 0; background: #fdf6ec; }
-.books-section:nth-child(even) { background-color: var(--vanilla); }
+.books-section:nth-child(even) { background-color: #f5ebe0; }
 
 .section-title {
     font-size: 34px;
@@ -405,10 +405,11 @@ input, select, textarea { font-family: var(--font-body); }
 
 /* === КАРТКА КНИГИ === */
 .book-card {
-    background: #fffaf4;
+    background: #fffdf8;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
+    border: 1px solid #f0e4d0;
     transition: transform var(--transition), box-shadow var(--transition);
     position: relative;
     display: flex;
@@ -489,6 +490,7 @@ input, select, textarea { font-family: var(--font-body); }
 
 .book-title {
     font-size: 16px;
+    font-weight: 700;
     margin-bottom: 6px;
     color: var(--black-bean);
     line-height: 1.4;

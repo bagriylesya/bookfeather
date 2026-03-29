@@ -180,7 +180,7 @@
                         </div>
                         <div class="faq-answer">
                             <p><strong>Так!</strong> Ви можете скасувати або змінити замовлення ДО моменту його відправки.</p>
-                            <p>Для цього зателефонуйте нам: <strong>+380 XX XXX XX XX</strong> або напишіть на <strong><a href="mailto:info@bookfeather.com">info@bookfeather.com</a></strong></p>
+                            <p>Для цього зателефонуйте нам: <strong>+380 XX XXX XX XX</strong> або напишіть на <strong><a href="/cdn-cgi/l/email-protection#bfd6d1d9d0ffddd0d0d4d9dadecbd7dacd91dcd0d2"><span class="__cf_email__" data-cfemail="325b5c545d72505d5d59545753465a57401c515d5f">[email&#160;protected]</span></a></strong></p>
                             <p>Вкажіть номер замовлення та що саме потрібно змінити.</p>
                         </div>
                     </div>
@@ -367,7 +367,7 @@
                     <h3 style="font-size: 28px; margin-bottom: 20px; color: var(--blood-red);">Не знайшли відповіді?</h3>
                     <p style="font-size: 18px; margin-bottom: 25px;">Наша команда з радістю допоможе!</p>
                     <div style="font-size: 18px; margin-bottom: 25px;">
-                        <p><strong>📧 Email:</strong> <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
+                        <p><strong>📧 Email:</strong> <a href="/cdn-cgi/l/email-protection#e38a8d858ca3818c8c88858682978b8691cd808c8e"><span class="__cf_email__" data-cfemail="c3aaada5ac83a1acaca8a5a6a2b7aba6b1eda0acae">[email&#160;protected]</span></a></p>
                         <p><strong>📞 Телефон:</strong> +380 XX XXX XX XX</p>
                         <p><strong>⏰ Графік:</strong> Пн-Пт 9:00-18:00</p>
                     </div>
@@ -394,7 +394,7 @@
                 </div>
                 <div class="footer-section">
                     <h4>Контакти</h4>
-                    <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
+                    <p>Email: <a href="/cdn-cgi/l/email-protection#741d1a121b34161b1b1f121115001c11065a171b19"><span class="__cf_email__" data-cfemail="472e292128072528282c212226332f22356924282a">[email&#160;protected]</span></a></p>
                     <p>Тел: +380 XX XXX XX XX</p>
                 </div>
                 <div class="footer-section">
@@ -413,17 +413,22 @@
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/search.js"></script>
-    <script>
-        function toggleFaq(element) {
-            // Закрити всі інші
-            document.querySelectorAll('.faq-question').forEach(q => {
-        q.addEventListener('click', () => {
-            const item = q.parentElement;
-            item.classList.toggle('open');
-        });
-    });
+    
+<script src="js/main.js"></script>
+<script src="js/search.js"></script>
+<script>
+function toggleFaq(el) {
+    const item = el.closest('.faq-item');
+    const answer = item.querySelector('.faq-answer');
+    const isOpen = answer.classList.contains('active');
+    // Close all
+    document.querySelectorAll('.faq-answer.active').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('.faq-question.active').forEach(q => q.classList.remove('active'));
+    if (!isOpen) {
+        answer.classList.add('active');
+        el.classList.add('active');
+    }
+}
 </script>
 </body>
 </html>

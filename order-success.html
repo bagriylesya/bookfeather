@@ -366,7 +366,7 @@
     </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const params  = new URLSearchParams(window.location.search);
@@ -460,14 +460,10 @@ function startRedirectTimer() {
     }, 1000);
 
     // Клік на будь-яку кнопку — зупинити таймер
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            clearInterval(timer);
-            const cd = document.getElementById('countdown');
-            if (cd) cd.parentElement.style.display = 'none';
-        });
+        document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', () => clearInterval(timer));
     });
-});
+}
 </script>
 </body>
 </html>

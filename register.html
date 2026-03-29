@@ -343,7 +343,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection#422b2c242d02202d2d29242723362a27306c212d2f"><span class="__cf_email__" data-cfemail="630a0d050c23010c0c08050602170b06114d000c0e">[email&#160;protected]</span></a></p>
             </div>
             <div class="footer-section">
                 <h4>Підтримка</h4>
@@ -359,11 +359,27 @@
     </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.js"></script>
 <script>
 // ===== ВЖЕ ЗАЛОГІНЕНИЙ =====
 document.addEventListener('DOMContentLoaded', () => {
     if (getCurrentUser()) window.location.href = 'profile.html';
+
+    // Авто +380 для телефону
+    const phoneInput = document.getElementById('reg-phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('focus', () => {
+            if (!phoneInput.value) phoneInput.value = '+380';
+        });
+        phoneInput.addEventListener('input', () => {
+            if (!phoneInput.value.startsWith('+380')) {
+                const digits = phoneInput.value.replace(/\D/g, '');
+                if (digits.startsWith('380'))      phoneInput.value = '+' + digits;
+                else if (digits.startsWith('0'))   phoneInput.value = '+38' + digits;
+                else if (digits.length > 0)        phoneInput.value = '+380' + digits;
+            }
+        });
+    }
 });
 
 // ===== ПОКАЗ ПАРОЛЯ =====
@@ -500,8 +516,14 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
 
         updateCartCount();
         updateFavCount();
-        showNotification(`🎉 Вітаємо, ${name}! Акаунт створено.`);
-        setTimeout(() => { window.location.href = 'profile.html'; }, 1200);
+        updateProfileMenu();
+
+        showNotification(`✅ Вітаємо, ${name}! Реєстрація успішна!`);
+
+        const params   = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect') || 'profile.html';
+        setTimeout(() => { window.location.href = redirect; }, 1200);
+
     }, 600);
 });
 </script>
