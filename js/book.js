@@ -78,7 +78,7 @@ async function displayBookDetails() {
         stockHtml = `<div style="background:#f8d7da; color:#721c24; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
             ❌ Немає в наявності
         </div>`;
-    } else if (availableStock <= 20) {
+    } else if (availableStock <= 15) {
         stockHtml = `<div style="background:#fff3cd; color:#856404; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
             ⚠️ Поспішайте! Залишилось лише ${availableStock} шт
         </div>`;
@@ -128,7 +128,7 @@ async function displayBookDetails() {
                           text-decoration:none; font-family:var(--font-heading);">
                     ${book.author}
                 </a>
-                ${book.publisher ? `<span style="font-size:14px; color:var(--cinereous); margin-left:8px;">· ${book.publisher}</span>` : ''}
+
             </div>
 
             ${priceHtml}
@@ -156,7 +156,7 @@ async function displayBookDetails() {
             </div>
 
             <!-- ХАРАКТЕРИСТИКИ -->
-            <div class="book-meta" style="margin:24px 0;">
+            <div class="book-meta" style="margin:24px 0; box-shadow:0 4px 18px rgba(49,14,16,0.13); border-radius:12px; overflow:hidden; border:1px solid #e8d8c4;">
                 ${metaRow('Оригінальна назва', book.originalTitle)}
                 ${metaRow('Автор', book.author, () => `catalog.html?author=${encodeURIComponent(book.author)}`)}
                 ${metaRow('Видавництво', book.publisher, book.publisher ? () => `catalog.html?publisher=${encodeURIComponent(book.publisher)}` : null)}

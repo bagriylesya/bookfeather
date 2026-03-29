@@ -4,12 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Про нас - BOOKFEATHER</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="shortcut icon" href="images/logo.png">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .about-hero {
             background: linear-gradient(135deg, var(--blood-red) 0%, var(--black-bean) 100%);
             padding: 80px 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero-bg {
+            position: absolute;
+            inset: 0;
+            background-image: url('images/pro_nas_poster.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.38;
+            z-index: 0;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg,
+                rgba(116,7,14,0.72) 0%,
+                rgba(49,14,16,0.78) 100%);
+            z-index: 1;
+        }
+
+        .about-hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .about-hero h1 {
@@ -181,9 +210,12 @@
 
 <!-- HERO -->
 <div class="about-hero">
+    <div class="about-hero-bg"></div>
     <div class="container">
-        <h1>Про BOOKFEATHER</h1>
-        <p>Ми — команда людей, які щиро люблять книги і хочуть зробити читання доступним для кожного.</p>
+        <div class="about-hero-content">
+            <h1>Про BOOKFEATHER</h1>
+            <p>Ми — команда людей, які щиро люблять книги і хочуть зробити читання доступним для кожного.</p>
+        </div>
     </div>
 </div>
 
@@ -197,34 +229,16 @@
                 <p>Сьогодні ми — сучасний онлайн-магазин з тисячами назв українською та іноземними мовами. Ми ретельно відбираємо кожне видання і дбаємо про те, щоб ваша книга дійшла швидко і в ідеальному стані.</p>
                 <p>Наша місія — підтримувати українське читання і робити книги ближчими до людей.</p>
             </div>
-            <div class="about-image-box">📚</div>
+            <div class="about-image-box" style="padding:0; overflow:hidden;">
+                <img src="images/pro_nas_mu.png"
+                     alt="Команда BOOKFEATHER"
+                     style="width:100%; height:100%; object-fit:cover; border-radius:20px;"
+                     onerror="this.parentElement.innerHTML='📚'; this.parentElement.style.fontSize='96px'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">
+            </div>
         </div>
     </div>
 </section>
 
-<!-- СТАТИСТИКА -->
-<section class="about-section bg-dark">
-    <div class="container">
-        <div class="stats-row">
-            <div class="stat-item">
-                <div class="stat-num">5000+</div>
-                <div class="stat-label">книг у каталозі</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num">12 000+</div>
-                <div class="stat-label">задоволених покупців</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num">1–3</div>
-                <div class="stat-label">дні доставки по Україні</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-num">98%</div>
-                <div class="stat-label">позитивних відгуків</div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- НАШІ ЦІННОСТІ -->
 <section class="about-section bg-vanilla">
@@ -269,7 +283,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: <a href="/cdn-cgi/l/email-protection#1e777078715e7c717175787b7f6a767b6c307d7173"><span class="__cf_email__" data-cfemail="533a3d353c13313c3c38353632273b36217d303c3e">[email&#160;protected]</span></a></p>
+                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">

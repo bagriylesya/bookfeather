@@ -4,6 +4,7 @@
 // ===================================
 
 let filteredBooks = [];
+let _isInitialLoad = true;
 
 // ІНІЦІАЛІЗАЦІЯ
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadCategoryFilter();
         applyUrlFilters();
         filterBooks();
+        _isInitialLoad = false;
     });
 });
 
@@ -154,9 +156,11 @@ function displayBooks() {
     
     container.innerHTML = filteredBooks.map(book => createBookCard(book)).join('');
     attachBookCardListeners();
-    // Скрол на початок каталогу, не всієї сторінки
-    const catalogTop = document.querySelector('.catalog-layout') || document.querySelector('.books-section');
-    if (catalogTop) catalogTop.scrollIntoView({ behavior: 'instant', block: 'start' });
+    // Скрол тільки при зміні фільтрів (не при першому завантаженні)
+    if (!_isInitialLoad) {
+        const catalogTop = document.querySelector('.catalog-layout') || document.querySelector('.books-section');
+        if (catalogTop) catalogTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 
