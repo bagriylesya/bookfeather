@@ -62,31 +62,26 @@ async function displayBookDetails() {
         : book.price;
 
     const priceHtml = book.discount > 0 ? `
-        <div class="book-detail-price">
-            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-                <span style="font-size:36px; font-weight:700; color:var(--blood-red);">${finalPrice} грн</span>
-                <span style="text-decoration:line-through; font-size:20px; color:var(--cinereous);">${book.price} грн</span>
-                <span style="background:var(--blood-red); color:white; padding:4px 10px;
-                             border-radius:6px; font-size:15px; font-weight:700;">-${book.discount}%</span>
-            </div>
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:4px 0 0;">
+            <span style="font-size:32px; font-weight:700; color:var(--blood-red); font-family:var(--font-heading);">${finalPrice} грн</span>
+            <span style="text-decoration:line-through; font-size:17px; color:var(--cinereous);">${book.price} грн</span>
+            <span style="background:var(--blood-red); color:white; padding:3px 9px;
+                         border-radius:6px; font-size:13px; font-weight:700;">-${book.discount}%</span>
         </div>
-    ` : `<div class="book-detail-price" style="font-size:36px; font-weight:700; color:var(--blood-red); margin-bottom:16px;">${book.price} грн</div>`;
+    ` : `<span style="font-size:32px; font-weight:700; color:var(--blood-red); font-family:var(--font-heading);">${book.price} грн</span>`;
 
-    // Стан складу
+    // Стан складу — показуємо тільки якщо немає або мало (≤15)
     let stockHtml = '';
     if (availableStock <= 0) {
-        stockHtml = `<div style="background:#f8d7da; color:#721c24; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
+        stockHtml = `<div style="background:#f8d7da; color:#721c24; padding:10px 16px; border-radius:8px; margin:14px 0; font-weight:600;">
             ❌ Немає в наявності
         </div>`;
     } else if (availableStock <= 15) {
-        stockHtml = `<div style="background:#fff3cd; color:#856404; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
+        stockHtml = `<div style="background:#fff3cd; color:#856404; padding:10px 16px; border-radius:8px; margin:14px 0; font-weight:600;">
             ⚠️ Поспішайте! Залишилось лише ${availableStock} шт
         </div>`;
-    } else {
-        stockHtml = `<div style="background:#d4edda; color:#155724; padding:10px 16px; border-radius:8px; margin-bottom:20px; font-weight:600;">
-            ✅ В наявності: ${availableStock} шт
-        </div>`;
     }
+    // Якщо > 15 — нічого не показуємо
 
     container.innerHTML = `
         <!-- ГАЛЕРЕЯ -->
@@ -120,18 +115,21 @@ async function displayBookDetails() {
 
         <!-- ІНФОРМАЦІЯ -->
         <div class="book-detail-info">
-            <h1 class="page-title">${book.title}</h1>
 
-            <div style="margin-bottom:16px;">
+            <!-- ЗАГОЛОВОК + АВТОР + ЦІНА — одна компактна картка -->
+            <div style="background:#fff8ee; border-radius:14px; padding:22px 26px;
+                        box-shadow:0 2px 12px rgba(49,14,16,0.08); border:1px solid #eedfc8; margin-bottom:16px;">
+                <h1 class="page-title" style="font-size:28px; margin-bottom:8px; line-height:1.3;">${book.title}</h1>
                 <a href="catalog.html?author=${encodeURIComponent(book.author)}"
-                   style="font-size:18px; font-weight:600; color:var(--blood-red);
-                          text-decoration:none; font-family:var(--font-heading);">
+                   style="font-size:16px; font-weight:600; color:var(--blood-red);
+                          text-decoration:none; font-family:var(--font-heading); display:block; margin-bottom:14px;">
                     ${book.author}
                 </a>
-
+                <div style="border-top:1px solid #eedfc8; padding-top:14px;">
+                    ${priceHtml}
+                </div>
             </div>
 
-            ${priceHtml}
             ${stockHtml}
 
             <!-- РЕЙТИНГ -->
@@ -156,7 +154,7 @@ async function displayBookDetails() {
             </div>
 
             <!-- ХАРАКТЕРИСТИКИ -->
-            <div class="book-meta" style="margin:24px 0; box-shadow:0 4px 18px rgba(49,14,16,0.13); border-radius:12px; overflow:hidden; border:1px solid #e8d8c4;">
+            <div class="book-meta" style="margin:24px 0;">
                 ${metaRow('Оригінальна назва', book.originalTitle)}
                 ${metaRow('Автор', book.author, () => `catalog.html?author=${encodeURIComponent(book.author)}`)}
                 ${metaRow('Видавництво', book.publisher, book.publisher ? () => `catalog.html?publisher=${encodeURIComponent(book.publisher)}` : null)}

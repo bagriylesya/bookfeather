@@ -127,7 +127,7 @@ function updateCartSummary() {
         totalQty += (item.quantity || 1);
     });
 
-    const delivery = subtotal >= 500 ? 0 : 50;
+    const delivery = subtotal >= 899 ? 0 : 50;
     const total    = subtotal + delivery;
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -141,7 +141,7 @@ function updateCartSummary() {
     const hint = document.getElementById('delivery-hint');
     if (hint) {
         if (delivery > 0) {
-            const diff = (500 - subtotal).toFixed(0);
+            const diff = (899 - subtotal).toFixed(0);
             hint.innerHTML = `<small style="color:var(--cinereous);">До безкоштовної доставки ще <strong>${diff} грн</strong></small>`;
         } else {
             hint.innerHTML = `<small style="color:#2d8a4e; font-weight:600;">✅ Безкоштовна доставка</small>`;

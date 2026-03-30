@@ -15,7 +15,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .about-hero-bg {
             position: absolute;
             inset: 0;
@@ -25,21 +24,14 @@
             opacity: 0.38;
             z-index: 0;
         }
-
         .about-hero::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg,
-                rgba(116,7,14,0.72) 0%,
-                rgba(49,14,16,0.78) 100%);
+            background: linear-gradient(135deg, rgba(116,7,14,0.72) 0%, rgba(49,14,16,0.78) 100%);
             z-index: 1;
         }
-
-        .about-hero-content {
-            position: relative;
-            z-index: 2;
-        }
+        .about-hero-content { position: relative; z-index: 2; }
 
         .about-hero h1 {
             font-size: 48px;
@@ -230,7 +222,7 @@
                 <p>Наша місія — підтримувати українське читання і робити книги ближчими до людей.</p>
             </div>
             <div class="about-image-box" style="padding:0; overflow:hidden;">
-                <img src="images/pro_nas_mu.png"
+                <img src="images/pro_nas.png"
                      alt="Команда BOOKFEATHER"
                      style="width:100%; height:100%; object-fit:cover; border-radius:20px;"
                      onerror="this.parentElement.innerHTML='📚'; this.parentElement.style.fontSize='96px'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center';">

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Оформлення замовлення - BOOKFEATHER</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="shortcut icon" href="images/logo.png">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .checkout-layout {
@@ -266,6 +268,8 @@
                 <ul>
                     <li><a href="index.html">Головна</a></li>
                     <li><a href="catalog.html">Каталог</a></li>
+                    <li><a href="about.html">Про нас</a></li>
+                    <li><a href="contact.html">Контакти</a></li>
                 </ul>
             </nav>
             <div class="header-icons">
@@ -482,18 +486,6 @@
 
     </div>
 </section>
-
-
-    // Валідація при blur
-    ['name','phone','city'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.addEventListener('blur', () => {
-            if (!el.value.trim()) el.style.borderColor = '#dc3545';
-            else el.style.borderColor = '';
-        });
-    });
-});
-</script>
 <footer class="footer">
     <div class="container">
         <div class="footer-content">
@@ -512,7 +504,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection#1e777078715e7c717175787b7f6a767b6c307d7173"><span class="__cf_email__" data-cfemail="462f282029062429292d202327322e23346825292b">[email&#160;protected]</span></a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">
@@ -524,11 +516,26 @@
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
+                <div class="footer-bottom">
             <p>&copy; 2026 BOOKFEATHER. Всі права захищені.</p>
         </div>
     </div>
 </footer>
 
+<script src="js/main.js"></script>
+<script src="js/checkout.js"></script>
+<script src="js/search.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Валідація при blur
+    ['name','phone','city'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('blur', () => {
+            if (!el.value.trim()) el.style.borderColor = '#dc3545';
+            else el.style.borderColor = '';
+        });
+    });
+});
+</script>
 </body>
 </html>

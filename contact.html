@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Контакти - BOOKFEATHER</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="shortcut icon" href="images/logo.png">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .contact-hero {
@@ -155,7 +157,7 @@
                     <div class="contact-icon">📧</div>
                     <div class="contact-item-text">
                         <h4>Email</h4>
-                        <a href="mailto:info@bookfeather.com">info@bookfeather.com</a>
+                        <a href="/cdn-cgi/l/email-protection#95fcfbf3fad5f7fafafef3f0f4e1fdf0e7bbf6faf8"><span class="__cf_email__" data-cfemail="93fafdf5fcd3f1fcfcf8f5f6f2e7fbf6e1bdf0fcfe">[email&#160;protected]</span></a>
                     </div>
                 </div>
 
@@ -175,13 +177,6 @@
                     </div>
                 </div>
 
-                <div class="contact-item">
-                    <div class="contact-icon">📍</div>
-                    <div class="contact-item-text">
-                        <h4>Адреса</h4>
-                        <p>Україна (тільки онлайн-магазин)</p>
-                    </div>
-                </div>
 
                 <div class="contact-hours">
                     <h4>🕐 Години роботи підтримки</h4>
@@ -255,7 +250,7 @@
             </div>
             <div class="footer-section">
                 <h4>Контакти</h4>
-                <p>Email: <a href="mailto:info@bookfeather.com">info@bookfeather.com</a></p>
+                <p>Email: <a href="/cdn-cgi/l/email-protection#dfb6b1b9b09fbdb0b0b4b9babeabb7baadf1bcb0b2"><span class="__cf_email__" data-cfemail="c2abaca4ad82a0adada9a4a7a3b6aaa7b0eca1adaf">[email&#160;protected]</span></a></p>
                 <p>Тел: +380 XX XXX XX XX</p>
             </div>
             <div class="footer-section">
@@ -272,7 +267,7 @@
     </div>
 </footer>
 
-<script src="js/main.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/main.js"></script>
 <script>
 function sendMessage() {
     const name    = document.getElementById('c-name').value.trim();
@@ -280,7 +275,7 @@ function sendMessage() {
     const message = document.getElementById('c-message').value.trim();
 
     if (!name || !email || !message) {
-        showNotification('Заповніть обов\'язкові поля', 'error');
+            showNotification('Заповніть обов\'язкові поля', 'error');
         return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -288,8 +283,8 @@ function sendMessage() {
         return;
     }
     document.getElementById('form-success').style.display = 'block';
-    document.getElementById('c-name').value = '';
-    document.getElementById('c-email').value = '';
+    document.getElementById('c-name').value    = '';
+    document.getElementById('c-email').value   = '';
     document.getElementById('c-message').value = '';
     document.getElementById('c-subject').value = '';
 }
