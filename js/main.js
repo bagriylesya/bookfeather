@@ -35,8 +35,22 @@ async function loadBooks(forceReload = false) {
                 const parsed = JSON.parse(savedBooks);
                 if (parsed && parsed.length > 0) {
                     books = parsed;
-                    // Тихо оновлюємо з API у фоні
+                    // Тихо оновлюємо з API у фоні (тільки якщо не було локальних змін)
                     _syncFromAPI(basePath);
+                    return books;
+                }
+            }
+        } catch (e) {}
+    }
+
+    // forceReload: спочатку перечитуємо localStorage (зберігає адмінські зміни)
+    if (forceReload) {
+        try {
+            const savedBooks = localStorage.getItem('books');
+            if (savedBooks) {
+                const parsed = JSON.parse(savedBooks);
+                if (parsed && parsed.length > 0) {
+                    books = parsed;
                     return books;
                 }
             }
@@ -76,8 +90,14 @@ async function loadBooks(forceReload = false) {
 }
 
 // Фонове оновлення з API (не блокує рендер)
+// НЕ перезаписує localStorage якщо адмін щойно робив зміни (протягом 5 хв)
 async function _syncFromAPI(basePath) {
     try {
+        // Якщо адмін нещодавно змінював книги локально — не перезаписуємо
+        const lastAdminEdit = parseInt(localStorage.getItem('books_admin_modified') || '0');
+        const fiveMinutes   = 5 * 60 * 1000;
+        if (Date.now() - lastAdminEdit < fiveMinutes) return;
+
         const response = await fetch(basePath + 'php/api.php?action=books&limit=100');
         if (!response.ok) return;
         const json = await response.json();

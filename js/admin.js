@@ -181,10 +181,12 @@ function quickEditStock(bookId) {
 // ===================================
 function setupFormHandler() {
     const form = document.getElementById('add-book-form');
-    if (!form) return;
+    if (!form || form._handlerAttached) return;
+    form._handlerAttached = true;
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const editId = form.dataset.editId;
         if (editId) {
             updateBook(parseInt(editId));
@@ -254,8 +256,8 @@ async function addBook() {
     const form = document.getElementById('add-book-form');
     const data = collectFormData(form);
 
-    if (!data.title || !data.author || !data.category || !data.price || !data.image) {
-        showNotification('Заповніть всі обов\'язкові поля!', 'error');
+    if (!data.title || !data.author || !data.category || !data.price) {
+        showNotification('Заповніть обов\'язкові поля: назва, автор, категорія, ціна!', 'error');
         return;
     }
 
@@ -281,7 +283,11 @@ async function addBook() {
                 resetFormButton();
                 loadAdminBooks();
                 loadCategoryOptions();
-                document.querySelector('[data-tab="manage-books"]')?.click();
+    // Перемикаємо таб
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
+    document.getElementById('manage-books')?.classList.add('active');
                 return;
             }
         } catch (e) {
@@ -293,13 +299,19 @@ async function addBook() {
     const newBook = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
     books.push(newBook);
     localStorage.setItem('books', JSON.stringify(books));
+    localStorage.setItem('books_admin_modified', Date.now().toString());
+    clearSearchCache?.();
     showNotification(`✅ Книгу "${newBook.title}" додано!`);
     form.reset();
     delete form.dataset.editId;
     resetFormButton();
     loadAdminBooks();
     loadCategoryOptions();
-    document.querySelector('[data-tab="manage-books"]')?.click();
+    // Перемикаємо таб
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
+    document.getElementById('manage-books')?.classList.add('active');
 }
 
 // ===================================
@@ -352,7 +364,11 @@ function editBook(id) {
     if (btn) btn.textContent = '💾 Зберегти зміни';
 
     // Переходимо на таб форми
-    document.querySelector('[data-tab="add-book"]')?.click();
+    // Перемикаємо таб
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="add-book"]')?.classList.add('active');
+    document.getElementById('add-book')?.classList.add('active');
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     showNotification(`Редагування: "${book.title}"`, 'info');
 }
@@ -404,12 +420,19 @@ async function updateBook(id) {
     // Fallback: localStorage
     books[idx] = { ...books[idx], ...data, id, updatedAt: new Date().toISOString() };
     localStorage.setItem('books', JSON.stringify(books));
+    localStorage.setItem('books_admin_modified', Date.now().toString());
+    clearSearchCache?.();
     showNotification(`✅ Книгу "${data.title}" оновлено!`);
     form.reset();
     delete form.dataset.editId;
     resetFormButton();
     loadAdminBooks();
     loadCategoryOptions();
+    // Перемикаємо таб
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
+    document.getElementById('manage-books')?.classList.add('active');
 }
 
 // ===================================
@@ -446,6 +469,8 @@ async function deleteBook(id) {
     // Fallback: localStorage
     books = books.filter(b => b.id !== id);
     localStorage.setItem('books', JSON.stringify(books));
+    localStorage.setItem('books_admin_modified', Date.now().toString());
+    clearSearchCache?.();
     showNotification(`Книгу "${book.title}" видалено`);
     loadAdminBooks();
     loadCategoryOptions();
@@ -456,6 +481,8 @@ async function deleteBook(id) {
 // ===================================
 function saveAdminBooks() {
     localStorage.setItem('books', JSON.stringify(books));
+    localStorage.setItem('books_admin_modified', Date.now().toString());
+    clearSearchCache?.();
 }
 
 // ===================================
@@ -478,3 +505,14 @@ window.deleteBook       = deleteBook;
 window.quickEditStock   = quickEditStock;
 window.setupFormHandler = setupFormHandler;
 window.addBook          = addBook;
+// ===================================
+// ОЧИСТИТИ КЕШ КНИГ (для адміна)
+// ===================================
+function clearBooksCache() {
+    localStorage.removeItem('books');
+    localStorage.removeItem('books_admin_modified');
+    books = [];
+    showNotification('🔄 Кеш очищено. Перезавантажте сторінку.', 'info');
+    setTimeout(() => window.location.reload(), 1200);
+}
+window.clearBooksCache = clearBooksCache;

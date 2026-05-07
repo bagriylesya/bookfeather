@@ -492,24 +492,37 @@
     // ===== ВХІД В АДМІНКУ =====
     const ADMIN_PASSWORD = 'admin123'; // змініть на свій пароль
 
+    function showAdminPanel() {
+        document.getElementById('admin-login').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        sessionStorage.setItem('adminLoggedIn', '1');
+        loadBooks().then(() => {
+            loadAdminBooks();
+            loadCategoryOptions();
+            setupFormHandler(); // підключаємо обробник форми додавання/редагування
+        });
+    }
+
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const pass = document.getElementById('admin-password').value;
         if (pass === ADMIN_PASSWORD) {
-            document.getElementById('admin-login').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'block';
-            loadBooks().then(() => {
-                loadAdminBooks();
-                loadCategoryOptions();
-            });
+            showAdminPanel();
         } else {
             showNotification('Невірний пароль!', 'error');
         }
     });
 
+    // Авто-відновлення сесії після F5 — не вимагає повторного входу
+    if (sessionStorage.getItem('adminLoggedIn') === '1') {
+        showAdminPanel();
+    }
+
     document.getElementById('logout-btn').addEventListener('click', () => {
+        sessionStorage.removeItem('adminLoggedIn');
         document.getElementById('admin-panel').style.display = 'none';
         document.getElementById('admin-login').style.display = 'block';
+        document.getElementById('admin-password').value = '';
     });
 
     // ===== КАТЕГОРІЇ: datalist у формі =====
