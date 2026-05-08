@@ -507,7 +507,7 @@
     function showAdminPanel() {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-panel').style.display = 'block';
-        sessionStorage.setItem('adminLoggedIn', '1');
+        localStorage.setItem('adminLoggedIn', '1');
         loadBooks().then(() => {
             loadAdminBooks();
             loadCategoryOptions();
@@ -524,13 +524,13 @@
         }
     });
 
-    // Авто-відновлення сесії після F5
-    if (sessionStorage.getItem('adminLoggedIn') === '1') {
+    // Авто-відновлення сесії після F5 або повернення на сторінку
+    if (localStorage.getItem('adminLoggedIn') === '1') {
         showAdminPanel();
     }
 
     document.getElementById('logout-btn').addEventListener('click', () => {
-        sessionStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminLoggedIn');
         document.getElementById('admin-panel').style.display = 'none';
         document.getElementById('admin-login').style.display = 'block';
         document.getElementById('admin-password').value = '';
