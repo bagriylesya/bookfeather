@@ -346,7 +346,7 @@ async function displayHomeBooks() {
     // Новинки
     const newBooksContainer = document.getElementById('new-books');
     if (newBooksContainer) {
-        const newBooks = books.filter(book => book.isNew).slice(0, 6);
+        const newBooks = books.filter(book => book.isNew === true || book.isNew === 'true' || book.isNew === 1).slice(0, 6);
         newBooksContainer.innerHTML = newBooks.length
             ? newBooks.map(book => createBookCard(book)).join('')
             : '<p style="text-align:center;color:var(--cinereous);padding:40px;">Немає новинок</p>';
@@ -355,7 +355,7 @@ async function displayHomeBooks() {
     // Топ продажів
     const topBooksContainer = document.getElementById('top-books');
     if (topBooksContainer) {
-        const topBooks = books.filter(book => book.isTop).slice(0, 6);
+        const topBooks = books.filter(book => book.isTop === true || book.isTop === 'true' || book.isTop === 1).slice(0, 6);
         topBooksContainer.innerHTML = topBooks.length
             ? topBooks.map(book => createBookCard(book)).join('')
             : '<p style="text-align:center;color:var(--cinereous);padding:40px;">Немає топ книг</p>';

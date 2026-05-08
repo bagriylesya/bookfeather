@@ -14,8 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // Викликається після успішного входу адміна
 async function initAdminPanel() {
     await loadBooks();
-    // Накладаємо збережені адміном зміни поверх хардкоду
-    _mergeAdminOverrides();
+    // _mergeAdminOverrides вже не потрібен: loadBooks() з пріоритетом 0
+    // завантажує books_admin_overrides напряму як повний масив books.
+    // Повторний merge тут лише псував би актуальні дані.
     loadAdminBooks();
     loadCategoryOptions();
 }
@@ -260,9 +261,9 @@ function collectFormData(form) {
         // Описи
         shortDescription: formData.get('shortDescription')?.trim() || '',
         description:      formData.get('description')?.trim() || '',
-        // Мітки
-        isNew:            formData.get('isNew') === 'on',
-        isTop:            formData.get('isTop') === 'on',
+        // Мітки — завжди булеві
+        isNew:            formData.get('isNew') === 'on' || formData.get('isNew') === 'true',
+        isTop:            formData.get('isTop') === 'on' || formData.get('isTop') === 'true',
         // Склад
         stock:            parseInt(formData.get('stock')) || 0,
         reserved:         0,
@@ -313,6 +314,12 @@ async function addBook() {
     const newBook = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
     books.push(newBook);
     _persistAdminBooks();
+    // Очищаємо будь-яку стару оцінку для цього id (щоб не з'являлась "Ваша оцінка")
+    try {
+        const ur = JSON.parse(localStorage.getItem('userRatings') || '{}');
+        delete ur[newBook.id];
+        localStorage.setItem('userRatings', JSON.stringify(ur));
+    } catch(e) {}
     showNotification(`✅ Книгу "${newBook.title}" додано!`);
     _afterSaveBook(form);
 }
@@ -430,11 +437,11 @@ async function updateBook(id) {
 
 // Внутрішній хелпер: зберегти books в localStorage + позначити що адмін вносив зміни
 function _persistAdminBooks() {
-    // 1. Зберігаємо весь масив books
+    // Зберігаємо весь актуальний масив books
     localStorage.setItem('books', JSON.stringify(books));
     localStorage.setItem('books_admin_modified', Date.now().toString());
-    // 2. Зберігаємо окремий "overrides" — для відновлення після перезавантаження
-    //    коли main.js може підвантажити хардкод знову
+    // overrides = той самий масив books (повна копія)
+    // loadBooks() в пріоритеті 0 підхопить саме його — без зайвого merge
     localStorage.setItem('books_admin_overrides', JSON.stringify(books));
     clearSearchCache?.();
 }

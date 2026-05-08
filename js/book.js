@@ -157,7 +157,7 @@ async function displayBookDetails() {
             <div class="book-meta" style="margin:24px 0;">
                 ${metaRow('Оригінальна назва', book.originalTitle)}
                 ${metaRow('Автор', book.author, () => `catalog.html?author=${encodeURIComponent(book.author)}`)}
-                ${metaRow('Видавництво', book.publisher, book.publisher ? () => `catalog.html?publisher=${encodeURIComponent(book.publisher)}` : null)}
+                ${metaRow('Видавництво', book.publisher, (book.publisher && book.publisher.trim()) ? () => `catalog.html?publisher=${encodeURIComponent(book.publisher.trim())}` : null)}
                 ${metaRow('Категорія', getCategoryIcon(normalizeCategory(book.category)) + ' ' + getCategoryName(normalizeCategory(book.category)), () => `catalog.html?category=${encodeURIComponent(normalizeCategory(book.category))}`)}
                 ${metaRow('Мова', book.language)}
                 ${metaRow('Перекладач', book.translator)}
@@ -294,6 +294,7 @@ function attachRatingListeners(bookId) {
 // ЗБЕРЕЖЕННЯ ОЦІНКИ
 // ===================================
 function setUserRating(bookId, rating) {
+    const prevUserRating = userRatings[bookId] || 0; // оцінка що вже була від цього юзера
     userRatings[bookId] = rating;
     localStorage.setItem('userRatings', JSON.stringify(userRatings));
 
@@ -301,9 +302,16 @@ function setUserRating(bookId, rating) {
     const book = books.find(b => b.id === bookId);
     if (book) {
         const prevCount = book.ratingCount || 0;
-        const prevTotal = (book.rating || 0) * prevCount;
-        book.ratingCount = prevCount + 1;
-        book.rating      = parseFloat(((prevTotal + rating) / book.ratingCount).toFixed(2));
+        if (prevUserRating > 0) {
+            // Юзер вже голосував — замінюємо його стару оцінку, ratingCount не змінюємо
+            const prevTotal = (book.rating || 0) * prevCount;
+            book.rating = parseFloat(((prevTotal - prevUserRating + rating) / prevCount).toFixed(2));
+        } else {
+            // Перша оцінка від цього юзера
+            const prevTotal = (book.rating || 0) * prevCount;
+            book.ratingCount = prevCount + 1;
+            book.rating = parseFloat(((prevTotal + rating) / book.ratingCount).toFixed(2));
+        }
         localStorage.setItem('books', JSON.stringify(books));
     }
 }
