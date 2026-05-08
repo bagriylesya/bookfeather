@@ -14,8 +14,28 @@ document.addEventListener('DOMContentLoaded', () => {
 // Викликається після успішного входу адміна
 async function initAdminPanel() {
     await loadBooks();
+    // Накладаємо збережені адміном зміни поверх хардкоду
+    _mergeAdminOverrides();
     loadAdminBooks();
     loadCategoryOptions();
+}
+
+// ===================================
+// ЗЛИТТЯ: хардкод + зміни адміна
+// Якщо адмін змінював книги — його версія має пріоритет
+// ===================================
+function _mergeAdminOverrides() {
+    const raw = localStorage.getItem('books_admin_overrides');
+    if (!raw) return;
+    try {
+        const overrides = JSON.parse(raw); // масив {id, ...fields}
+        overrides.forEach(ov => {
+            const idx = books.findIndex(b => String(b.id) === String(ov.id));
+            if (idx !== -1) {
+                books[idx] = { ...books[idx], ...ov };
+            }
+        });
+    } catch(e) {}
 }
 
 // ===================================
@@ -171,7 +191,7 @@ function quickEditStock(bookId) {
 
     const idx = books.findIndex(b => String(b.id) === String(bookId));
     books[idx].stock = parsed;
-    saveAdminBooks();
+    _persistAdminBooks();
     loadAdminBooks();
     showNotification(`Склад "${book.title}" оновлено: ${parsed} шт`);
 }
@@ -276,18 +296,12 @@ async function addBook() {
             });
             const json = await resp.json();
             if (json.success) {
+                // Додаємо книгу з id з БД локально — НЕ перезавантажуємо щоб не скидати сесію
+                const newBook = { ...data, id: json.id || Date.now(), createdAt: new Date().toISOString() };
+                books.push(newBook);
+                _persistAdminBooks();
                 showNotification(`✅ Книгу "${data.title}" збережено в базі даних!`);
-                await loadBooks(true); // перезавантажуємо з БД
-                form.reset();
-                delete form.dataset.editId;
-                resetFormButton();
-                loadAdminBooks();
-                loadCategoryOptions();
-    // Перемикаємо таб
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
-    document.getElementById('manage-books')?.classList.add('active');
+                _afterSaveBook(form);
                 return;
             }
         } catch (e) {
@@ -298,20 +312,9 @@ async function addBook() {
     // Fallback: localStorage
     const newBook = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
     books.push(newBook);
-    localStorage.setItem('books', JSON.stringify(books));
-    localStorage.setItem('books_admin_modified', Date.now().toString());
-    clearSearchCache?.();
+    _persistAdminBooks();
     showNotification(`✅ Книгу "${newBook.title}" додано!`);
-    form.reset();
-    delete form.dataset.editId;
-    resetFormButton();
-    loadAdminBooks();
-    loadCategoryOptions();
-    // Перемикаємо таб
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
-    document.getElementById('manage-books')?.classList.add('active');
+    _afterSaveBook(form);
 }
 
 // ===================================
@@ -406,13 +409,11 @@ async function updateBook(id) {
             });
             const json = await resp.json();
             if (json.success) {
+                // Оновлюємо локально — НЕ робимо loadBooks(true) щоб не скидати сесію
+                books[idx] = { ...books[idx], ...data, id, updatedAt: new Date().toISOString() };
+                _persistAdminBooks();
                 showNotification(`✅ Книгу "${data.title}" оновлено в базі даних!`);
-                await loadBooks(true);
-                form.reset();
-                delete form.dataset.editId;
-                resetFormButton();
-                loadAdminBooks();
-                loadCategoryOptions();
+                _afterSaveBook(form);
                 return;
             }
         } catch (e) {
@@ -422,16 +423,30 @@ async function updateBook(id) {
 
     // Fallback: localStorage
     books[idx] = { ...books[idx], ...data, id, updatedAt: new Date().toISOString() };
+    _persistAdminBooks();
+    showNotification(`✅ Книгу "${data.title}" оновлено!`);
+    _afterSaveBook(form);
+}
+
+// Внутрішній хелпер: зберегти books в localStorage + позначити що адмін вносив зміни
+function _persistAdminBooks() {
+    // 1. Зберігаємо весь масив books
     localStorage.setItem('books', JSON.stringify(books));
     localStorage.setItem('books_admin_modified', Date.now().toString());
+    // 2. Зберігаємо окремий "overrides" — для відновлення після перезавантаження
+    //    коли main.js може підвантажити хардкод знову
+    localStorage.setItem('books_admin_overrides', JSON.stringify(books));
     clearSearchCache?.();
-    showNotification(`✅ Книгу "${data.title}" оновлено!`);
+}
+
+// Внутрішній хелпер: дії після збереження/оновлення — БЕЗ виходу з адмінки
+function _afterSaveBook(form) {
     form.reset();
     delete form.dataset.editId;
     resetFormButton();
     loadAdminBooks();
     loadCategoryOptions();
-    // Перемикаємо таб
+    // Перемикаємо таб назад до списку книг
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
@@ -458,8 +473,9 @@ async function deleteBook(id) {
             });
             const json = await resp.json();
             if (json.success) {
+                books = books.filter(b => String(b.id) !== String(id));
+                _persistAdminBooks();
                 showNotification(`Книгу "${book.title}" видалено з бази даних`);
-                await loadBooks(true);
                 loadAdminBooks();
                 loadCategoryOptions();
                 return;
@@ -470,10 +486,8 @@ async function deleteBook(id) {
     }
 
     // Fallback: localStorage
-    books = books.filter(b => b.id !== id);
-    localStorage.setItem('books', JSON.stringify(books));
-    localStorage.setItem('books_admin_modified', Date.now().toString());
-    clearSearchCache?.();
+    books = books.filter(b => String(b.id) !== String(id));
+    _persistAdminBooks();
     showNotification(`Книгу "${book.title}" видалено`);
     loadAdminBooks();
     loadCategoryOptions();
@@ -483,9 +497,7 @@ async function deleteBook(id) {
 // ЗБЕРЕЖЕННЯ (legacy fallback)
 // ===================================
 function saveAdminBooks() {
-    localStorage.setItem('books', JSON.stringify(books));
-    localStorage.setItem('books_admin_modified', Date.now().toString());
-    clearSearchCache?.();
+    _persistAdminBooks();
 }
 
 // ===================================
@@ -514,6 +526,7 @@ window.addBook          = addBook;
 function clearBooksCache() {
     localStorage.removeItem('books');
     localStorage.removeItem('books_admin_modified');
+    localStorage.removeItem('books_admin_overrides');
     books = [];
     showNotification('🔄 Кеш очищено. Перезавантажте сторінку.', 'info');
     setTimeout(() => window.location.reload(), 1200);

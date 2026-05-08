@@ -90,13 +90,17 @@ async function loadBooks(forceReload = false) {
 }
 
 // Фонове оновлення з API (не блокує рендер)
-// НЕ перезаписує localStorage якщо адмін щойно робив зміни (протягом 5 хв)
+// НЕ перезаписує localStorage якщо адмін будь-коли вносив зміни вручну
 async function _syncFromAPI(basePath) {
     try {
-        // Якщо адмін нещодавно змінював книги локально — не перезаписуємо
+        // Якщо адмін хоч колись змінював книги вручну — не перезаписуємо ніколи
+        // (адмінські зміни мають вищий пріоритет ніж дані з API)
+        const hasAdminOverrides = localStorage.getItem('books_admin_overrides');
+        if (hasAdminOverrides) return;
+
+        // Додаткова перевірка: якщо редагували нещодавно — теж не чіпаємо
         const lastAdminEdit = parseInt(localStorage.getItem('books_admin_modified') || '0');
-        const fiveMinutes   = 5 * 60 * 1000;
-        if (Date.now() - lastAdminEdit < fiveMinutes) return;
+        if (lastAdminEdit > 0) return;
 
         const response = await fetch(basePath + 'php/api.php?action=books&limit=100');
         if (!response.ok) return;
