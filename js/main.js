@@ -22,24 +22,25 @@ let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
 // ЗАВАНТАЖЕННЯ КНИГ
 // ===================================
 async function loadBooks(forceReload = false) {
-    // Якщо книги вже в пам'яті І не примусове перезавантаження — повертаємо одразу
+    // Якщо книги вже в пам'яті — не завантажуємо знову
     if (!forceReload && books && books.length > 0) return books;
 
     const basePath = window.BASE_PATH || '';
 
-    // ПРІОРИТЕТ 1: якщо є адмінські зміни — завжди беремо їх, без жодних запитів
-    const adminOverrides = localStorage.getItem('books_admin_overrides');
-    if (adminOverrides) {
-        try {
-            const parsed = JSON.parse(adminOverrides);
-            if (parsed && parsed.length > 0) {
+    // ★ ПРІОРИТЕТ 0: якщо адмін будь-коли змінював книги —
+    //   завжди беремо ЙОГО версію, ніколи не ліземо в API чи books.json
+    try {
+        const adminSaved = localStorage.getItem('books_admin_overrides');
+        if (adminSaved) {
+            const parsed = JSON.parse(adminSaved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
                 books = parsed;
                 return books;
             }
-        } catch (e) {}
-    }
+        }
+    } catch (e) {}
 
-    // ПРІОРИТЕТ 2: звичайний localStorage (без адмінських змін)
+    // 1. СПОЧАТКУ — миттєво з localStorage (без затримки)
     if (!forceReload) {
         try {
             const savedBooks = localStorage.getItem('books');
@@ -55,7 +56,7 @@ async function loadBooks(forceReload = false) {
         } catch (e) {}
     }
 
-    // forceReload: перечитуємо localStorage
+    // forceReload: спочатку перечитуємо localStorage (зберігає адмінські зміни)
     if (forceReload) {
         try {
             const savedBooks = localStorage.getItem('books');
@@ -69,7 +70,7 @@ async function loadBooks(forceReload = false) {
         } catch (e) {}
     }
 
-    // ПРІОРИТЕТ 3: API (тільки якщо localStorage порожній)
+    // 2. Якщо localStorage порожній — чекаємо API
     try {
         const response = await fetch(basePath + 'php/api.php?action=books&limit=100');
         if (response.ok) {
@@ -85,7 +86,7 @@ async function loadBooks(forceReload = false) {
         console.log('PHP API недоступний');
     }
 
-    // ПРІОРИТЕТ 4: books.json
+    // 3. Fallback: books.json
     try {
         const response = await fetch(basePath + 'data/books.json');
         if (response.ok) {
@@ -95,7 +96,7 @@ async function loadBooks(forceReload = false) {
         }
     } catch (e) {}
 
-    // ПРІОРИТЕТ 5: Демо-дані
+    // 4. Демо-дані
     books = getDemoBooks();
     localStorage.setItem('books', JSON.stringify(books));
     return books;
@@ -105,7 +106,8 @@ async function loadBooks(forceReload = false) {
 // НЕ перезаписує localStorage якщо адмін будь-коли вносив зміни вручну
 async function _syncFromAPI(basePath) {
     try {
-        // Якщо адмін хоч колись змінював книги вручну — не перезаписуємо НІКОЛИ
+        // Якщо адмін хоч колись змінював книги вручну — не перезаписуємо ніколи
+        // (адмінські зміни мають вищий пріоритет ніж дані з API)
         const hasAdminOverrides = localStorage.getItem('books_admin_overrides');
         if (hasAdminOverrides) return;
 

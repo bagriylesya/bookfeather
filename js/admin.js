@@ -13,10 +13,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Викликається після успішного входу адміна
 async function initAdminPanel() {
-    // loadBooks() вже сам бере books_admin_overrides в першу чергу (main.js)
     await loadBooks();
+    // Накладаємо збережені адміном зміни поверх хардкоду
+    _mergeAdminOverrides();
     loadAdminBooks();
     loadCategoryOptions();
+}
+
+// ===================================
+// ЗЛИТТЯ: хардкод + зміни адміна
+// Якщо адмін змінював книги — його версія має пріоритет
+// ===================================
+function _mergeAdminOverrides() {
+    const raw = localStorage.getItem('books_admin_overrides');
+    if (!raw) return;
+    try {
+        const overrides = JSON.parse(raw); // масив {id, ...fields}
+        overrides.forEach(ov => {
+            const idx = books.findIndex(b => String(b.id) === String(ov.id));
+            if (idx !== -1) {
+                books[idx] = { ...books[idx], ...ov };
+            }
+        });
+    } catch(e) {}
 }
 
 // ===================================
