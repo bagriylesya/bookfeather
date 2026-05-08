@@ -392,8 +392,8 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary" style="margin-right: 10px;">Додати книгу</button>
-                        <button type="reset" class="btn btn-outline">Очистити форму</button>
+                        <button type="button" id="save-book-btn" class="btn btn-primary" style="margin-right: 10px;" onclick="handleBookFormSubmit()">Додати книгу</button>
+                        <button type="button" class="btn btn-outline" onclick="document.getElementById('add-book-form').reset(); resetFormButton();">Очистити форму</button>
                     </form>
                 </div>
 
@@ -492,6 +492,18 @@
     // ===== ВХІД В АДМІНКУ =====
     const ADMIN_PASSWORD = 'admin123'; // змініть на свій пароль
 
+    // Глобальна функція для кнопки "Додати/Зберегти"
+    window.handleBookFormSubmit = function() {
+        const form = document.getElementById('add-book-form');
+        if (!form) return;
+        const editId = form.dataset.editId;
+        if (editId) {
+            updateBook(parseInt(editId));
+        } else {
+            addBook();
+        }
+    };
+
     function showAdminPanel() {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-panel').style.display = 'block';
@@ -499,7 +511,6 @@
         loadBooks().then(() => {
             loadAdminBooks();
             loadCategoryOptions();
-            setupFormHandler(); // підключаємо обробник форми додавання/редагування
         });
     }
 
@@ -513,7 +524,7 @@
         }
     });
 
-    // Авто-відновлення сесії після F5 — не вимагає повторного входу
+    // Авто-відновлення сесії після F5
     if (sessionStorage.getItem('adminLoggedIn') === '1') {
         showAdminPanel();
     }

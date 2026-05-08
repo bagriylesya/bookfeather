@@ -153,7 +153,7 @@ function getBookImages(book) {
 // ШВИДКЕ РЕДАГУВАННЯ СКЛАДУ
 // ===================================
 function quickEditStock(bookId) {
-    const book = books.find(b => b.id === bookId);
+    const book = books.find(b => String(b.id) === String(bookId));
     if (!book) return;
 
     const current = book.stock || 0;
@@ -169,7 +169,7 @@ function quickEditStock(bookId) {
         return;
     }
 
-    const idx = books.findIndex(b => b.id === bookId);
+    const idx = books.findIndex(b => String(b.id) === String(bookId));
     books[idx].stock = parsed;
     saveAdminBooks();
     loadAdminBooks();
@@ -318,7 +318,7 @@ async function addBook() {
 // РЕДАГУВАННЯ: заповнення форми
 // ===================================
 function editBook(id) {
-    const book = books.find(b => b.id === id);
+    const book = books.find(b => String(b.id) === String(id));
     if (!book) return;
 
     const form = document.getElementById('add-book-form');
@@ -360,7 +360,7 @@ function editBook(id) {
     if (form.elements['isTop']) form.elements['isTop'].checked = !!book.isTop;
 
     // Кнопка
-    const btn = form.querySelector('button[type="submit"]');
+    const btn = document.getElementById('save-book-btn');
     if (btn) btn.textContent = '💾 Зберегти зміни';
 
     // Переходимо на таб форми
@@ -377,8 +377,11 @@ function editBook(id) {
 // ОНОВЛЕННЯ КНИГИ
 // ===================================
 async function updateBook(id) {
-    const idx = books.findIndex(b => b.id === id);
-    if (idx === -1) return;
+    const idx = books.findIndex(b => String(b.id) === String(id));
+    if (idx === -1) {
+        showNotification('Книгу не знайдено в списку!', 'error');
+        return;
+    }
 
     const form = document.getElementById('add-book-form');
     const data = collectFormData(form);
@@ -439,7 +442,7 @@ async function updateBook(id) {
 // ВИДАЛЕННЯ КНИГИ
 // ===================================
 async function deleteBook(id) {
-    const book = books.find(b => b.id === id);
+    const book = books.find(b => String(b.id) === String(id));
     if (!book) return;
 
     if (!confirm(`Видалити книгу "${book.title}"?\n\nЦю дію не можна скасувати.`)) return;
@@ -489,8 +492,8 @@ function saveAdminBooks() {
 // СКИДАННЯ ФОРМИ
 // ===================================
 function resetFormButton() {
-    const btn = document.querySelector('#add-book-form button[type="submit"]');
-    if (btn) btn.textContent = '➕ Додати книгу';
+    const btn = document.getElementById('save-book-btn');
+    if (btn) btn.textContent = 'Додати книгу';
 }
 
 // ===================================
