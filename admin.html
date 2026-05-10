@@ -281,9 +281,7 @@
                             <label>Посилання на Goodreads:</label>
                             <input type="url" name="goodreadsUrl"
                                    placeholder="https://www.goodreads.com/book/show/...">
-                            <small style="color:var(--cinereous);">
-                                Необов'язково. Відображається на сторінці книги як кнопка
-                            </small>
+                            <small style="color:var(--cinereous);">Необов'язково — відображається як кнопка на сторінці книги</small>
                         </div>
 
                         <div class="form-row">
@@ -502,12 +500,27 @@
         }
     };
 
+    // Очистити форму
+    window.clearBookForm = function() {
+        const form = document.getElementById('add-book-form');
+        if (!form) return;
+        form.reset();
+        delete form.dataset.editId;
+        // Скидаємо всі textarea і select вручну (form.reset може не спрацювати для деяких)
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+            else if (el.name !== 'language') el.value = '';
+        });
+        form.querySelector('[name="language"]') && (form.querySelector('[name="language"]').value = 'Українська');
+        const btn = document.getElementById('save-book-btn');
+        if (btn) btn.textContent = '➕ Додати книгу';
+        showNotification('🗑️ Форму очищено', 'info');
+    };
+
     function showAdminPanel() {
         document.getElementById('admin-login').style.display = 'none';
         document.getElementById('admin-panel').style.display = 'block';
         localStorage.setItem('adminLoggedIn', '1');
-        // НЕ loadBooks(true) — воно скидає зміни адміна!
-        // loadBooks() сам читає books_admin_overrides в першу чергу
         loadBooks().then(() => {
             loadAdminBooks();
             loadCategoryOptions();

@@ -319,7 +319,7 @@ async function addBook() {
         localStorage.setItem('userRatings', JSON.stringify(ur));
     } catch(e) {}
     showNotification(`✅ Книгу "${newBook.title}" збережено! 📚`);
-    _afterSaveBook(form);
+    await _afterSaveBook(form);
 }
 
 // ===================================
@@ -430,7 +430,7 @@ async function updateBook(id) {
     books[idx] = { ...books[idx], ...data, id: originalId, updatedAt: new Date().toISOString() };
     _persistAdminBooks();
     showNotification(`✅ Зміни збережено: "${data.title}"! 💾`);
-    _afterSaveBook(form);
+    await _afterSaveBook(form);
 }
 
 // ===================================
@@ -446,25 +446,23 @@ function _persistAdminBooks() {
     clearSearchCache?.();
 }
 
-// Внутрішній хелпер: дії після збереження/оновлення
+// Внутрішній хелпер: дії після збереження/оновлення — БЕЗ виходу з адмінки
 async function _afterSaveBook(form) {
     // Очищаємо форму
-    if (typeof window.clearBookForm === 'function') {
-        window.clearBookForm(true);
-    } else {
-        form.reset();
-        delete form.dataset.editId;
-        resetFormButton();
-    }
+    form.reset();
     delete form.dataset.editId;
+    resetFormButton();
+
+    // Оновлюємо список книг
     loadAdminBooks();
     loadCategoryOptions();
-    // Повертаємося до списку книг
+
+    // Перемикаємо таб до списку книг
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
     document.getElementById('manage-books')?.classList.add('active');
-    document.getElementById('manage-books')?.scrollIntoView({ behavior:'smooth', block:'start' });
+    document.getElementById('manage-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ===================================
@@ -523,7 +521,7 @@ function saveAdminBooks() {
 // ===================================
 function resetFormButton() {
     const btn = document.getElementById('save-book-btn');
-    if (btn) btn.textContent = '➕ Додати книгу';
+    if (btn) btn.textContent = 'Додати книгу';
 }
 
 // ===================================
