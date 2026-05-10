@@ -227,12 +227,19 @@ function collectFormData(form) {
     const mainImage   = (formData.get('image')  || '').trim();
     const extraImages = (formData.get('images') || '').trim();
 
-    // Збираємо всі URL в масив
+    // Збираємо всі URL в масив (http/https і відносні шляхи)
     const allUrls = [mainImage, ...extraImages.split(',').map(s => s.trim())]
-        .filter(url => url && url.startsWith('http'));
+        .filter(url => url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('images/')));
 
-    // Видалення дублів
     const uniqueUrls = [...new Set(allUrls)];
+
+    // Чекбокси — читаємо через .checked, не через formData (formData не повертає false)
+    const isNewChecked = form.elements['isNew'] ? form.elements['isNew'].checked : false;
+    const isTopChecked = form.elements['isTop'] ? form.elements['isTop'].checked : false;
+
+    // rating/ratingCount — зберігаємо тільки якщо поле заповнене
+    const ratingRaw      = formData.get('rating');
+    const ratingCountRaw = formData.get('ratingCount');
 
     return {
         title:            formData.get('title')?.trim() || '',
@@ -241,10 +248,16 @@ function collectFormData(form) {
         publisher:        formData.get('publisher')?.trim() || '',
         category:         formData.get('category')?.trim() || '',
         language:         formData.get('language') || 'Українська',
-        price:            parseFloat(formData.get('price')) || 0,
+        price:            parseFloat((formData.get('price')||'0').replace(',','.')) || 0,
         discount:         parseInt(formData.get('discount')) || 0,
-        rating:           parseFloat(formData.get('rating')) || 0,
-        ratingCount:      parseInt(formData.get('ratingCount')) || 0,
+        goodreadsUrl:     formData.get('goodreadsUrl')?.trim() || '',
+        goodreadsRating:  parseFloat(formData.get('goodreadsRating')) || 0,
+        ...(ratingRaw !== '' && ratingRaw !== null
+            ? { rating: parseFloat(ratingRaw) || 0 }
+            : {}),
+        ...(ratingCountRaw !== '' && ratingCountRaw !== null
+            ? { ratingCount: parseInt(ratingCountRaw) || 0 }
+            : {}),
         pages:            parseInt(formData.get('pages')) || 0,
         year:             parseInt(formData.get('year')) || new Date().getFullYear(),
         cover:            formData.get('cover') || 'Тверда',
@@ -254,17 +267,13 @@ function collectFormData(form) {
         size:             formData.get('size')?.trim() || '',
         weight:           parseInt(formData.get('weight')) || 0,
         illustrations:    formData.get('illustrations') || '',
-        // Фото
         image:            uniqueUrls[0] || '',
         image_url:        uniqueUrls[0] || '',
-        images:           uniqueUrls,   // зберігаємо як масив
-        // Описи
+        images:           uniqueUrls,
         shortDescription: formData.get('shortDescription')?.trim() || '',
         description:      formData.get('description')?.trim() || '',
-        // Мітки — завжди булеві
-        isNew:            formData.get('isNew') === 'on' || formData.get('isNew') === 'true',
-        isTop:            formData.get('isTop') === 'on' || formData.get('isTop') === 'true',
-        // Склад
+        isNew:            isNewChecked,
+        isTop:            isTopChecked,
         stock:            parseInt(formData.get('stock')) || 0,
         reserved:         0,
     };
@@ -320,7 +329,7 @@ async function addBook() {
         delete ur[newBook.id];
         localStorage.setItem('userRatings', JSON.stringify(ur));
     } catch(e) {}
-    showNotification(`✅ Книгу "${newBook.title}" додано!`);
+    showNotification(`✅ Книгу "${newBook.title}" збережено! 📚`);
     _afterSaveBook(form);
 }
 
@@ -345,8 +354,9 @@ function editBook(id) {
     set('language',         book.language || 'Українська');
     set('price',            book.price);
     set('discount',         book.discount || 0);
-    set('rating',           book.rating || 0);
-    set('ratingCount',      book.ratingCount || 0);
+    // rating тепер тільки від користувачів — не виводимо в форму
+    set('goodreadsUrl',     book.goodreadsUrl    || '');
+    set('goodreadsRating',  book.goodreadsRating || '');
     set('pages',            book.pages || '');
     set('year',             book.year || '');
     set('cover',            book.cover || 'Тверда');
@@ -387,7 +397,8 @@ function editBook(id) {
 // ОНОВЛЕННЯ КНИГИ
 // ===================================
 async function updateBook(id) {
-    const idx = books.findIndex(b => String(b.id) === String(id));
+    const strId = String(id);
+    const idx = books.findIndex(b => String(b.id) === strId);
     if (idx === -1) {
         showNotification('Книгу не знайдено в списку!', 'error');
         return;
@@ -401,12 +412,13 @@ async function updateBook(id) {
         return;
     }
 
+    const originalId = books[idx].id; // зберігаємо оригінальний id (число або рядок)
     const basePath = window.BASE_PATH || '';
 
     // Спробуємо оновити в MySQL
     if (window.USE_API) {
         try {
-            const resp = await fetch(basePath + `php/api.php?action=books&id=${id}`, {
+            const resp = await fetch(basePath + `php/api.php?action=books&id=${originalId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -416,8 +428,7 @@ async function updateBook(id) {
             });
             const json = await resp.json();
             if (json.success) {
-                // Оновлюємо локально — НЕ робимо loadBooks(true) щоб не скидати сесію
-                books[idx] = { ...books[idx], ...data, id, updatedAt: new Date().toISOString() };
+                books[idx] = { ...books[idx], ...data, id: originalId, updatedAt: new Date().toISOString() };
                 _persistAdminBooks();
                 showNotification(`✅ Книгу "${data.title}" оновлено в базі даних!`);
                 _afterSaveBook(form);
@@ -428,14 +439,16 @@ async function updateBook(id) {
         }
     }
 
-    // Fallback: localStorage
-    books[idx] = { ...books[idx], ...data, id, updatedAt: new Date().toISOString() };
+    // Fallback: localStorage — id не змінюємо!
+    books[idx] = { ...books[idx], ...data, id: originalId, updatedAt: new Date().toISOString() };
     _persistAdminBooks();
-    showNotification(`✅ Книгу "${data.title}" оновлено!`);
+    showNotification(`✅ Зміни збережено: "${data.title}"! 💾`);
     _afterSaveBook(form);
 }
 
-// Внутрішній хелпер: зберегти books в localStorage + позначити що адмін вносив зміни
+// ===================================
+// ЗБЕРЕЖЕННЯ В LOCALSTORAGE
+// ===================================
 function _persistAdminBooks() {
     // Зберігаємо весь актуальний масив books
     localStorage.setItem('books', JSON.stringify(books));
@@ -446,19 +459,32 @@ function _persistAdminBooks() {
     clearSearchCache?.();
 }
 
-// Внутрішній хелпер: дії після збереження/оновлення — БЕЗ виходу з адмінки
-function _afterSaveBook(form) {
-    form.reset();
+// Внутрішній хелпер: дії після збереження/оновлення
+async function _afterSaveBook(form) {
+    // Скидаємо форму (якщо clearBookForm ще не викликали)
+    if (typeof window.clearBookForm === 'function') {
+        window.clearBookForm(true); // true = без зайвого notification
+    } else {
+        form.reset();
+        delete form.dataset.editId;
+        resetFormButton();
+    }
     delete form.dataset.editId;
-    resetFormButton();
+
     loadAdminBooks();
     loadCategoryOptions();
-    // Перемикаємо таб назад до списку книг
+
+    // Перемикаємо на таб зі списком книг
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
     document.getElementById('manage-books')?.classList.add('active');
+    document.getElementById('manage-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+// ===================================
+// РЕДАГУВАННЯ: заповнення форми
+// ===================================
 
 // ===================================
 // ВИДАЛЕННЯ КНИГИ
@@ -512,7 +538,7 @@ function saveAdminBooks() {
 // ===================================
 function resetFormButton() {
     const btn = document.getElementById('save-book-btn');
-    if (btn) btn.textContent = 'Додати книгу';
+    if (btn) btn.textContent = '➕ Додати книгу';
 }
 
 // ===================================

@@ -52,8 +52,8 @@ function loadCategoryFilter() {
 // ЗАСТОСУВАННЯ ФІЛЬТРІВ З URL
 function applyUrlFilters() {
     const params = new URLSearchParams(window.location.search);
-    const search = params.get('search');
-    const author = params.get('author');
+    const search    = params.get('search');
+    const author    = params.get('author');
     const publisher = params.get('publisher');
 
     if (search) {
@@ -61,7 +61,10 @@ function applyUrlFilters() {
         if (input) input.value = search;
     }
 
-    if (author) {
+    window._authorFilter    = author    ? author.trim().toLowerCase()    : '';
+    window._publisherFilter = publisher ? publisher.trim().toLowerCase() : '';
+
+    if (author && !search) {
         const input = document.getElementById('search-input');
         if (input) input.value = author;
     }
@@ -80,15 +83,31 @@ function filterBooks() {
     const onlyNew         = document.getElementById('new-filter')?.checked       || false;
 
     filteredBooks = books.filter(book => {
-        // Категорія
+        // Категорія — підтримка і одного рядка і масиву categories
         if (categoryFilter) {
-            const bookCat = (window.normalizeCategory || (c => c))(book.category);
-            if (bookCat !== categoryFilter) return false;
+            const cats = window.getBookCategories ? window.getBookCategories(book) : [book.category];
+            const matched = cats.some(cat => {
+                const norm = (window.normalizeCategory || (x=>x))(cat);
+                return norm === categoryFilter;
+            });
+            if (!matched) return false;
         }
         // Мова
         if (languageFilter && book.language !== languageFilter) return false;
-        // Пошук
-        if (searchQuery) {
+        // Видавництво (з URL ?publisher=...) — точна фільтрація
+        if (window._publisherFilter) {
+            const bp = (book.publisher || '').trim().toLowerCase();
+            const pf = window._publisherFilter;
+            if (bp !== pf && !bp.includes(pf) && !pf.includes(bp)) return false;
+        }
+        // Автор (з URL ?author=...) — точна фільтрація
+        if (window._authorFilter) {
+            const ba = (book.author || '').trim().toLowerCase();
+            const af = window._authorFilter;
+            if (ba !== af && !ba.includes(af) && !af.includes(ba)) return false;
+        }
+        // Пошук (загальний — не конфліктує з URL-фільтрами)
+        if (searchQuery && !window._authorFilter && !window._publisherFilter) {
             const str = `${book.title} ${book.author} ${book.description || ''} ${book.publisher || ''}`.toLowerCase();
             if (!str.includes(searchQuery)) return false;
         }

@@ -7,6 +7,9 @@ let currentBook       = null;
 let currentImageIndex = 0;
 let userRatings       = JSON.parse(localStorage.getItem('userRatings') || '{}');
 let userRating        = 0;
+// sessionVoted: чи голосували в поточній сесії браузера (захист від спаму)
+// Зберігається в sessionStorage — скидається при закритті вкладки
+let sessionVoted      = JSON.parse(sessionStorage.getItem('sessionVoted') || '{}');
 
 // ===================================
 // ІНІЦІАЛІЗАЦІЯ
@@ -53,7 +56,8 @@ async function displayBookDetails() {
 
     const images         = getBookImages(book);
     const isFavorite     = isInFavorites(book.id);
-    userRating           = userRatings[bookId] || 0;
+    // Ключ в localStorage завжди рядок — використовуємо String()
+    userRating           = userRatings[String(bookId)] || userRatings[bookId] || 0;
     const availableStock = (book.stock || 0) - (book.reserved || 0);
 
     // Ціна з урахуванням знижки
@@ -94,9 +98,25 @@ async function displayBookDetails() {
                      onclick="openImageModal(this.src)"
                      title="Натисніть для збільшення">
                 ${images.length > 1 ? `
-                    <div class="gallery-nav">
-                        <button onclick="changeImage(-1)" title="Попереднє">‹</button>
-                        <button onclick="changeImage(1)"  title="Наступне">›</button>
+                    <div style="position:absolute; top:50%; left:10px; transform:translateY(-50%); z-index:10;">
+                        <button onclick="changeImage(-1)" title="Попереднє"
+                            style="width:42px; height:42px; background:rgba(116,7,14,0.88); color:white;
+                                   border:2px solid rgba(255,255,255,0.7); border-radius:50%; font-size:24px;
+                                   font-weight:700; cursor:pointer; display:flex; align-items:center;
+                                   justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,0.4);
+                                   transition:background 0.2s, transform 0.2s;"
+                            onmouseover="this.style.background='rgba(116,7,14,1)';this.style.transform='translateY(0) scale(1.1)'"
+                            onmouseout="this.style.background='rgba(116,7,14,0.88)';this.style.transform='translateY(0) scale(1)'">‹</button>
+                    </div>
+                    <div style="position:absolute; top:50%; right:10px; transform:translateY(-50%); z-index:10;">
+                        <button onclick="changeImage(1)" title="Наступне"
+                            style="width:42px; height:42px; background:rgba(116,7,14,0.88); color:white;
+                                   border:2px solid rgba(255,255,255,0.7); border-radius:50%; font-size:24px;
+                                   font-weight:700; cursor:pointer; display:flex; align-items:center;
+                                   justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,0.4);
+                                   transition:background 0.2s, transform 0.2s;"
+                            onmouseover="this.style.background='rgba(116,7,14,1)';this.style.transform='translateY(0) scale(1.1)'"
+                            onmouseout="this.style.background='rgba(116,7,14,0.88)';this.style.transform='translateY(0) scale(1)'">›</button>
                     </div>
                 ` : ''}
             </div>
@@ -133,25 +153,76 @@ async function displayBookDetails() {
             ${stockHtml}
 
             <!-- РЕЙТИНГ -->
-            <div class="rating-interactive">
-                <div class="current-rating">
-                    <div class="stars-display" style="overflow:visible;">${generateStarsDisplay(book.rating || 0)}</div>
+            <div class="rating-interactive" id="rating-block"
+                 style="box-shadow:0 3px 16px rgba(49,14,16,0.11);">
+
+                <!-- Поточний середній рейтинг -->
+                <div class="current-rating" style="display:flex; align-items:center; gap:12px;
+                     flex-wrap:wrap; margin-bottom:12px; padding-bottom:12px;
+                     border-bottom:1px solid #f0e8d8;">
+                    <div class="stars-display" id="avg-stars" style="overflow:visible;">
+                        ${generateStarsDisplay(book.rating || 0)}
+                    </div>
                     <span class="rating-info">
-                        ${(book.rating || 0).toFixed(1)} / 10
-                        · ${book.ratingCount || 0} оцінок
+                        <strong id="avg-rating-num" style="font-size:20px; color:var(--black-bean);">
+                            ${(book.rating || 0).toFixed(1)}
+                        </strong>
+                        <span style="color:var(--cinereous);"> / 10</span>
+                        <span style="color:var(--cinereous); margin-left:6px;" id="rating-count-label">
+                            (${book.ratingCount || 0} ${nPlural(book.ratingCount||0,'оцінка','оцінки','оцінок')})
+                        </span>
                     </span>
                 </div>
 
-                <div class="user-rating" style="margin-top:14px;">
-                    <div class="user-rating-label">Ваша оцінка:</div>
+                <!-- Зірки для голосування -->
+                <div>
+                    <div id="rating-user-label" style="font-size:13px; font-weight:600;
+                         color:var(--cinereous); margin-bottom:8px;">
+                        ${userRating > 0
+                            ? `✅ Ваша оцінка: ${userRating}/10 — <span style="color:var(--blood-red);
+                               cursor:pointer; text-decoration:underline;"
+                               onclick="askChangeRating(${book.id})">Змінити</span>`
+                            : '⭐ Ваша оцінка:'}
+                    </div>
                     <div class="rating-stars" id="rating-stars">
                         ${generateRatingStars()}
                     </div>
-                    <div class="selected-rating" id="selected-rating">
-                        ${userRating > 0 ? `Ви оцінили: ${userRating}/10` : 'Натисніть на зірку'}
+                    <div class="selected-rating" id="selected-rating"
+                         style="font-size:13px; color:var(--cinereous); margin-top:6px; min-height:18px;">
+                        ${userRating > 0 ? '' : 'Натисніть на зірку щоб оцінити'}
                     </div>
                 </div>
             </div>
+
+            <!-- GOODREADS БЛОК -->
+            ${(book.goodreadsUrl || book.goodreadsRating > 0) ? `
+            <div style="background:linear-gradient(135deg,#f4f1ea,#e8e0d0); border-radius:12px;
+                        padding:14px 18px; margin-bottom:16px; display:flex; align-items:center;
+                        gap:12px; box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+                <span style="font-size:26px; flex-shrink:0;">📗</span>
+                <div style="flex:1;">
+                    <div style="font-weight:700; font-size:14px; color:#372213;">
+                        Goodreads
+                        ${book.goodreadsRating > 0 ? `
+                        <span style="display:inline-flex; align-items:center; gap:3px; margin-left:8px;
+                                     background:#fff; border-radius:20px; padding:2px 9px;
+                                     font-size:14px; font-weight:700; color:#e07b39;
+                                     border:1px solid #e0d4c0;">
+                            ★ ${parseFloat(book.goodreadsRating).toFixed(2)}/5
+                        </span>` : ''}
+                    </div>
+                    <div style="font-size:12px; color:#7a6a5a; margin-top:2px;">
+                        Оцінка читачів з усього світу
+                    </div>
+                </div>
+                ${book.goodreadsUrl ? `
+                <a href="${book.goodreadsUrl}" target="_blank" rel="noopener"
+                   style="flex-shrink:0; background:#372213; color:#f4f1ea; border-radius:8px;
+                          padding:7px 13px; text-decoration:none; font-size:13px; font-weight:600;">
+                    Відкрити →
+                </a>` : ''}
+            </div>
+            ` : ''}
 
             <!-- ХАРАКТЕРИСТИКИ -->
             <div class="book-meta" style="margin:24px 0;">
@@ -174,7 +245,17 @@ async function displayBookDetails() {
             <!-- ОПИС -->
             <div style="margin-bottom:28px;">
                 <h3 style="font-size:22px; margin-bottom:12px; color:var(--blood-red);">Про книгу</h3>
-                <p style="line-height:1.9; font-size:16px; color:var(--black-bean);">${book.description || book.shortDescription || ''}</p>
+                ${book.shortDescription ? `
+                    <p style="line-height:1.8; font-size:16px; color:var(--black-bean);
+                               font-weight:600; margin-bottom:12px; padding:12px 16px;
+                               background:#fff8ee; border-left:4px solid var(--blood-red);
+                               border-radius:0 8px 8px 0;">
+                        ${book.shortDescription}
+                    </p>
+                ` : ''}
+                ${book.description ? `
+                    <p style="line-height:1.9; font-size:15px; color:#444;">${book.description}</p>
+                ` : ''}
             </div>
 
             <!-- КНОПКИ ДІЙ -->
@@ -250,6 +331,16 @@ function generateStarsDisplay(rating) {
 }
 
 // ===================================
+// ВІДМІНЮВАННЯ
+// ===================================
+function nPlural(n, one, few, many) {
+    const mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return one;
+    if ([2,3,4].includes(mod10) && ![12,13,14].includes(mod100)) return few;
+    return many;
+}
+
+// ===================================
 // ЗІРКИ ДЛЯ ВИБОРУ ОЦІНКИ (1-10)
 // ===================================
 function generateRatingStars() {
@@ -261,6 +352,25 @@ function generateRatingStars() {
 }
 
 // ===================================
+// ЗАПИТ НА ЗМІНУ ОЦІНКИ
+// ===================================
+function askChangeRating(bookId) {
+    if (!confirm(`Ви вже оцінили книгу на ${userRating}/10.
+Хочете змінити оцінку?`)) return;
+    // Дозволяємо повторне голосування
+    const key = String(bookId);
+    delete sessionVoted[key];
+    sessionStorage.setItem('sessionVoted', JSON.stringify(sessionVoted));
+    // Розблоковуємо зірки
+    const starsBlock = document.getElementById('rating-stars');
+    if (starsBlock) { starsBlock.style.opacity = '1'; starsBlock.style.pointerEvents = 'auto'; }
+    const label = document.getElementById('rating-user-label');
+    if (label) label.innerHTML = '⭐ Оберіть нову оцінку:';
+    showNotification('Оберіть нову оцінку', 'info');
+}
+window.askChangeRating = askChangeRating;
+
+// ===================================
 // СЛУХАЧІ РЕЙТИНГУ
 // ===================================
 function attachRatingListeners(bookId) {
@@ -268,18 +378,33 @@ function attachRatingListeners(bookId) {
     const selectedLabel = document.getElementById('selected-rating');
     if (!stars.length) return;
 
+    const key = String(bookId);
+    // Якщо вже є оцінка — блокуємо зірки
+    if (userRating > 0 && !sessionVoted[key] === false) {
+        // Зірки видимі але не заблоковані — можна змінити через кнопку
+    }
+
     // Hover
     stars.forEach((star, i) => {
         star.addEventListener('mouseenter', () => {
+            if (userRating > 0 && sessionVoted[key]) return; // заблоковані
             stars.forEach((s, j) => s.classList.toggle('filled', j <= i));
         });
 
         star.addEventListener('click', () => {
+            if (sessionVoted[key]) {
+                // Запитуємо чи хоче змінити
+                askChangeRating(bookId);
+                return;
+            }
             const rating = i + 1;
             setUserRating(bookId, rating);
             userRating = rating;
             stars.forEach((s, j) => s.classList.toggle('filled', j < rating));
-            if (selectedLabel) selectedLabel.textContent = `Ви оцінили: ${rating}/10 ✓`;
+            if (selectedLabel) selectedLabel.textContent = '';
+            // Оновлюємо лейбл
+            const label = document.getElementById('rating-user-label');
+            if (label) label.innerHTML = `✅ Ваша оцінка: ${rating}/10 — <span style="color:var(--blood-red); cursor:pointer; text-decoration:underline;" onclick="askChangeRating(${bookId})">Змінити</span>`;
             showNotification(`Дякуємо за оцінку ${rating}/10! ⭐`);
         });
     });
@@ -294,25 +419,51 @@ function attachRatingListeners(bookId) {
 // ЗБЕРЕЖЕННЯ ОЦІНКИ
 // ===================================
 function setUserRating(bookId, rating) {
-    const prevUserRating = userRatings[bookId] || 0; // оцінка що вже була від цього юзера
-    userRatings[bookId] = rating;
+    const key = String(bookId);
+    const prevUserRating = userRatings[key] || 0;
+
+    // Зберігаємо оцінку
+    userRatings[key] = rating;
+    sessionVoted[key] = rating;
     localStorage.setItem('userRatings', JSON.stringify(userRatings));
+    sessionStorage.setItem('sessionVoted', JSON.stringify(sessionVoted));
 
     // Оновлюємо середній рейтинг книги
-    const book = books.find(b => b.id === bookId);
+    const book = books.find(b => b.id === bookId || String(b.id) === key);
     if (book) {
         const prevCount = book.ratingCount || 0;
         if (prevUserRating > 0) {
-            // Юзер вже голосував — замінюємо його стару оцінку, ratingCount не змінюємо
+            // Змінює стару оцінку — ratingCount не росте
             const prevTotal = (book.rating || 0) * prevCount;
-            book.rating = parseFloat(((prevTotal - prevUserRating + rating) / prevCount).toFixed(2));
+            book.rating = prevCount > 0
+                ? parseFloat(((prevTotal - prevUserRating + rating) / prevCount).toFixed(2))
+                : rating;
         } else {
-            // Перша оцінка від цього юзера
+            // Новий голос
             const prevTotal = (book.rating || 0) * prevCount;
             book.ratingCount = prevCount + 1;
             book.rating = parseFloat(((prevTotal + rating) / book.ratingCount).toFixed(2));
         }
+
+        // Зберігаємо
         localStorage.setItem('books', JSON.stringify(books));
+        // Оновлюємо і в admin overrides щоб не зникало
+        try {
+            const ov = JSON.parse(localStorage.getItem('books_admin_overrides') || 'null');
+            if (ov) {
+                const idx = ov.findIndex(b => String(b.id) === key);
+                if (idx !== -1) { ov[idx].rating = book.rating; ov[idx].ratingCount = book.ratingCount; }
+                localStorage.setItem('books_admin_overrides', JSON.stringify(ov));
+            }
+        } catch(e) {}
+
+        // Оновлюємо відображення на сторінці без перезавантаження
+        const avgNum = document.getElementById('avg-rating-num');
+        if (avgNum) avgNum.textContent = book.rating.toFixed(1);
+        const avgStars = document.getElementById('avg-stars');
+        if (avgStars) avgStars.innerHTML = generateStarsDisplay(book.rating);
+        const countLbl = document.getElementById('rating-count-label');
+        if (countLbl) countLbl.textContent = `(${book.ratingCount} ${nPlural(book.ratingCount,'оцінка','оцінки','оцінок')})`;
     }
 }
 

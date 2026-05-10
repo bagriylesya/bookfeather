@@ -370,9 +370,8 @@ async function displayHomeBooks() {
 function createBookCard(book) {
     const isFavorite = isInFavorites(book.id);
     const availableStock = (book.stock || 0) - (book.reserved || 0);
-    const discountPrice = book.discount > 0 ? (book.price * (1 - book.discount / 100)) : book.price;
+    const discountPrice = book.discount > 0 ? (parseFloat(book.price) * (1 - parseFloat(book.discount) / 100)) : parseFloat(book.price);
 
-    // Значок наявності
     let stockBadge = '';
     if (availableStock <= 0) {
         stockBadge = '<div class="stock-badge out-of-stock">Немає в наявності</div>';
@@ -382,8 +381,10 @@ function createBookCard(book) {
 
     // Бейджі
     let badges = '';
-    if (book.isNew) badges += '<span class="badge badge-new">Новинка</span>';
-    if (book.isTop) badges += '<span class="badge badge-top">Топ</span>';
+    const _isNew = book.isNew === true || book.isNew === 'true' || book.isNew === 1 || book.isNew === '1';
+    const _isTop = book.isTop === true || book.isTop === 'true' || book.isTop === 1 || book.isTop === '1';
+    if (_isNew) badges += '<span class="badge badge-new">Новинка</span>';
+    if (_isTop) badges += '<span class="badge badge-top">Топ</span>';
     if (book.discount > 0) badges += `<span class="badge badge-discount">-${book.discount}%</span>`;
 
     // Ціна
@@ -666,6 +667,13 @@ function normalizeCategory(cat) {
     return CATEGORY_MAP[cat.toLowerCase()] || cat;
 }
 window.normalizeCategory = normalizeCategory;
+
+function getBookCategories(book) {
+    if (Array.isArray(book.categories) && book.categories.length > 0) return book.categories;
+    if (book.category) return [book.category];
+    return [];
+}
+window.getBookCategories = getBookCategories;
 
 const DEFAULT_CATEGORIES = [
     // Художня література

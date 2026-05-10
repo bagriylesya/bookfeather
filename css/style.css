@@ -796,21 +796,26 @@ input, select, textarea { font-family: var(--font-body); }
 }
 
 .gallery-nav button {
-    width: 36px;
-    height: 36px;
-    background: rgba(116,7,14,0.85);
+    width: 40px;
+    height: 40px;
+    background: rgba(116,7,14,0.90);
     color: white;
-    border: none;
+    border: 2px solid rgba(255,255,255,0.6);
     border-radius: 50%;
-    font-size: 20px;
+    font-size: 22px;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background var(--transition);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    transition: background 0.2s, transform 0.2s;
 }
 
-.gallery-nav button:hover { background: var(--black-bean); }
+.gallery-nav button:hover {
+    background: rgba(116,7,14,1);
+    transform: scale(1.1);
+}
 
 .book-detail-info h1.page-title { font-size: 34px; margin-bottom: 12px; }
 
@@ -848,7 +853,41 @@ input, select, textarea { font-family: var(--font-body); }
 .meta-value.clickable:hover { color: var(--black-bean); }
 
 /* Рейтинг */
-.rating-interactive { margin: 20px 0; padding: 20px; background: #fdf8ef; border-radius: var(--radius); }
+.rating-interactive {
+    margin: 20px 0;
+    padding: 20px;
+    background: #fdf8ef;
+    border-radius: var(--radius);
+    border: 1px solid #eedfc8;
+    box-shadow: 0 3px 14px rgba(116,7,14,0.10);
+}
+
+/* Таблиця характеристик книги — тінь і контраст */
+.book-meta {
+    border: 1px solid #e8dccb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: 0 3px 16px rgba(49,14,16,0.10);
+}
+
+.meta-row {
+    display: flex;
+    padding: 11px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid #f0e4d0;
+}
+
+.meta-row:last-child { border-bottom: none; }
+.meta-row:nth-child(even) { background: #fdfaf5; }
+.meta-row:nth-child(odd)  { background: #fff8f0; }
+
+.meta-label {
+    color: #6b4c3b;
+    width: 170px;
+    flex-shrink: 0;
+    font-weight: 600;
+}
 
 .stars-display { font-size: 24px; color: #c8860a; margin-bottom: 4px; }
 
