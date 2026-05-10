@@ -237,10 +237,6 @@ function collectFormData(form) {
     const isNewChecked = form.elements['isNew'] ? form.elements['isNew'].checked : false;
     const isTopChecked = form.elements['isTop'] ? form.elements['isTop'].checked : false;
 
-    // rating/ratingCount — зберігаємо тільки якщо поле заповнене
-    const ratingRaw      = formData.get('rating');
-    const ratingCountRaw = formData.get('ratingCount');
-
     return {
         title:            formData.get('title')?.trim() || '',
         author:           formData.get('author')?.trim() || '',
@@ -251,13 +247,6 @@ function collectFormData(form) {
         price:            parseFloat((formData.get('price')||'0').replace(',','.')) || 0,
         discount:         parseInt(formData.get('discount')) || 0,
         goodreadsUrl:     formData.get('goodreadsUrl')?.trim() || '',
-        goodreadsRating:  parseFloat(formData.get('goodreadsRating')) || 0,
-        ...(ratingRaw !== '' && ratingRaw !== null
-            ? { rating: parseFloat(ratingRaw) || 0 }
-            : {}),
-        ...(ratingCountRaw !== '' && ratingCountRaw !== null
-            ? { ratingCount: parseInt(ratingCountRaw) || 0 }
-            : {}),
         pages:            parseInt(formData.get('pages')) || 0,
         year:             parseInt(formData.get('year')) || new Date().getFullYear(),
         cover:            formData.get('cover') || 'Тверда',
@@ -354,9 +343,7 @@ function editBook(id) {
     set('language',         book.language || 'Українська');
     set('price',            book.price);
     set('discount',         book.discount || 0);
-    // rating тепер тільки від користувачів — не виводимо в форму
-    set('goodreadsUrl',     book.goodreadsUrl    || '');
-    set('goodreadsRating',  book.goodreadsRating || '');
+    set('goodreadsUrl',     book.goodreadsUrl || '');
     set('pages',            book.pages || '');
     set('year',             book.year || '');
     set('cover',            book.cover || 'Тверда');
@@ -461,25 +448,23 @@ function _persistAdminBooks() {
 
 // Внутрішній хелпер: дії після збереження/оновлення
 async function _afterSaveBook(form) {
-    // Скидаємо форму (якщо clearBookForm ще не викликали)
+    // Очищаємо форму
     if (typeof window.clearBookForm === 'function') {
-        window.clearBookForm(true); // true = без зайвого notification
+        window.clearBookForm(true);
     } else {
         form.reset();
         delete form.dataset.editId;
         resetFormButton();
     }
     delete form.dataset.editId;
-
     loadAdminBooks();
     loadCategoryOptions();
-
-    // Перемикаємо на таб зі списком книг
+    // Повертаємося до списку книг
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
     document.getElementById('manage-books')?.classList.add('active');
-    document.getElementById('manage-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('manage-books')?.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 // ===================================
