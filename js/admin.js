@@ -223,26 +223,39 @@ function setupFormHandler() {
 function collectFormData(form) {
     const formData = new FormData(form);
 
-    // Головне фото + додаткові
+    // Фото
     const mainImage   = (formData.get('image')  || '').trim();
     const extraImages = (formData.get('images') || '').trim();
-
-    // Збираємо всі URL в масив (http/https і відносні шляхи)
     const allUrls = [mainImage, ...extraImages.split(',').map(s => s.trim())]
         .filter(url => url && (url.startsWith('http') || url.startsWith('/') || url.startsWith('images/')));
-
     const uniqueUrls = [...new Set(allUrls)];
 
-    // Чекбокси — читаємо через .checked, не через formData (formData не повертає false)
+    // Чекбокси
     const isNewChecked = form.elements['isNew'] ? form.elements['isNew'].checked : false;
     const isTopChecked = form.elements['isTop'] ? form.elements['isTop'].checked : false;
+
+    // Мультикатегорії з прихованого JSON-поля
+    let categoriesArr = [];
+    try {
+        const raw = formData.get('categoriesJson') || '[]';
+        categoriesArr = JSON.parse(raw);
+    } catch(e) {}
+
+    // Якщо JSON порожній — пробуємо window._selectedCategories напряму
+    if (categoriesArr.length === 0 && Array.isArray(window._selectedCategories) && window._selectedCategories.length > 0) {
+        categoriesArr = window._selectedCategories;
+    }
+
+    const primaryCategory = categoriesArr.length > 0 ? categoriesArr[0].id : '';
 
     return {
         title:            formData.get('title')?.trim() || '',
         author:           formData.get('author')?.trim() || '',
         originalTitle:    formData.get('originalTitle')?.trim() || '',
         publisher:        formData.get('publisher')?.trim() || '',
-        category:         formData.get('category')?.trim() || '',
+        category:         primaryCategory,
+        categories:       categoriesArr.map(c => c.id),
+        categoriesData:   categoriesArr,
         language:         formData.get('language') || 'Українська',
         price:            parseFloat((formData.get('price')||'0').replace(',','.')) || 0,
         discount:         parseInt(formData.get('discount')) || 0,
@@ -272,54 +285,67 @@ function collectFormData(form) {
 // ДОДАВАННЯ КНИГИ
 // ===================================
 async function addBook() {
-    const form = document.getElementById('add-book-form');
-    const data = collectFormData(form);
+    if (window._formSubmitting) return;
+    window._formSubmitting = true;
 
-    if (!data.title || !data.author || !data.category || !data.price) {
-        showNotification('Заповніть обов\'язкові поля: назва, автор, категорія, ціна!', 'error');
-        return;
-    }
+    const btn = document.getElementById('save-book-btn');
+    const origText = btn ? btn.textContent : '➕ Додати книгу';
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Зберігаємо...'; }
 
-    const basePath = window.BASE_PATH || '';
-
-    // Спробуємо зберегти в MySQL
-    if (window.USE_API) {
-        try {
-            const resp = await fetch(basePath + 'php/api.php?action=books', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Admin-Token': window.ADMIN_TOKEN || 'admin123'
-                },
-                body: JSON.stringify(data)
-            });
-            const json = await resp.json();
-            if (json.success) {
-                // Додаємо книгу з id з БД локально — НЕ перезавантажуємо щоб не скидати сесію
-                const newBook = { ...data, id: json.id || Date.now(), createdAt: new Date().toISOString() };
-                books.push(newBook);
-                _persistAdminBooks();
-                showNotification(`✅ Книгу "${data.title}" збережено в базі даних!`);
-                _afterSaveBook(form);
-                return;
-            }
-        } catch (e) {
-            console.warn('API недоступний, зберігаємо локально');
-        }
-    }
-
-    // Fallback: localStorage
-    const newBook = { ...data, id: Date.now(), createdAt: new Date().toISOString() };
-    books.push(newBook);
-    _persistAdminBooks();
-    // Очищаємо будь-яку стару оцінку для цього id (щоб не з'являлась "Ваша оцінка")
     try {
-        const ur = JSON.parse(localStorage.getItem('userRatings') || '{}');
-        delete ur[newBook.id];
-        localStorage.setItem('userRatings', JSON.stringify(ur));
-    } catch(e) {}
-    showNotification(`✅ Книгу "${newBook.title}" збережено! 📚`);
-    await _afterSaveBook(form);
+        const form = document.getElementById('add-book-form');
+        const data = collectFormData(form);
+
+        // Валідація — тільки JS, без required на полі category
+        if (!data.title) {
+            showNotification('Введіть назву книги!', 'error'); return;
+        }
+        if (!data.author) {
+            showNotification('Введіть автора!', 'error'); return;
+        }
+        if (!data.category) {
+            showNotification('Додайте хоча б одну категорію (жанр)!', 'error'); return;
+        }
+        if (!data.price || data.price <= 0) {
+            showNotification('Введіть ціну!', 'error'); return;
+        }
+
+        const basePath = window.BASE_PATH || '';
+
+        if (window.USE_API) {
+            try {
+                const resp = await fetch(basePath + 'php/api.php?action=books', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': window.ADMIN_TOKEN || 'admin123' },
+                    body: JSON.stringify(data)
+                });
+                const json = await resp.json();
+                if (json.success) {
+                    const newBook = { ...data, id: json.id || Date.now(), rating: 0, ratingCount: 0, createdAt: new Date().toISOString() };
+                    books.push(newBook);
+                    _persistAdminBooks();
+                    showNotification(`✅ Книгу "${data.title}" збережено в базі даних!`, 'success');
+                    await _afterSaveBook(form);
+                    return;
+                }
+            } catch (e) { console.warn('API недоступний, зберігаємо локально'); }
+        }
+
+        const newBook = { ...data, id: Date.now(), rating: 0, ratingCount: 0, createdAt: new Date().toISOString() };
+        books.push(newBook);
+        _persistAdminBooks();
+        try {
+            const ur = JSON.parse(localStorage.getItem('userRatings') || '{}');
+            delete ur[newBook.id];
+            localStorage.setItem('userRatings', JSON.stringify(ur));
+        } catch(e) {}
+        showNotification(`✅ Книгу "${newBook.title}" додано! 📚`, 'success');
+        await _afterSaveBook(form);
+
+    } finally {
+        window._formSubmitting = false;
+        if (btn) { btn.disabled = false; btn.textContent = origText; }
+    }
 }
 
 // ===================================
@@ -366,6 +392,38 @@ function editBook(id) {
     if (form.elements['isNew']) form.elements['isNew'].checked = !!book.isNew;
     if (form.elements['isTop']) form.elements['isTop'].checked = !!book.isTop;
 
+    // Категорії — відновлюємо теги
+    window._selectedCategories = [];
+    const tagsEl   = document.getElementById('category-tags');
+    const hiddenEl = document.getElementById('categories-json-input');
+    const catInput = document.getElementById('category-input-field');
+    if (tagsEl)   tagsEl.innerHTML = '';
+    if (hiddenEl) hiddenEl.value   = '';
+    if (catInput) catInput.value   = '';
+
+    const allCats = typeof getAllCategories === 'function' ? getAllCategories() : [];
+    let catsToRestore = [];
+
+    if (Array.isArray(book.categoriesData) && book.categoriesData.length > 0) {
+        catsToRestore = book.categoriesData;
+    } else if (Array.isArray(book.categories) && book.categories.length > 0) {
+        catsToRestore = book.categories.map(cid => {
+            const found = allCats.find(c => c.id === cid);
+            return found
+                ? { id: found.id, name: found.name, label: `${found.icon} ${found.name}` }
+                : { id: cid, name: cid, label: `📚 ${cid}` };
+        });
+    } else if (book.category) {
+        const found = allCats.find(c => c.id === book.category || c.name === book.category);
+        catsToRestore = found
+            ? [{ id: found.id, name: found.name, label: `${found.icon} ${found.name}` }]
+            : [{ id: book.category, name: book.category, label: `📚 ${book.category}` }];
+    }
+
+    catsToRestore.forEach(c => {
+        if (typeof window.addCategoryTag === 'function') window.addCategoryTag(c.name);
+    });
+
     // Кнопка
     const btn = document.getElementById('save-book-btn');
     if (btn) btn.textContent = '💾 Зберегти зміни';
@@ -384,53 +442,60 @@ function editBook(id) {
 // ОНОВЛЕННЯ КНИГИ
 // ===================================
 async function updateBook(id) {
-    const strId = String(id);
-    const idx = books.findIndex(b => String(b.id) === strId);
-    if (idx === -1) {
-        showNotification('Книгу не знайдено в списку!', 'error');
-        return;
-    }
+    if (window._formSubmitting) return;
+    window._formSubmitting = true;
 
-    const form = document.getElementById('add-book-form');
-    const data = collectFormData(form);
+    const btn = document.getElementById('save-book-btn');
+    const origText = btn ? btn.textContent : '💾 Зберегти зміни';
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Зберігаємо...'; }
 
-    if (!data.title || !data.author || !data.category || !data.price) {
-        showNotification('Заповніть всі обов\'язкові поля!', 'error');
-        return;
-    }
+    try {
+        const strId = String(id);
+        const idx = books.findIndex(b => String(b.id) === strId);
+        if (idx === -1) { showNotification('Книгу не знайдено!', 'error'); return; }
 
-    const originalId = books[idx].id; // зберігаємо оригінальний id (число або рядок)
-    const basePath = window.BASE_PATH || '';
+        const form = document.getElementById('add-book-form');
+        const data = collectFormData(form);
 
-    // Спробуємо оновити в MySQL
-    if (window.USE_API) {
-        try {
-            const resp = await fetch(basePath + `php/api.php?action=books&id=${originalId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Admin-Token': window.ADMIN_TOKEN || 'admin123'
-                },
-                body: JSON.stringify(data)
-            });
-            const json = await resp.json();
-            if (json.success) {
-                books[idx] = { ...books[idx], ...data, id: originalId, updatedAt: new Date().toISOString() };
-                _persistAdminBooks();
-                showNotification(`✅ Книгу "${data.title}" оновлено в базі даних!`);
-                _afterSaveBook(form);
-                return;
-            }
-        } catch (e) {
-            console.warn('API недоступний, зберігаємо локально');
+        if (!data.title)              { showNotification('Введіть назву книги!', 'error'); return; }
+        if (!data.author)             { showNotification('Введіть автора!', 'error'); return; }
+        if (!data.category)           { showNotification('Додайте хоча б одну категорію!', 'error'); return; }
+        if (!data.price || data.price <= 0) { showNotification('Введіть ціну!', 'error'); return; }
+
+        const originalId = books[idx].id;
+        const basePath   = window.BASE_PATH || '';
+
+        if (window.USE_API) {
+            try {
+                const resp = await fetch(basePath + `php/api.php?action=books&id=${originalId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Admin-Token': window.ADMIN_TOKEN || 'admin123' },
+                    body: JSON.stringify(data)
+                });
+                const json = await resp.json();
+                if (json.success) {
+                    books[idx] = { ...books[idx], ...data, id: originalId,
+                        rating: books[idx].rating ?? 0, ratingCount: books[idx].ratingCount ?? 0,
+                        updatedAt: new Date().toISOString() };
+                    _persistAdminBooks();
+                    showNotification(`✅ Книгу "${data.title}" оновлено!`, 'success');
+                    await _afterSaveBook(form);
+                    return;
+                }
+            } catch(e) { console.warn('API недоступний'); }
         }
-    }
 
-    // Fallback: localStorage — id не змінюємо!
-    books[idx] = { ...books[idx], ...data, id: originalId, updatedAt: new Date().toISOString() };
-    _persistAdminBooks();
-    showNotification(`✅ Зміни збережено: "${data.title}"! 💾`);
-    await _afterSaveBook(form);
+        books[idx] = { ...books[idx], ...data, id: originalId,
+            rating: books[idx].rating ?? 0, ratingCount: books[idx].ratingCount ?? 0,
+            updatedAt: new Date().toISOString() };
+        _persistAdminBooks();
+        showNotification(`✅ Зміни збережено: "${data.title}"! 💾`, 'success');
+        await _afterSaveBook(form);
+
+    } finally {
+        window._formSubmitting = false;
+        if (btn) { btn.disabled = false; btn.textContent = origText; }
+    }
 }
 
 // ===================================
@@ -446,23 +511,37 @@ function _persistAdminBooks() {
     clearSearchCache?.();
 }
 
-// Внутрішній хелпер: дії після збереження/оновлення — БЕЗ виходу з адмінки
+// Дії після збереження: очищення форми + перехід на "Керування книгами"
 async function _afterSaveBook(form) {
-    // Очищаємо форму
+    // 1. Очищаємо форму
     form.reset();
     delete form.dataset.editId;
     resetFormButton();
 
-    // Оновлюємо список книг
+    // 2. Скидаємо теги категорій
+    window._selectedCategories = [];
+    const tagsEl = document.getElementById('category-tags');
+    const hiddenEl = document.getElementById('categories-json-input');
+    const catInput = document.getElementById('category-input-field');
+    if (tagsEl)   tagsEl.innerHTML = '';
+    if (hiddenEl) hiddenEl.value   = '';
+    if (catInput) catInput.value   = '';
+
+    // 3. Оновлюємо список книг
     loadAdminBooks();
     loadCategoryOptions();
 
-    // Перемикаємо таб до списку книг
+    // 4. Перемикаємо таб на "Керування книгами" — надійно через DOM
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelector('[data-tab="manage-books"]')?.classList.add('active');
-    document.getElementById('manage-books')?.classList.add('active');
-    document.getElementById('manage-books')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    const manageBtn = document.querySelector('[data-tab="manage-books"]');
+    const manageTab = document.getElementById('manage-books');
+    if (manageBtn) manageBtn.classList.add('active');
+    if (manageTab) {
+        manageTab.classList.add('active');
+        manageTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // ===================================

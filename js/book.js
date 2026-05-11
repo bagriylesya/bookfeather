@@ -55,7 +55,8 @@ async function displayBookDetails() {
     const images         = getBookImages(book);
     const isFavorite     = isInFavorites(book.id);
     // Ключ в localStorage завжди рядок — використовуємо String()
-    userRating           = userRatings[String(bookId)] || userRatings[bookId] || 0;
+    const bookKey = String(book.id);
+    userRating    = userRatings[bookKey] || 0;
     const availableStock = (book.stock || 0) - (book.reserved || 0);
 
     // Ціна з урахуванням знижки
@@ -204,19 +205,26 @@ async function displayBookDetails() {
             </div>
 
             <!-- ОПИС -->
-            <div style="margin-bottom:28px;">
-                <h3 style="font-size:22px; margin-bottom:12px; color:var(--blood-red);">Про книгу</h3>
+            <div style="margin-bottom:28px; background:#fffdf7; border:1px solid #e8d9be;
+                        border-radius:14px; padding:22px 24px;">
+                <h3 style="font-size:20px; margin-bottom:14px; color:var(--blood-red);
+                            display:flex; align-items:center; gap:8px;">
+                    📖 Про книгу
+                </h3>
                 ${book.shortDescription ? `
-                    <p style="line-height:1.8; font-size:16px; color:var(--black-bean);
-                               font-weight:600; margin-bottom:12px; padding:12px 16px;
-                               background:#fff8ee; border-left:4px solid var(--blood-red);
+                    <p style="line-height:1.85; font-size:16px; color:var(--black-bean);
+                               font-weight:600; margin-bottom:14px; padding:12px 16px;
+                               background:#fff3e0; border-left:4px solid var(--blood-red);
                                border-radius:0 8px 8px 0;">
                         ${book.shortDescription}
                     </p>
                 ` : ''}
                 ${book.description ? `
-                    <p style="line-height:1.9; font-size:15px; color:#444;">${book.description}</p>
-                ` : ''}
+                    <p style="line-height:2; font-size:16px; color:#1e0e0f;
+                               letter-spacing:0.01em; margin:0;">
+                        ${book.description}
+                    </p>
+                ` : '<p style="color:var(--cinereous); font-style:italic; margin:0;">Опис відсутній</p>'}
             </div>
 
             <!-- КНОПКИ ДІЙ -->
@@ -366,9 +374,8 @@ function setUserRating(bookId, rating) {
     localStorage.setItem('userRatings', JSON.stringify(userRatings));
     sessionStorage.setItem('sessionVoted', JSON.stringify(sessionVoted));
 
-    // Оновлюємо середній рейтинг книги
-    const bookIdNum = parseInt(key); // b.id зазвичай число
-    const book = books.find(b => b.id === bookIdNum || String(b.id) === key);
+    // Шукаємо книгу — завжди через рядкове порівняння id
+    const book = books.find(b => String(b.id) === key);
     if (!book) return;
 
     const prevCount = book.ratingCount || 0;
@@ -389,13 +396,16 @@ function setUserRating(bookId, rating) {
     localStorage.setItem('books', JSON.stringify(books));
     try {
         const ov = JSON.parse(localStorage.getItem('books_admin_overrides') || 'null');
-        if (ov) {
+        if (Array.isArray(ov)) {
             const idx = ov.findIndex(b => String(b.id) === key);
             if (idx !== -1) {
                 ov[idx].rating      = book.rating;
                 ov[idx].ratingCount = book.ratingCount;
-                localStorage.setItem('books_admin_overrides', JSON.stringify(ov));
+            } else {
+                // Книга є в books але не в overrides — додаємо
+                ov.push({ ...book });
             }
+            localStorage.setItem('books_admin_overrides', JSON.stringify(ov));
         }
     } catch(e) {}
 
@@ -454,24 +464,80 @@ function setImage(index) {
 // МОДАЛЬНЕ ВІКНО ФОТО
 // ===================================
 function openImageModal(src) {
+    const images = currentBook ? getBookImages(currentBook) : [];
+    let modalIdx = images.indexOf(src);
+    if (modalIdx === -1) modalIdx = 0;
+
     let modal = document.getElementById('image-modal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'image-modal';
         modal.className = 'image-modal';
-        modal.innerHTML = `
-            <span class="modal-close" onclick="closeImageModal()">×</span>
-            <img class="modal-image" id="modal-img" src="" alt="Фото книги">
-        `;
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeImageModal();
-        });
         document.body.appendChild(modal);
     }
 
-    document.getElementById('modal-img').src = src;
+    function renderModal(idx) {
+        const hasManyImages = images.length > 1;
+        modal.innerHTML = `
+            <span class="modal-close" onclick="closeImageModal()"
+                style="position:fixed; top:20px; right:24px; color:white; font-size:42px;
+                       cursor:pointer; line-height:1; z-index:10001; opacity:.85; transition:opacity .2s;"
+                onmouseover="this.style.opacity=1" onmouseout="this.style.opacity='.85'">×</span>
+            ${hasManyImages ? `
+            <button id="modal-prev"
+                style="position:fixed; left:20px; top:50%; transform:translateY(-50%);
+                       width:52px; height:52px; background:rgba(255,255,255,0.15); border:2px solid rgba(255,255,255,0.5);
+                       color:white; font-size:32px; border-radius:50%; cursor:pointer; z-index:10001;
+                       display:flex; align-items:center; justify-content:center; transition:background .2s;"
+                onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.15)'">‹</button>
+            <button id="modal-next"
+                style="position:fixed; right:20px; top:50%; transform:translateY(-50%);
+                       width:52px; height:52px; background:rgba(255,255,255,0.15); border:2px solid rgba(255,255,255,0.5);
+                       color:white; font-size:32px; border-radius:50%; cursor:pointer; z-index:10001;
+                       display:flex; align-items:center; justify-content:center; transition:background .2s;"
+                onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.15)'">›</button>
+            <div style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+                        color:rgba(255,255,255,.7); font-size:14px; z-index:10001;">
+                ${idx + 1} / ${images.length}
+            </div>
+            ` : ''}
+            <img class="modal-image" id="modal-img"
+                 src="${images[idx] || src}"
+                 alt="Фото книги"
+                 style="max-width:90vw; max-height:85vh; object-fit:contain; border-radius:8px; display:block;">
+        `;
+
+        modal.onclick = (e) => { if (e.target === modal) closeImageModal(); };
+
+        if (hasManyImages) {
+            modal.querySelector('#modal-prev').onclick = (e) => {
+                e.stopPropagation();
+                modalIdx = (modalIdx - 1 + images.length) % images.length;
+                renderModal(modalIdx);
+            };
+            modal.querySelector('#modal-next').onclick = (e) => {
+                e.stopPropagation();
+                modalIdx = (modalIdx + 1) % images.length;
+                renderModal(modalIdx);
+            };
+        }
+    }
+
+    renderModal(modalIdx);
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
+
+    // Стрілки клавіатури
+    modal._keyHandler = (e) => {
+        if (!modal.classList.contains('show') || images.length <= 1) return;
+        if (e.key === 'ArrowLeft')  { modalIdx = (modalIdx - 1 + images.length) % images.length; renderModal(modalIdx); }
+        if (e.key === 'ArrowRight') { modalIdx = (modalIdx + 1) % images.length; renderModal(modalIdx); }
+        if (e.key === 'Escape')     { closeImageModal(); }
+    };
+    document.removeEventListener('keydown', modal._keyHandler);
+    document.addEventListener('keydown', modal._keyHandler);
 }
 
 function closeImageModal() {

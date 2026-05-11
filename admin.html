@@ -252,13 +252,24 @@
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Категорія*:</label>
-                                <input type="text" name="category" required
-                                    placeholder="Оберіть або введіть свою"
-                                    list="category-suggestions"
-                                    autocomplete="off">
+                                <label>Категорії / Жанри* <small style="font-weight:400;">(додайте хоча б одну)</small>:</label>
+                                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                                    <input type="text" id="category-input-field"
+                                        placeholder="Введіть жанр і натисніть ＋ або Enter"
+                                        list="category-suggestions"
+                                        autocomplete="off"
+                                        style="flex:1; padding:14px; border:2px solid var(--cinereous);
+                                               border-radius:8px; font-family:var(--font-body); font-size:16px;">
+                                    <button type="button" onclick="addCategoryTag()"
+                                        style="padding:10px 18px; background:var(--blood-red); color:white;
+                                               border:none; border-radius:8px; font-size:22px; cursor:pointer;
+                                               line-height:1;">＋</button>
+                                </div>
                                 <datalist id="category-suggestions"></datalist>
-                                <small style="color:var(--cinereous);">Оберіть з списку або введіть нову</small>
+                                <div id="category-tags" style="display:flex; flex-wrap:wrap; gap:8px; min-height:28px; margin-bottom:4px;"></div>
+                                <!-- прихований input — читається collectFormData -->
+                                <input type="hidden" name="categoriesJson" id="categories-json-input">
+                                <small style="color:var(--cinereous);">Перша — основна категорія (виділена червоним)</small>
                             </div>
                             <div class="form-group">
                                 <label>Мова:</label>
@@ -348,29 +359,25 @@
                         <div class="form-group">
                             <label>Додаткові фото (через кому, необов'язково):</label>
                             <textarea name="images" rows="2" placeholder="https://example.com/photo2.jpg, https://example.com/photo3.jpg"></textarea>
-                            <small style="color:var(--cinereous);">Перше фото буде головним. Додаткові — для галереї на сторінці книги.</small>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Кількість на складі*:</label>
-                                <input type="number" name="stock" min="0" value="0" required>
-                                <small style="color:var(--cinereous);">0 = немає в наявності</small>
-                            </div>
-                            <div class="form-group">
-                                <label>Знижка (%):</label>
-                                <input type="number" name="discount" min="0" max="100" value="0">
-                            </div>
+                            <small style="color:var(--cinereous);">Додаткові фото — для галереї на сторінці книги.</small>
                         </div>
 
                         <div class="form-group">
-                            <label>Короткий опис*:</label>
-                            <textarea name="shortDescription" rows="2" required></textarea>
+                            <label>Кількість на складі*:</label>
+                            <input type="number" name="stock" min="0" value="0" required>
+                            <small style="color:var(--cinereous);">0 = немає в наявності</small>
                         </div>
 
                         <div class="form-group">
-                            <label>Повний опис*:</label>
-                            <textarea name="description" rows="5" required></textarea>
+                            <label>Короткий опис:</label>
+                            <textarea name="shortDescription" rows="2"
+                                placeholder="Одне-два речення — виводиться як анонс"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Повний опис:</label>
+                            <textarea name="description" rows="5"
+                                placeholder="Детальний опис книги"></textarea>
                         </div>
 
                         <div class="form-row">
@@ -388,7 +395,7 @@
                             </div>
                         </div>
 
-                        <button type="button" id="save-book-btn" class="btn btn-primary" style="margin-right: 10px;" onclick="handleBookFormSubmit()">Додати книгу</button>
+                        <button type="button" id="save-book-btn" class="btn btn-primary" style="margin-right: 10px;" onclick="handleBookFormSubmit()">➕ Додати книгу</button>
                         <button type="button" class="btn btn-outline" onclick="clearBookForm()">🗑️ Очистити форму</button>
                     </form>
                 </div>
@@ -492,6 +499,7 @@
     window.handleBookFormSubmit = function() {
         const form = document.getElementById('add-book-form');
         if (!form) return;
+        if (window._formSubmitting) return; // захист від подвійного кліку
         const editId = form.dataset.editId;
         if (editId) {
             updateBook(parseInt(editId));
@@ -500,18 +508,85 @@
         }
     };
 
-    // Очистити форму
+    // ===== МУЛЬТИКАТЕГОРІЇ =====
+    window._selectedCategories = [];
+
+    window.addCategoryTag = function(nameOverride) {
+        const input = document.getElementById('category-input-field');
+        const raw   = (nameOverride || (input ? input.value : '') || '').trim();
+        if (!raw) return;
+
+        const cats  = typeof getAllCategories === 'function' ? getAllCategories() : [];
+        const found = cats.find(c => c.name.toLowerCase() === raw.toLowerCase());
+        const id    = found ? found.id : raw.toLowerCase().replace(/\s+/g, '_');
+        const displayName = found ? found.name : raw;
+        const label = found ? `${found.icon} ${found.name}` : `📚 ${raw}`;
+
+        if (window._selectedCategories.find(c => c.id === id)) {
+            if (input) input.value = '';
+            return;
+        }
+
+        window._selectedCategories.push({ id, name: displayName, label });
+        _renderCategoryTags();
+        if (input) input.value = '';
+    };
+
+    window.removeCategoryTag = function(id) {
+        window._selectedCategories = window._selectedCategories.filter(c => c.id !== id);
+        _renderCategoryTags();
+    };
+
+    function _renderCategoryTags() {
+        const container = document.getElementById('category-tags');
+        const hidden    = document.getElementById('categories-json-input');
+        if (!container) return;
+
+        container.innerHTML = window._selectedCategories.map((c, i) => `
+            <span style="display:inline-flex; align-items:center; gap:6px;
+                         background:${i === 0 ? 'var(--blood-red)' : '#e8d5c4'};
+                         color:${i === 0 ? 'white' : 'var(--black-bean)'};
+                         padding:5px 14px 5px 10px; border-radius:20px; font-size:14px; font-weight:600;">
+                ${c.label}
+                ${i === 0 ? ' <small style="opacity:.65; font-size:11px; font-weight:400;">(основна)</small>' : ''}
+                <button type="button" onclick="removeCategoryTag('${c.id}')"
+                    style="background:none; border:none; cursor:pointer; font-size:15px; line-height:1;
+                           color:${i === 0 ? 'rgba(255,255,255,.75)' : '#947268'}; padding:0 0 0 4px;
+                           margin-left:2px;">✕</button>
+            </span>
+        `).join('');
+
+        if (hidden) hidden.value = JSON.stringify(window._selectedCategories);
+    }
+
+    // Enter або вибір з datalist — додає тег
+    document.addEventListener('DOMContentLoaded', () => {
+        const ci = document.getElementById('category-input-field');
+        if (ci) {
+            ci.addEventListener('keydown', e => {
+                if (e.key === 'Enter') { e.preventDefault(); addCategoryTag(); }
+            });
+            ci.addEventListener('change', () => { if (ci.value) addCategoryTag(); });
+        }
+    });
+
+    // ===== ОЧИСТИТИ ФОРМУ =====
     window.clearBookForm = function() {
         const form = document.getElementById('add-book-form');
         if (!form) return;
         form.reset();
         delete form.dataset.editId;
-        // Скидаємо всі textarea і select вручну (form.reset може не спрацювати для деяких)
         form.querySelectorAll('input, textarea, select').forEach(el => {
             if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
             else if (el.name !== 'language') el.value = '';
         });
-        form.querySelector('[name="language"]') && (form.querySelector('[name="language"]').value = 'Українська');
+        const langEl = form.querySelector('[name="language"]');
+        if (langEl) langEl.value = 'Українська';
+        // Скидаємо теги
+        window._selectedCategories = [];
+        _renderCategoryTags();
+        const catInput = document.getElementById('category-input-field');
+        if (catInput) catInput.value = '';
         const btn = document.getElementById('save-book-btn');
         if (btn) btn.textContent = '➕ Додати книгу';
         showNotification('🗑️ Форму очищено', 'info');
