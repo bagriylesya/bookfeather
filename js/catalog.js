@@ -64,9 +64,23 @@ function applyUrlFilters() {
     window._authorFilter    = author    ? author.trim().toLowerCase()    : '';
     window._publisherFilter = publisher ? publisher.trim().toLowerCase() : '';
 
-    if (author && !search) {
+    // Показуємо видавництво або автора в полі пошуку (якщо немає окремого пошуку)
+    if (publisher && !search) {
+        const input = document.getElementById('search-input');
+        if (input) input.value = publisher;
+    } else if (author && !search) {
         const input = document.getElementById('search-input');
         if (input) input.value = author;
+    }
+
+    // Якщо є фільтр видавництва — оновлюємо заголовок результатів
+    if (publisher) {
+        const title = document.getElementById('catalog-results-title');
+        if (title) title.textContent = `Видавництво: ${publisher}`;
+    }
+    if (author) {
+        const title = document.getElementById('catalog-results-title');
+        if (title) title.textContent = `Автор: ${author}`;
     }
 }
 
@@ -94,20 +108,20 @@ function filterBooks() {
         }
         // Мова
         if (languageFilter && book.language !== languageFilter) return false;
-        // Видавництво (з URL ?publisher=...) — точна фільтрація
+        // Видавництво (з URL ?publisher=...) — точна фільтрація, ігнорує searchQuery
         if (window._publisherFilter) {
             const bp = (book.publisher || '').trim().toLowerCase();
             const pf = window._publisherFilter;
-            if (bp !== pf && !bp.includes(pf) && !pf.includes(bp)) return false;
-        }
-        // Автор (з URL ?author=...) — точна фільтрація
-        if (window._authorFilter) {
+            // Фільтруємо: книга без видавця АБО видавець не містить запит
+            if (!bp || !bp.includes(pf)) return false;
+        // Автор (з URL ?author=...) — точна фільтрація, ігнорує searchQuery
+        } else if (window._authorFilter) {
             const ba = (book.author || '').trim().toLowerCase();
             const af = window._authorFilter;
-            if (ba !== af && !ba.includes(af) && !af.includes(ba)) return false;
-        }
-        // Пошук (загальний — не конфліктує з URL-фільтрами)
-        if (searchQuery && !window._authorFilter && !window._publisherFilter) {
+            // Фільтруємо: автор не містить запит
+            if (!ba || !ba.includes(af)) return false;
+        // Пошук (загальний — тільки якщо немає URL-фільтрів)
+        } else if (searchQuery) {
             const str = `${book.title} ${book.author} ${book.description || ''} ${book.publisher || ''}`.toLowerCase();
             if (!str.includes(searchQuery)) return false;
         }
@@ -131,15 +145,17 @@ function filterBooks() {
     });
 
     // Сортування
+    const getFinalPrice = b => b.discount > 0 ? b.price * (1 - b.discount / 100) : b.price;
+
     switch (sortFilter) {
         case 'new':
             filteredBooks.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
             break;
         case 'price-low':
-            filteredBooks.sort((a, b) => a.price - b.price);
+            filteredBooks.sort((a, b) => getFinalPrice(a) - getFinalPrice(b));
             break;
         case 'price-high':
-            filteredBooks.sort((a, b) => b.price - a.price);
+            filteredBooks.sort((a, b) => getFinalPrice(b) - getFinalPrice(a));
             break;
         case 'rating':
             filteredBooks.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -192,7 +208,18 @@ function resetFilters() {
     checks.forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
 
     document.getElementById('sort-filter').value = 'popular';
+
+    // Скидаємо URL-фільтри видавництва та автора
+    window._publisherFilter = '';
+    window._authorFilter    = '';
+
+    // Прибираємо параметри з URL
     window.history.pushState({}, '', 'catalog.html');
+
+    // Скидаємо заголовок результатів якщо є
+    const title = document.getElementById('catalog-results-title');
+    if (title) title.textContent = '';
+
     filterBooks();
 }
 

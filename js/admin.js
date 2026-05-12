@@ -71,6 +71,12 @@ function loadAdminBooks() {
     }
 
     container.innerHTML = books.map(book => createAdminBookCard(book)).join('');
+
+    // Перезастосовуємо пошук, якщо е активний запит
+    const searchEl = document.getElementById('admin-books-search');
+    if (searchEl && searchEl.value.trim()) {
+        filterAdminBooks();
+    }
 }
 
 // ===================================
@@ -284,6 +290,33 @@ function collectFormData(form) {
 // ===================================
 // ДОДАВАННЯ КНИГИ
 // ===================================
+// Показати повідомлення прямо біля кнопки (працює завжди, незалежно від showNotification)
+function _showInlineMsg(msg, type) {
+    let el = document.getElementById('_inline-add-msg');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = '_inline-add-msg';
+        el.style.cssText = 'margin:12px 0; padding:14px 18px; border-radius:10px; font-size:15px; font-weight:600; display:none;';
+        const btn = document.getElementById('save-book-btn');
+        if (btn && btn.parentNode) btn.parentNode.insertBefore(el, btn);
+    }
+    el.textContent = msg;
+    el.style.display = 'block';
+    if (type === 'error') {
+        el.style.background = '#f8d7da';
+        el.style.color = '#721c24';
+        el.style.border = '2px solid #dc3545';
+    } else {
+        el.style.background = '#d4edda';
+        el.style.color = '#155724';
+        el.style.border = '2px solid #2d8a4e';
+    }
+    clearTimeout(el._hideTimer);
+    if (type !== 'error') {
+        el._hideTimer = setTimeout(() => { el.style.display = 'none'; }, 8000);
+    }
+}
+
 async function addBook() {
     if (window._formSubmitting) return;
     window._formSubmitting = true;
@@ -292,22 +325,31 @@ async function addBook() {
     const origText = btn ? btn.textContent : '➕ Додати книгу';
     if (btn) { btn.disabled = true; btn.textContent = '⏳ Зберігаємо...'; }
 
+    let success = false;
     try {
         const form = document.getElementById('add-book-form');
         const data = collectFormData(form);
 
-        // Валідація — тільки JS, без required на полі category
+        // Валідація — тепер через throw щоб finally спрацював правильно
         if (!data.title) {
-            showNotification('Введіть назву книги!', 'error'); return;
+            _showInlineMsg('⚠️ Введіть назву книги!', 'error');
+            if (typeof showNotification === 'function') showNotification('Введіть назву книги!', 'error');
+            throw new Error('validation');
         }
         if (!data.author) {
-            showNotification('Введіть автора!', 'error'); return;
+            _showInlineMsg('⚠️ Введіть автора!', 'error');
+            if (typeof showNotification === 'function') showNotification('Введіть автора!', 'error');
+            throw new Error('validation');
         }
         if (!data.category) {
-            showNotification('Додайте хоча б одну категорію (жанр)!', 'error'); return;
+            _showInlineMsg('⚠️ Додайте хоча б одну категорію (жанр)!', 'error');
+            if (typeof showNotification === 'function') showNotification('Додайте хоча б одну категорію (жанр)!', 'error');
+            throw new Error('validation');
         }
         if (!data.price || data.price <= 0) {
-            showNotification('Введіть ціну!', 'error'); return;
+            _showInlineMsg('⚠️ Введіть ціну!', 'error');
+            if (typeof showNotification === 'function') showNotification('Введіть ціну!', 'error');
+            throw new Error('validation');
         }
 
         const basePath = window.BASE_PATH || '';
@@ -324,11 +366,15 @@ async function addBook() {
                     const newBook = { ...data, id: json.id || Date.now(), rating: 0, ratingCount: 0, createdAt: new Date().toISOString() };
                     books.push(newBook);
                     _persistAdminBooks();
-                    showNotification(`✅ Книгу "${data.title}" збережено в базі даних!`, 'success');
-                    await _afterSaveBook(form);
+                    success = true;
+                    _showInlineMsg(`✅ Книгу "${data.title}" збережено в базі даних! 📚`, 'success');
+                    await _afterSaveBook(form, `✅ Книгу "${data.title}" збережено в базі даних! 📚`);
                     return;
                 }
-            } catch (e) { console.warn('API недоступний, зберігаємо локально'); }
+            } catch (e) {
+                if (e.message !== 'validation') console.warn('API недоступний, зберігаємо локально');
+                else throw e;
+            }
         }
 
         const newBook = { ...data, id: Date.now(), rating: 0, ratingCount: 0, createdAt: new Date().toISOString() };
@@ -339,12 +385,22 @@ async function addBook() {
             delete ur[newBook.id];
             localStorage.setItem('userRatings', JSON.stringify(ur));
         } catch(e) {}
-        showNotification(`✅ Книгу "${newBook.title}" додано! 📚`, 'success');
-        await _afterSaveBook(form);
+        success = true;
+        _showInlineMsg(`✅ Книгу "${newBook.title}" успішно додано! 📚`, 'success');
+        await _afterSaveBook(form, `✅ Книгу "${newBook.title}" успішно додано! 📚`);
 
+    } catch(err) {
+        // validation error вже показана вище; інші помилки логуємо
+        if (err.message !== 'validation') {
+            console.error('addBook error:', err);
+            _showInlineMsg('❌ Помилка при збереженні. Спробуйте ще раз.', 'error');
+        }
     } finally {
         window._formSubmitting = false;
-        if (btn) { btn.disabled = false; btn.textContent = origText; }
+        if (btn) {
+            btn.disabled = false;
+            if (!success) btn.textContent = origText;
+        }
     }
 }
 
@@ -449,6 +505,7 @@ async function updateBook(id) {
     const origText = btn ? btn.textContent : '💾 Зберегти зміни';
     if (btn) { btn.disabled = true; btn.textContent = '⏳ Зберігаємо...'; }
 
+    let success = false;
     try {
         const strId = String(id);
         const idx = books.findIndex(b => String(b.id) === strId);
@@ -478,8 +535,8 @@ async function updateBook(id) {
                         rating: books[idx].rating ?? 0, ratingCount: books[idx].ratingCount ?? 0,
                         updatedAt: new Date().toISOString() };
                     _persistAdminBooks();
-                    showNotification(`✅ Книгу "${data.title}" оновлено!`, 'success');
-                    await _afterSaveBook(form);
+                    success = true;
+                    await _afterSaveBook(form, `✅ Книгу "${data.title}" оновлено! 💾`);
                     return;
                 }
             } catch(e) { console.warn('API недоступний'); }
@@ -489,12 +546,15 @@ async function updateBook(id) {
             rating: books[idx].rating ?? 0, ratingCount: books[idx].ratingCount ?? 0,
             updatedAt: new Date().toISOString() };
         _persistAdminBooks();
-        showNotification(`✅ Зміни збережено: "${data.title}"! 💾`, 'success');
-        await _afterSaveBook(form);
+        success = true;
+        await _afterSaveBook(form, `✅ Зміни збережено: "${data.title}"! 💾`);
 
     } finally {
         window._formSubmitting = false;
-        if (btn) { btn.disabled = false; btn.textContent = origText; }
+        if (btn) {
+            btn.disabled = false;
+            if (!success) btn.textContent = origText;
+        }
     }
 }
 
@@ -512,37 +572,121 @@ function _persistAdminBooks() {
 }
 
 // Дії після збереження: очищення форми + перехід на "Керування книгами"
-async function _afterSaveBook(form) {
-    // 1. Очищаємо форму
+async function _afterSaveBook(form, successMessage) {
+    const msg = successMessage || '✅ Збережено!';
+
+    // Показуємо статус в самій формі
+    showBookFormStatus(msg, 'success');
+    // Також showNotification якщо є
+    if (typeof showNotification === 'function') showNotification(msg, 'success', 7000);
+
+    // Чекаємо щоб користувач побачив повідомлення
+    await new Promise(r => setTimeout(r, 800));
+
+    // Очищаємо форму
     form.reset();
     delete form.dataset.editId;
-    resetFormButton();
 
-    // 2. Скидаємо теги категорій
+    const discountEl = form.querySelector('[name="discount"]');
+    if (discountEl) discountEl.value = '0';
+    const stockEl = form.querySelector('[name="stock"]');
+    if (stockEl) stockEl.value = '0';
+    const langEl = form.querySelector('[name="language"]');
+    if (langEl) langEl.value = 'Українська';
+
+    resetFormButton();
+    hideBookFormStatus();
+
+    // Скидаємо теги категорій
     window._selectedCategories = [];
-    const tagsEl = document.getElementById('category-tags');
+    const tagsEl   = document.getElementById('category-tags');
     const hiddenEl = document.getElementById('categories-json-input');
     const catInput = document.getElementById('category-input-field');
     if (tagsEl)   tagsEl.innerHTML = '';
     if (hiddenEl) hiddenEl.value   = '';
     if (catInput) catInput.value   = '';
 
-    // 3. Оновлюємо список книг
+    // Оновлюємо список книг
     loadAdminBooks();
     loadCategoryOptions();
 
-    // 4. Перемикаємо таб на "Керування книгами" — надійно через DOM
+    // Перемикаємо таб на "Керування книгами"
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-
     const manageBtn = document.querySelector('[data-tab="manage-books"]');
     const manageTab = document.getElementById('manage-books');
     if (manageBtn) manageBtn.classList.add('active');
-    if (manageTab) {
-        manageTab.classList.add('active');
-        manageTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (manageTab) manageTab.classList.add('active');
+
+    // Фіксований тост зверху — видно ПІСЛЯ переключення табу (основне повідомлення!)
+    if (typeof window._showSuccessToast === 'function') {
+        window._showSuccessToast(msg);
+    }
+
+    // Зелений банер у панелі "Керування книгами"
+    showAdminSuccessBanner(msg);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Показати статус безпосередньо в формі
+function showBookFormStatus(msg, type) {
+    const el = document.getElementById('book-form-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+    if (type === 'success') {
+        el.style.background = '#d4edda';
+        el.style.color = '#155724';
+        el.style.border = '2px solid #2d8a4e';
+    } else if (type === 'error') {
+        el.style.background = '#f8d7da';
+        el.style.color = '#721c24';
+        el.style.border = '2px solid #dc3545';
     }
 }
+
+function hideBookFormStatus() {
+    const el = document.getElementById('book-form-status');
+    if (el) el.style.display = 'none';
+}
+
+window.showBookFormStatus = showBookFormStatus;
+window.hideBookFormStatus = hideBookFormStatus;
+
+// Зелений банер всередині панелі "Керування книгами"
+function showAdminSuccessBanner(msg) {
+    const existing = document.getElementById('admin-save-banner');
+    if (existing) existing.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'admin-save-banner';
+    banner.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px;">
+            <span style="font-size:17px; font-weight:700;">${msg}</span>
+            <button onclick="document.getElementById('admin-save-banner').remove()"
+                    style="background:none; border:none; font-size:22px; cursor:pointer; color:#155724; line-height:1; padding:0;">×</button>
+        </div>
+    `;
+    banner.style.cssText = `
+        background: #d4edda;
+        border: 2px solid #2d8a4e;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        color: #155724;
+    `;
+
+    const manageTab = document.getElementById('manage-books');
+    if (manageTab) {
+        const h2 = manageTab.querySelector('h2');
+        const insertAfter = h2 ? h2.nextSibling : manageTab.firstChild;
+        manageTab.insertBefore(banner, insertAfter);
+        setTimeout(() => { if (banner.parentNode) banner.remove(); }, 8000);
+    }
+}
+
+window.showAdminSuccessBanner = showAdminSuccessBanner;
 
 // ===================================
 // РЕДАГУВАННЯ: заповнення форми
@@ -607,6 +751,56 @@ function resetFormButton() {
 // ЕКСПОРТ
 // ===================================
 window.initAdminPanel   = initAdminPanel;
+
+// ===================================
+// ПОШУК КНИГ В АДМІНЦІ
+// ===================================
+function filterAdminBooks() {
+    const input = document.getElementById('admin-books-search');
+    const query = (input?.value || '').toLowerCase().trim();
+    const container = document.getElementById('admin-books-list');
+    const counter  = document.getElementById('admin-search-count');
+
+    if (!container) return;
+
+    const items = container.querySelectorAll('.admin-book-item');
+
+    if (!query) {
+        items.forEach(el => { el.style.display = ''; });
+        if (counter) counter.textContent = '';
+        return;
+    }
+
+    let visible = 0;
+    items.forEach(el => {
+        const id = el.dataset.id;
+        const book = books.find(b => String(b.id) === String(id));
+        if (!book) { el.style.display = 'none'; return; }
+        const haystack = [book.title, book.author, book.publisher || '', book.isbn || '', book.category || ''].join(' ').toLowerCase();
+        if (haystack.includes(query)) {
+            el.style.display = '';
+            visible++;
+        } else {
+            el.style.display = 'none';
+        }
+    });
+
+    if (counter) {
+        if (visible === 0) {
+            counter.innerHTML = `<span style="color:#dc3545;">Нічого не знайдено за запитом &laquo;${query}&raquo;</span>`;
+        } else {
+            counter.textContent = `Знайдено: ${visible} з ${items.length} книг`;
+            counter.style.color = 'var(--cinereous)';
+        }
+    }
+}
+
+function updateAdminSearchCount(visible, total) {
+    // Залишено для сумісності
+}
+
+window.filterAdminBooks = filterAdminBooks;
+
 window.loadAdminBooks   = loadAdminBooks;
 window.loadCategoryOptions = loadCategoryOptions;
 window.editBook         = editBook;
