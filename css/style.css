@@ -1268,3 +1268,9 @@ body.dark-theme .footer { background: #0d0304; }
     .book-image { height: 200px; }
     .cart-item { flex-direction: column; align-items: center; text-align: center; }
 }
+.book-description,
+.book-short-description,
+.product-description,
+.book-full-description {
+    white-space: pre-line;
+}
